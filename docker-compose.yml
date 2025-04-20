@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  php-apache:
+    image: php-server
+    container_name: php_app
+    restart: always
+    ports:
+      - "8080:80"   # PHP app accessible at http://localhost:8080
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - mariadb_db
+    networks:
+      - my_network
+
+  mariadb_db:
+    image: mariadb:10.6
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: herbs
+      MARIADB_USER: root
+      MARIADB_PASSWORD: root
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./herbs.sql:/docker-entrypoint-initdb.d/herbs.sql
+      - ./Pharma.sql:/docker-entrypoint-initdb.d/Pharma.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+
