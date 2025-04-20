@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-apache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-apache
+  template:
+    metadata:
+      labels:
+        app: php-apache
+    spec:
+      containers:
+        - name: php-container
+          image: shubham554/ayur-app:latest  # Make sure this image is in a registry accessible by Kubernetes
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html-volume
+              mountPath: /var/www/html
+      volumes:
+        - name: html-volume
+          hostPath:
+            path: "C:/Users/User/Desktop/Docker/Ayur-new"  # Replace with your actual path
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-service
+spec:
+  selector:
+    app: php-apache
+  ports:
+    - port: 80
+      targetPort: 80
+  type: NodePort
