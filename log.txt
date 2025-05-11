@@ -1,0 +1,16 @@
+cd ayur
+sudo chmod 777 docker.sh
+./docker.sh
+docker ps
+ls
+sudo chmod 777 kubectl.sh
+./kubectl.sh
+sudo chmod 777 kind.sh
+./kind.sh
+kubectl get node
+kind create cluster --config kind-config.yaml --name ayur
+kubectl get node
+cd k8s
+kubectl apply -f .
+kubectl get all
+kubectl exec -it pod/mariadb-6c8ff46d9-z7f98 -- /bin/bash
