@@ -49,6 +49,13 @@ kubectl version --client
 chmod +x ./kind
 sudo mv ./kind /usr/local/bin/kind
 
+# If you don't want to install Jenkins, you can create a container of Jenkins
+# docker run -d -p 8080:8080 -p 50000:50000 --name jenkins-container jenkins/jenkins:lts
+
+# Run Docker Container of Sonarqube
+#!/bin/bash
+#docker run -d  --name sonar -p 9000:9000 sonarqube:lts-community
+
 
 # Installing Trivy
 #!/bin/bash
