@@ -14,3 +14,4 @@ cd k8s
 kubectl apply -f .
 kubectl get all
 kubectl exec -it pod/mariadb-6c8ff46d9-z7f98 -- /bin/bash
+mysql -uroot -proot herbs</docker-entrypoint-initdb.d/herbs.sql
