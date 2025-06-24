@@ -48,7 +48,7 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y docker.io openjdk-11-jdk git unzip curl
 sudo systemctl enable docker && sudo systemctl start docker
 
-2. 📦 Install DevOps Tools
+### 2. 📦 Install DevOps Tools
 <details> <summary>Jenkins</summary>
 bash
 Copy
