@@ -38,7 +38,7 @@ jobs:
         run: |
           sed -i "s|image: .*$|image: ${IMAGE_NAME}:${IMAGE_TAG}|" docker-compose.yml
 
-      - name: Run docker-compose up
-        run: |
-          docker-compose pull
-          docker-compose up -d --remove-orphans
+      #- name: Run docker-compose up
+      #  run: |
+      #    docker-compose pull
+      #    docker-compose up -d --remove-orphans
