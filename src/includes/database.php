@@ -1,5 +1,5 @@
 <?php
-    $hostname = 'mariadb_db';
+    $hostname = 'mariadb-db';
     $username = 'root';
     $password = 'root';
     $dbname = 'herbs';
