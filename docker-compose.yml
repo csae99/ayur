@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
   php-apache:
-    image: php-server
-    container_name: php_app
+    image: shubham554/ayur-app:latest
+    container_name: ayur-app
     restart: always
     ports:
       - "8080:80"   # PHP app accessible at http://localhost:8080
@@ -14,7 +14,7 @@ services:
     networks:
       - my_network
 
-  mariadb_db:
+  mariadb-db:
     image: mariadb:10.6
     restart: always
     environment:
