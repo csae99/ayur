@@ -210,8 +210,6 @@ Customize the Jenkinsfile and Helm charts according to your app’s needs.
 
 📄 License
 MIT License (or specify your preferred license)
-
-🙋‍♂️ Contributors
 Your Name
 
 🖼 Architecture Diagram (Optional)
