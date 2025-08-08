@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   php-apache:
-    image: shubham554/ayur-app:latest
+    image: shubham554/ayur-app:build-<run_number>
     container_name: ayur-app
     restart: always
     ports:
