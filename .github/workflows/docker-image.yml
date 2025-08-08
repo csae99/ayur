@@ -1,13 +1,17 @@
-name: Build and Push Docker Image
+name: Build, Push and Deploy with Docker Compose
 
 on:
   push:
     branches:
-      - main  # or your deploy branch
+      - main
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: self-hosted
+
+    env:
+      IMAGE_NAME: ${{ secrets.REGISTRY_URL }}/${{ secrets.REGISTRY_USERNAME }}/ayur-app
+      IMAGE_TAG: build-${{ github.run_number }}
 
     steps:
       - name: Checkout code
@@ -28,4 +32,13 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.REGISTRY_URL }}/${{ secrets.REGISTRY_USERNAME }}/ayur-app:build-${{ github.run_number }}
+          tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+
+      - name: Update docker-compose.yml with new image tag
+        run: |
+          sed -i "s|image: .*$|image: ${IMAGE_NAME}:${IMAGE_TAG}|" docker-compose.yml
+
+      - name: Run docker-compose up
+        run: |
+          docker-compose pull
+          docker-compose up -d --remove-orphans
