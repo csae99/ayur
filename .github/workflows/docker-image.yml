@@ -36,7 +36,10 @@ jobs:
 
       - name: Update docker-compose.yml with new image tag
         run: |
-          sed -i "s|image: .*|image: ${FULL_IMAGE}|" docker-compose.yml
+          echo "Updating image tag in docker-compose.yml..."
+          sed -i "s|image: shubham554/ayur-app:.*|image: shubham554/ayur-app:build-${{ github.run_number }}|" docker-compose.yml
+          echo "Updated file content:"
+          cat docker-compose.yml
 
       #- name: Run docker-compose up
       #  run: |
