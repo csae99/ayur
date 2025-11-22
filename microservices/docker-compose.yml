@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - identity-service
+      - catalog-service
+      - order-service
+      - ayurbot-service
+    networks:
+      - ayur-network
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - ayur-network
+
+  # Identity Service (Node.js)
+  identity-service:
+    build: ./identity-service
+    environment:
+      - PORT=3001
+      - DB_HOST=postgres-db
+      - JWT_SECRET=ayur_super_secret_key_2025
+    depends_on:
+      - postgres-db
+    networks:
+      - ayur-network
+
+  # Catalog Service (Node.js)
+  catalog-service:
+    build: ./catalog-service
+    environment:
+      - PORT=3002
+      - DB_HOST=postgres-db
+    depends_on:
+      - postgres-db
+    networks:
+      - ayur-network
+
+  # Order Service (Node.js)
+  order-service:
+    build: ./order-service
+    environment:
+      - PORT=3003
+      - DB_HOST=postgres-db
+      - JWT_SECRET=ayur_super_secret_key_2025
+    depends_on:
+      - postgres-db
+    networks:
+      - ayur-network
+
+  # AyurBot Service (Python)
+  ayurbot-service:
+    build: ./ayurbot-service
+    environment:
+      - PORT=8000
+    networks:
+      - ayur-network
+
+  # Databases
+  postgres-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ayur_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./identity-service/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./catalog-service/migrations/init.sql:/docker-entrypoint-initdb.d/catalog_init.sql
+      - ./order-service/migrations/init.sql:/docker-entrypoint-initdb.d/order_init.sql
+    networks:
+      - ayur-network
+
+  mongo-db:
+    image: mongo:6.0
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - ayur-network
+
+networks:
+  ayur-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mongo_data:
