@@ -3,6 +3,7 @@ const cors = require('cors');
 const sequelize = require('./config/database');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
+const practitionerRoutes = require('./routes/practitioners');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,6 +14,7 @@ app.use(express.json());
 // Routes
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
+app.use('/practitioners', practitionerRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {

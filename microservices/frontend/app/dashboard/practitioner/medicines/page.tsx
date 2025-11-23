@@ -67,6 +67,26 @@ export default function MyMedicinesPage() {
         return <span className={`px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{status}</span>;
     };
 
+    const handleDelete = (id: number) => {
+        if (!confirm('Are you sure you want to delete this medicine? This action cannot be undone.')) return;
+
+        const token = localStorage.getItem('token');
+        fetch(`http://localhost/api/catalog/items/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(res => {
+                if (res.ok) {
+                    setMedicines(prev => prev.filter(m => m.id !== id));
+                } else {
+                    res.json().then(data => alert(data.error || 'Failed to delete'));
+                }
+            })
+            .catch(err => console.error('Error deleting medicine:', err));
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
             <nav className="bg-white shadow-sm">
@@ -129,6 +149,14 @@ export default function MyMedicinesPage() {
                                         <span>Stock: {med.item_quantity}</span>
                                         <span>{med.item_cat}</span>
                                     </div>
+                                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
+                                        <button
+                                            onClick={() => handleDelete(med.id)}
+                                            className="text-red-600 hover:text-red-800 font-medium text-sm flex items-center gap-2 transition-colors"
+                                        >
+                                            <i className="fas fa-trash-alt"></i> Delete
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -137,4 +165,24 @@ export default function MyMedicinesPage() {
             </div>
         </div>
     );
+}
+
+function handleDelete(id: number) {
+    if (!confirm('Are you sure you want to delete this medicine? This action cannot be undone.')) return;
+
+    const token = localStorage.getItem('token');
+    fetch(`http://localhost/api/catalog/items/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(res => {
+            if (res.ok) {
+                window.location.reload(); // Simple reload to refresh list
+            } else {
+                res.json().then(data => alert(data.error || 'Failed to delete'));
+            }
+        })
+        .catch(err => console.error('Error deleting medicine:', err));
 }

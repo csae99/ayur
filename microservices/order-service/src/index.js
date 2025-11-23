@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const sequelize = require('./config/database');
 const orderRoutes = require('./routes/orders');
+const appointmentRoutes = require('./routes/appointments');
 
 const app = express();
 const PORT = process.env.PORT || 3003;
@@ -11,6 +12,7 @@ app.use(express.json());
 
 // Routes
 app.use('/', orderRoutes);
+app.use('/appointments', appointmentRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {

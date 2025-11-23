@@ -172,6 +172,22 @@ export default function PractitionerDashboard() {
                             </Link>
                         </div>
                     </div>
+
+                    {/* Appointments Card */}
+                    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 md:col-span-2">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Appointments</h2>
+                            <Link href="/dashboard/practitioner/appointments" className="text-green-600 hover:text-green-700 font-medium">
+                                View All &rarr;
+                            </Link>
+                        </div>
+                        <p className="text-gray-600 mb-6">
+                            View and manage your appointment requests from patients.
+                        </p>
+                        <Link href="/dashboard/practitioner/appointments" className="btn btn-primary w-full text-center">
+                            Manage Appointments
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

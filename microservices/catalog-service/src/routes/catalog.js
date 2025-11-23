@@ -57,13 +57,33 @@ router.put('/items/:id', async (req, res) => {
     }
 });
 
-// Delete item
+// Delete item (Protected: Only owner can delete)
 router.delete('/items/:id', async (req, res) => {
     try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ error: 'No token provided' });
+
+        const jwt = require('jsonwebtoken');
+        const SECRET_KEY = process.env.JWT_SECRET || 'your_jwt_secret';
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, SECRET_KEY);
+        } catch (err) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+
         const item = await Item.findByPk(req.params.id);
         if (!item) return res.status(404).json({ error: 'Item not found' });
+
+        // Check ownership
+        // Allow admin to delete any item, or practitioner to delete their own
+        if (decoded.type !== 'admin' && item.added_by !== decoded.username) {
+            return res.status(403).json({ error: 'You can only delete items you added' });
+        }
+
         await item.destroy();
-        res.json({ message: 'Item deleted' });
+        res.json({ message: 'Item deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
