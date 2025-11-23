@@ -1,9 +1,6 @@
 {
   "/not-found": "app/not-found.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/practitioner/page": "app/dashboard/practitioner/page.js",
-  "/page": "app/page.js",
-  "/login/page": "app/login/page.js",
-  "/dashboard/practitioner/medicines/page": "app/dashboard/practitioner/medicines/page.js",
-  "/dashboard/practitioner/add-medicine/page": "app/dashboard/practitioner/add-medicine/page.js"
+  "/dashboard/admin/page": "app/dashboard/admin/page.js",
+  "/dashboard/admin/medicines/page": "app/dashboard/admin/medicines/page.js",
+  "/dashboard/admin/medicines/[id]/page": "app/dashboard/admin/medicines/[id]/page.js"
 }

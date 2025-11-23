@@ -6,35 +6,20 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/page": [
+    "/dashboard/admin/medicines/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/dashboard/admin/medicines/page.js"
     ],
-    "/login/page": [
+    "/dashboard/admin/medicines/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/login/page.js"
+      "static/chunks/app/dashboard/admin/medicines/[id]/page.js"
     ],
-    "/dashboard/page": [
+    "/dashboard/admin/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/page.js"
-    ],
-    "/dashboard/practitioner/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/practitioner/page.js"
-    ],
-    "/dashboard/practitioner/medicines/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/practitioner/medicines/page.js"
-    ],
-    "/dashboard/practitioner/add-medicine/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/practitioner/add-medicine/page.js"
+      "static/chunks/app/dashboard/admin/page.js"
     ],
     "/not-found": [
       "static/chunks/webpack.js",

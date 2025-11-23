@@ -42,6 +42,12 @@ export default function DashboardPage() {
                 const parsed = JSON.parse(userData);
                 setUser(parsed);
 
+                // If admin, redirect to admin dashboard
+                if (parsed.role === 'admin') {
+                    router.replace('/dashboard/admin');
+                    return;
+                }
+
                 // If practitioner, redirect to practitioner dashboard
                 if (parsed.role === 'practitioner') {
                     router.replace('/dashboard/practitioner');
