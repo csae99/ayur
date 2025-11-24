@@ -31,6 +31,16 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/patient/appointments/page.js"
     ],
+    "/dashboard/patient/practitioners/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/patient/practitioners/page.js"
+    ],
+    "/dashboard/patient/orders/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/patient/orders/page.js"
+    ],
     "/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

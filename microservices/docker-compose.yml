@@ -36,6 +36,8 @@ services:
     environment:
       - PORT=3001
       - DB_HOST=postgres-db
+      - DB_USER=user
+      - DB_PASSWORD=password
       - JWT_SECRET=ayur_super_secret_key_2025
     depends_on:
       - postgres-db
@@ -48,6 +50,8 @@ services:
     environment:
       - PORT=3002
       - DB_HOST=postgres-db
+      - DB_USER=user
+      - DB_PASSWORD=password
       - JWT_SECRET=ayur_super_secret_key_2025
     depends_on:
       - postgres-db
@@ -60,6 +64,8 @@ services:
     environment:
       - PORT=3003
       - DB_HOST=postgres-db
+      - DB_USER=user
+      - DB_PASSWORD=password
       - JWT_SECRET=ayur_super_secret_key_2025
     depends_on:
       - postgres-db

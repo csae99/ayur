@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import PatientNav from '@/components/dashboard/patient/PatientNav';
 
 interface Appointment {
     id: number;
@@ -25,6 +26,7 @@ export default function MyAppointmentsPage() {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [practitioners, setPractitioners] = useState<Record<number, Practitioner>>({});
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<any>(null);
     const [rescheduleModal, setRescheduleModal] = useState<{ show: boolean, appointment: Appointment | null }>({ show: false, appointment: null });
     const [newDate, setNewDate] = useState('');
     const [newTime, setNewTime] = useState('');
@@ -36,6 +38,12 @@ export default function MyAppointmentsPage() {
         if (!userData || !token) {
             router.push('/login');
             return;
+        }
+
+        try {
+            setUser(JSON.parse(userData));
+        } catch (e) {
+            console.error('Error parsing user data', e);
         }
 
         const fetchAppointments = fetch('http://localhost/api/orders/appointments/patient', {
@@ -65,6 +73,12 @@ export default function MyAppointmentsPage() {
                 setLoading(false);
             });
     }, [router]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        router.push('/');
+    };
 
     const handleCancelAppointment = async (id: number) => {
         if (!confirm('Are you sure you want to cancel this appointment?')) return;
@@ -150,26 +164,7 @@ export default function MyAppointmentsPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <nav className="bg-white shadow-sm">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <Link href="/dashboard" className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                                A
-                            </div>
-                            <span className="text-2xl font-bold text-gray-800">Ayurveda</span>
-                        </Link>
-                        <div className="flex gap-4">
-                            <Link href="/dashboard/patient/practitioners" className="text-gray-600 hover:text-green-600 font-medium">
-                                Find Practitioners
-                            </Link>
-                            <Link href="/dashboard" className="text-gray-600 hover:text-green-600 font-medium">
-                                Dashboard
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            <PatientNav username={user?.username} onLogout={handleLogout} />
 
             <div className="container mx-auto px-4 py-12">
                 <h1 className="text-3xl font-bold text-gray-800 mb-8">My Appointments</h1>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import PatientNav from '@/components/dashboard/patient/PatientNav';
 
 interface Practitioner {
     id: number;
@@ -21,6 +22,7 @@ export default function FindPractitionersPage() {
     const router = useRouter();
     const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
     const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<any>(null);
     const [selectedPractitioner, setSelectedPractitioner] = useState<Practitioner | null>(null);
     const [bookingDate, setBookingDate] = useState('');
     const [bookingTime, setBookingTime] = useState('');
@@ -34,10 +36,17 @@ export default function FindPractitionersPage() {
             router.push('/login');
             return;
         }
-        const user = JSON.parse(userData);
-        if (user.role !== 'patient') {
-            router.push('/dashboard');
-            return;
+
+        try {
+            const parsedUser = JSON.parse(userData);
+            setUser(parsedUser);
+
+            if (parsedUser.role !== 'patient') {
+                router.push('/dashboard');
+                return;
+            }
+        } catch (e) {
+            console.error('Error parsing user data', e);
         }
 
         fetch('http://localhost/api/identity/practitioners/public')
@@ -55,6 +64,12 @@ export default function FindPractitionersPage() {
                 setLoading(false);
             });
     }, [router]);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        router.push('/');
+    };
 
     const handleWhatsApp = (phone: string) => {
         // Remove non-numeric characters
@@ -104,27 +119,7 @@ export default function FindPractitionersPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Navbar */}
-            <nav className="bg-white shadow-sm">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <Link href="/dashboard" className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                                A
-                            </div>
-                            <span className="text-2xl font-bold text-gray-800">Ayurveda</span>
-                        </Link>
-                        <div className="flex gap-4">
-                            <Link href="/dashboard" className="text-gray-600 hover:text-green-600 font-medium">
-                                Dashboard
-                            </Link>
-                            <Link href="/dashboard/patient/appointments" className="text-gray-600 hover:text-green-600 font-medium">
-                                My Appointments
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+            <PatientNav username={user?.username} onLogout={handleLogout} />
 
             <div className="container mx-auto px-4 py-12">
                 <h1 className="text-3xl font-bold text-gray-800 mb-8">Find Practitioners</h1>
