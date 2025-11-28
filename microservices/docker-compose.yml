@@ -92,6 +92,7 @@ services:
       - ./identity-service/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./catalog-service/migrations/init.sql:/docker-entrypoint-initdb.d/catalog_init.sql
       - ./order-service/migrations/init.sql:/docker-entrypoint-initdb.d/order_init.sql
+      - ./backups/backup_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
     networks:
       - ayur-network
 

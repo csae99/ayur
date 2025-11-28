@@ -22,13 +22,25 @@ app.get('/health', (req, res) => {
 });
 
 // Database Connection and Server Start
-sequelize.authenticate()
-    .then(() => {
-        console.log('Database connected...');
-        app.listen(PORT, () => {
-            console.log(`Identity Service running on port ${PORT}`);
-        });
-    })
-    .catch(err => {
-        console.error('Error connecting to database:', err);
-    });
+const connectWithRetry = async () => {
+    const maxRetries = 10;
+    let retries = 0;
+    while (retries < maxRetries) {
+        try {
+            await sequelize.authenticate();
+            console.log('Database connected...');
+            app.listen(PORT, () => {
+                console.log(`Identity Service running on port ${PORT}`);
+            });
+            return;
+        } catch (err) {
+            retries++;
+            console.error(`Error connecting to database (Attempt ${retries}/${maxRetries}):`, err.message);
+            await new Promise(res => setTimeout(res, 5000));
+        }
+    }
+    console.error('Could not connect to database after multiple attempts. Exiting.');
+    process.exit(1);
+};
+
+connectWithRetry();
