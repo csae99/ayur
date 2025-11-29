@@ -4,26 +4,23 @@ const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
-// TEST ENDPOINT - Remove after debugging
-router.post('/orders/:id/cancel-test', (req, res) => {
-    console.log('[TEST] Cancel test endpoint hit!', req.params.id);
-    res.json({ message: 'Test endpoint works', orderId: req.params.id });
+// Get all orders (Practitioner/Admin only)
+router.get('/orders', authMiddleware, async (req, res) => {
+    try {
+        // Only practitioners and admins can view all orders
+        if (req.user.type !== 'practitioner' && req.user.type !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const orders = await Order.findAll({
+            order: [['order_date', 'DESC']],
+        });
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching all orders:', error);
+        res.status(500).json({ error: error.message });
+    }
 });
-
-// Catch-all test
-router.all('*', (req, res, next) => {
-    console.log(`[CATCH-ALL] ${req.method} ${req.path}`);
-    next(); // Continue to other routes
-});
-
-
-// TEST with different pattern
-router.post('/cancel-order-test/:id', (req, res) => {
-    console.log('[TEST2] Different pattern works!', req.params.id);
-    res.json({ message: 'Test2 works', orderId: req.params.id });
-});
-
-
 
 // Create new order (protected)
 router.post('/orders', authMiddleware, async (req, res) => {
@@ -195,7 +192,5 @@ router.delete('/orders/:id', authMiddleware, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-console.log('[ROUTES] Orders module loaded. All routes registered.');
 
 module.exports = router;
