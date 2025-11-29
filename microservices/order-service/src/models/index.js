@@ -6,7 +6,17 @@ const Order = sequelize.define('Order', {
     user_id: { type: DataTypes.INTEGER, allowNull: false },
     order_quantity: { type: DataTypes.INTEGER, allowNull: false },
     order_date: { type: DataTypes.DATEONLY, allowNull: false, defaultValue: DataTypes.NOW },
-    order_status: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    order_status: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 1,
+        comment: '0=PendingPayment, 1=Confirmed, 2=Processing, 3=Packed, 4=Shipped, 5=OutForDelivery, 6=Delivered, 7=Cancelled, 8=Returned, 9=Refunded'
+    },
+    tracking_number: { type: DataTypes.STRING },
+    shipped_date: { type: DataTypes.DATE },
+    delivered_date: { type: DataTypes.DATE },
+    estimated_delivery: { type: DataTypes.DATEONLY },
+    practitioner_id: { type: DataTypes.INTEGER, allowNull: true, comment: 'ID of the practitioner/pharmacy who sold the item' }
 }, {
     tableName: 'orders',
     timestamps: false,

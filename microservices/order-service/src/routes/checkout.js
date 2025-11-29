@@ -4,6 +4,7 @@ const { Cart, CartItem } = require('../models/cart');
 const { Order } = require('../models');
 const Address = require('../models/address');
 const verifyToken = require('../middleware/auth');
+const { estimateDelivery } = require('../utils/pricing');
 
 // Create Payment Intent (Mock Stripe)
 router.post('/payment-intent', verifyToken, async (req, res) => {
@@ -51,23 +52,19 @@ router.post('/', verifyToken, async (req, res) => {
         // Looking at `models/index.js`, Order has `item_id`. This implies one row per item order.
         // We will create multiple rows.
 
+        // 3. Calculate estimated delivery
+        const deliveryDate = new Date();
+        deliveryDate.setDate(deliveryDate.getDate() + 5); // 5 days from now
+
         const orders = [];
         for (const item of cart.CartItems) {
             const order = await Order.create({
                 user_id: userId,
                 item_id: item.item_id,
                 order_quantity: item.quantity,
-                order_status: 1, // 1 = Placed
-                // We might need to store address_id and payment info.
-                // Since we didn't add these columns to Order table in migration yet (only in plan),
-                // we rely on sync({ alter: true }) to add them if we define them in model.
-                // Wait, I updated models/index.js to add association, but I didn't update the Order definition itself to have these columns!
-                // I need to update Order definition in models/index.js first or here.
-                // Let's assume I will update Order model definition in next step or rely on what I have.
-                // Actually, I only added association `Order.belongsTo(Address)`. Sequelize adds `address_id` automatically.
-                // But `payment_id` and `total_amount` are missing.
+                order_status: 1, // 1 = Confirmed
                 address_id: address_id,
-                // payment_id: payment_id // Need to add this column to model if we want to save it.
+                estimated_delivery: deliveryDate
             });
             orders.push(order);
         }

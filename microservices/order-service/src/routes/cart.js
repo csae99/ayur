@@ -17,7 +17,30 @@ router.get('/', verifyToken, async (req, res) => {
             cart.dataValues.CartItems = [];
         }
 
-        res.json(cart);
+        // Fetch product details for each cart item
+        const cartItemsWithProducts = await Promise.all(
+            cart.CartItems.map(async (item) => {
+                try {
+                    const response = await fetch(`http://catalog-service:3002/items/${item.item_id}`);
+                    const product = await response.json();
+                    return {
+                        ...item.toJSON(),
+                        product
+                    };
+                } catch (error) {
+                    console.error(`Error fetching product ${item.item_id}:`, error);
+                    return {
+                        ...item.toJSON(),
+                        product: null
+                    };
+                }
+            })
+        );
+
+        res.json({
+            ...cart.toJSON(),
+            CartItems: cartItemsWithProducts
+        });
     } catch (err) {
         console.error('Error fetching cart:', err);
         res.status(500).json({ message: 'Server error' });

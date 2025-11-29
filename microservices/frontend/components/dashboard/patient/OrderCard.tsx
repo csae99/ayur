@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import Link from 'next/link';
+import OrderStatusTimeline from './OrderStatusTimeline';
 
 export interface OrderItem {
     id: number;
@@ -7,6 +9,10 @@ export interface OrderItem {
     order_quantity: number;
     order_date: string;
     order_status: number;
+    tracking_number?: string;
+    shipped_date?: string;
+    delivered_date?: string;
+    estimated_delivery?: string;
     item?: {
         id: number;
         item_title: string;
@@ -23,11 +29,34 @@ interface OrderCardProps {
 }
 
 export default function OrderCard({ order, onCancel }: OrderCardProps) {
+    const [showTimeline, setShowTimeline] = useState(false);
+
     const getStatusBadge = (status: number) => {
-        if (status === 0) {
-            return <span className="text-xs font-medium text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full">Pending</span>;
-        }
-        return <span className="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded-full">Completed</span>;
+        const statusConfig: Record<number, { label: string; color: string }> = {
+            0: { label: 'Pending Payment', color: 'yellow' },
+            1: { label: 'Confirmed', color: 'blue' },
+            2: { label: 'Processing', color: 'indigo' },
+            3: { label: 'Packed', color: 'purple' },
+            4: { label: 'Shipped', color: 'cyan' },
+            5: { label: 'Out for Delivery', color: 'orange' },
+            6: { label: 'Delivered', color: 'green' },
+            7: { label: 'Cancelled', color: 'red' },
+            8: { label: 'Returned', color: 'gray' },
+            9: { label: 'Refunded', color: 'pink' },
+        };
+
+        const config = statusConfig[status] || { label: 'Unknown', color: 'gray' };
+
+        return (
+            <span className={`text-xs font-medium px-3 py-1 rounded-full bg-${config.color}-100 text-${config.color}-700`}>
+                {config.label}
+            </span>
+        );
+    };
+
+    const canCancel = () => {
+        // Can cancel only if status <= 3 (Packed)
+        return order.order_status > 0 && order.order_status <= 3;
     };
 
     return (
@@ -82,7 +111,7 @@ export default function OrderCard({ order, onCancel }: OrderCardProps) {
                             )}
                         </div>
                         <div className="flex gap-3">
-                            {order.order_status === 0 && (
+                            {canCancel() && (
                                 <button
                                     onClick={() => onCancel(order.id)}
                                     className="btn bg-red-50 text-red-600 hover:bg-red-100 border-red-100 text-sm"
@@ -90,11 +119,28 @@ export default function OrderCard({ order, onCancel }: OrderCardProps) {
                                     Cancel Order
                                 </button>
                             )}
-                            <Link href={`/dashboard/orders/${order.id}`} className="btn btn-outline text-sm">
-                                View Details
-                            </Link>
+                            <button
+                                onClick={() => setShowTimeline(!showTimeline)}
+                                className="btn btn-outline text-sm"
+                            >
+                                <i className={`fas fa-${showTimeline ? 'chevron-up' : 'route'} mr-2`}></i>
+                                {showTimeline ? 'Hide' : 'Track Order'}
+                            </button>
                         </div>
                     </div>
+
+                    {/* Expandable Timeline */}
+                    {showTimeline && (
+                        <div className="mt-6 pt-6 border-t border-gray-200">
+                            <OrderStatusTimeline
+                                currentStatus={order.order_status}
+                                estimatedDelivery={order.estimated_delivery}
+                                trackingNumber={order.tracking_number}
+                                shippedDate={order.shipped_date}
+                                deliveredDate={order.delivered_date}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

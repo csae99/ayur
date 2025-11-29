@@ -71,13 +71,16 @@ export default function MyOrdersPage() {
 
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`http://localhost/api/orders/orders/${orderId}`, {
-                method: 'DELETE',
+            const response = await fetch(`http://localhost/api/orders/orders/${orderId}/cancel`, {
+                method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });
 
             if (response.ok) {
-                setOrders(orders.filter(order => order.id !== orderId));
+                // Update local state to show cancelled status instead of removing
+                setOrders(orders.map(order =>
+                    order.id === orderId ? { ...order, order_status: 7 } : order
+                ));
             } else {
                 alert('Failed to cancel order');
             }

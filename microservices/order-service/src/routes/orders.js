@@ -4,6 +4,27 @@ const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
+// TEST ENDPOINT - Remove after debugging
+router.post('/orders/:id/cancel-test', (req, res) => {
+    console.log('[TEST] Cancel test endpoint hit!', req.params.id);
+    res.json({ message: 'Test endpoint works', orderId: req.params.id });
+});
+
+// Catch-all test
+router.all('*', (req, res, next) => {
+    console.log(`[CATCH-ALL] ${req.method} ${req.path}`);
+    next(); // Continue to other routes
+});
+
+
+// TEST with different pattern
+router.post('/cancel-order-test/:id', (req, res) => {
+    console.log('[TEST2] Different pattern works!', req.params.id);
+    res.json({ message: 'Test2 works', orderId: req.params.id });
+});
+
+
+
 // Create new order (protected)
 router.post('/orders', authMiddleware, async (req, res) => {
     try {
@@ -97,39 +118,84 @@ router.get('/orders/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// Update order status (admin only)
-router.put('/orders/:id/status', authMiddleware, async (req, res) => {
+// Update order status (Practitioner/Admin)
+router.patch('/orders/:id/status', authMiddleware, async (req, res) => {
     try {
-        if (req.user.type !== 'admin') {
-            return res.status(403).json({ error: 'Admin access required' });
-        }
-
+        const { status, tracking_number } = req.body;
         const order = await Order.findByPk(req.params.id);
+
         if (!order) return res.status(404).json({ error: 'Order not found' });
 
-        await order.update({ order_status: req.body.order_status });
+        // Authorization check
+        if (req.user.type === 'practitioner') {
+            // Future: Check if order.practitioner_id === req.user.id
+            // For now, allow if they are a practitioner (assuming shared inventory or single pharmacy)
+        } else if (req.user.type !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const updates = { order_status: status };
+
+        // Handle specific status changes
+        if (status === 4) { // Shipped
+            if (!tracking_number) {
+                return res.status(400).json({ error: 'Tracking number required for shipping' });
+            }
+            updates.tracking_number = tracking_number;
+            updates.shipped_date = new Date();
+        }
+
+        if (status === 6) { // Delivered
+            updates.delivered_date = new Date();
+        }
+
+        await order.update(updates);
         res.json(order);
     } catch (error) {
+        console.error('Error updating order status:', error);
         res.status(400).json({ error: error.message });
     }
 });
 
-// Cancel/Delete order (protected)
-router.delete('/orders/:id', authMiddleware, async (req, res) => {
+// Cancel order (Patient/Admin)
+router.post('/orders/:id/cancel', authMiddleware, async (req, res) => {
+    console.log(`[DEBUG] Cancel request for order ${req.params.id} by user ${req.user.id}`);
     try {
         const order = await Order.findByPk(req.params.id);
         if (!order) return res.status(404).json({ error: 'Order not found' });
 
-        // Ensure user can only delete their own orders
+        // Authorization
         if (order.user_id !== req.user.id && req.user.type !== 'admin') {
             return res.status(403).json({ error: 'Forbidden' });
         }
 
-        await order.destroy();
-        res.json({ message: 'Order cancelled successfully' });
+        // Validation: Can only cancel if status <= 3 (Packed)
+        if (order.order_status > 3 && req.user.type !== 'admin') {
+            return res.status(400).json({ error: 'Cannot cancel order after it has been shipped' });
+        }
+
+        await order.update({ order_status: 7 }); // 7 = Cancelled
+        res.json({ message: 'Order cancelled successfully', order });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
+
+// Legacy DELETE (Admin only - hard delete)
+router.delete('/orders/:id', authMiddleware, async (req, res) => {
+    try {
+        if (req.user.type !== 'admin') {
+            return res.status(403).json({ error: 'Admin access required' });
+        }
+        const order = await Order.findByPk(req.params.id);
+        if (!order) return res.status(404).json({ error: 'Order not found' });
+        await order.destroy();
+        res.json({ message: 'Order deleted permanently' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+console.log('[ROUTES] Orders module loaded. All routes registered.');
 
 module.exports = router;
