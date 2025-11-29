@@ -1,7 +1,6 @@
 {
-  "/not-found": "app/not-found.js",
-  "/page": "app/page.js",
-  "/dashboard/patient/page": "app/dashboard/patient/page.js",
-  "/login/page": "app/login/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/patient/orders/page": "app/dashboard/patient/orders/page.js",
+  "/dashboard/orders/[id]/page": "app/dashboard/orders/[id]/page.js",
+  "/dashboard/patient/page": "app/dashboard/patient/page.js"
 }

@@ -13,6 +13,8 @@ app.use(express.json());
 // Routes
 app.use('/', orderRoutes);
 app.use('/appointments', appointmentRoutes);
+app.use('/cart', require('./routes/cart'));
+app.use('/checkout', require('./routes/checkout'));
 
 // Health Check
 app.get('/health', (req, res) => {
@@ -27,6 +29,11 @@ const connectWithRetry = async () => {
         try {
             await sequelize.authenticate();
             console.log('Database connected...');
+
+            // Sync models with database
+            await sequelize.sync({ alter: true });
+            console.log('Database models synced...');
+
             app.listen(PORT, () => {
                 console.log(`Order Service running on port ${PORT}`);
             });

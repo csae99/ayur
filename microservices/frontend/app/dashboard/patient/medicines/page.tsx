@@ -78,7 +78,7 @@ export default function BrowseMedicinesPage() {
         setAddingToCart(medicine.id);
 
         try {
-            const response = await fetch('http://localhost/api/orders/orders', {
+            const response = await fetch('http://localhost/api/orders/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ export default function BrowseMedicinesPage() {
                 },
                 body: JSON.stringify({
                     item_id: medicine.id,
-                    order_quantity: 1
+                    quantity: 1
                 })
             });
 

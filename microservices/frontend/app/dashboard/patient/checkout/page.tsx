@@ -1,0 +1,272 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import PatientNav from '@/components/dashboard/patient/PatientNav';
+
+interface Address {
+    id?: number;
+    full_name: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+    phone: string;
+}
+
+export default function CheckoutPage() {
+    const router = useRouter();
+    const [step, setStep] = useState(1); // 1: Address, 2: Payment, 3: Success
+    const [addresses, setAddresses] = useState<Address[]>([]);
+    const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+    const [newAddress, setNewAddress] = useState<Address>({
+        full_name: '',
+        street: '',
+        city: '',
+        state: '',
+        zip: '',
+        phone: ''
+    });
+    const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState<'cod' | 'stripe'>('cod');
+    const [loading, setLoading] = useState(false);
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('user');
+
+        if (!token) {
+            router.push('/login');
+            return;
+        }
+
+        if (userData) {
+            setUser(JSON.parse(userData));
+        }
+
+        fetchAddresses();
+    }, [router]);
+
+    const fetchAddresses = () => {
+        const token = localStorage.getItem('token');
+        fetch('http://localhost/api/orders/checkout/addresses', {
+            headers: { 'Authorization': `Bearer ${token}` },
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setAddresses(data);
+                    if (data.length > 0) setSelectedAddressId(data[0].id!);
+                    else setShowNewAddressForm(true);
+                }
+            })
+            .catch(err => console.error('Failed to fetch addresses:', err));
+    };
+
+    const handleSaveAddress = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch('http://localhost/api/orders/checkout/addresses', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(newAddress)
+            });
+            const savedAddress = await res.json();
+            setAddresses([...addresses, savedAddress]);
+            setSelectedAddressId(savedAddress.id);
+            setShowNewAddressForm(false);
+        } catch (error) {
+            console.error('Error saving address:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePlaceOrder = async () => {
+        if (!selectedAddressId) {
+            alert('Please select a delivery address');
+            return;
+        }
+
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        try {
+            // If Stripe, we would create a payment intent here first.
+            // For now, we simulate success for both COD and Stripe (Test Mode).
+
+            const response = await fetch('http://localhost/api/orders/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    address_id: selectedAddressId,
+                    payment_method: paymentMethod,
+                    payment_id: paymentMethod === 'stripe' ? 'mock_stripe_id' : null
+                })
+            });
+
+            if (response.ok) {
+                setStep(3); // Success
+            } else {
+                const err = await response.json();
+                alert('Failed to place order: ' + err.message);
+            }
+        } catch (error) {
+            console.error('Error placing order:', error);
+            alert('Error placing order');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50">
+            <PatientNav username={user?.username} onLogout={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                router.push('/');
+            }} />
+
+            <div className="container mx-auto px-4 py-12 max-w-4xl">
+                <h1 className="text-3xl font-bold text-gray-800 mb-8">Checkout</h1>
+
+                {step === 1 && (
+                    <div className="bg-white rounded-xl shadow-sm p-8">
+                        <h2 className="text-xl font-semibold mb-6">1. Delivery Address</h2>
+
+                        {!showNewAddressForm && addresses.length > 0 && (
+                            <div className="space-y-4 mb-6">
+                                {addresses.map(addr => (
+                                    <div
+                                        key={addr.id}
+                                        className={`p-4 border rounded-lg cursor-pointer flex items-start gap-3 ${selectedAddressId === addr.id ? 'border-green-600 bg-green-50' : 'border-gray-200 hover:border-green-300'}`}
+                                        onClick={() => setSelectedAddressId(addr.id!)}
+                                    >
+                                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center mt-1 ${selectedAddressId === addr.id ? 'border-green-600' : 'border-gray-300'}`}>
+                                            {selectedAddressId === addr.id && <div className="w-3 h-3 rounded-full bg-green-600"></div>}
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">{addr.full_name}</p>
+                                            <p className="text-gray-600">{addr.street}</p>
+                                            <p className="text-gray-600">{addr.city}, {addr.state} {addr.zip}</p>
+                                            <p className="text-gray-600">Phone: {addr.phone}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                                <button
+                                    onClick={() => setShowNewAddressForm(true)}
+                                    className="text-green-700 font-medium hover:underline"
+                                >
+                                    + Add New Address
+                                </button>
+                            </div>
+                        )}
+
+                        {showNewAddressForm && (
+                            <form onSubmit={handleSaveAddress} className="space-y-4 mb-6 border p-6 rounded-lg bg-gray-50">
+                                <h3 className="font-medium mb-2">New Address</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input required placeholder="Full Name" className="input" value={newAddress.full_name} onChange={e => setNewAddress({ ...newAddress, full_name: e.target.value })} />
+                                    <input required placeholder="Phone Number" className="input" value={newAddress.phone} onChange={e => setNewAddress({ ...newAddress, phone: e.target.value })} />
+                                    <input required placeholder="Street Address" className="input md:col-span-2" value={newAddress.street} onChange={e => setNewAddress({ ...newAddress, street: e.target.value })} />
+                                    <input required placeholder="City" className="input" value={newAddress.city} onChange={e => setNewAddress({ ...newAddress, city: e.target.value })} />
+                                    <input required placeholder="State" className="input" value={newAddress.state} onChange={e => setNewAddress({ ...newAddress, state: e.target.value })} />
+                                    <input required placeholder="ZIP Code" className="input" value={newAddress.zip} onChange={e => setNewAddress({ ...newAddress, zip: e.target.value })} />
+                                </div>
+                                <div className="flex gap-3 mt-4">
+                                    <button type="submit" className="btn btn-primary" disabled={loading}>Save Address</button>
+                                    {addresses.length > 0 && (
+                                        <button type="button" onClick={() => setShowNewAddressForm(false)} className="btn btn-secondary">Cancel</button>
+                                    )}
+                                </div>
+                            </form>
+                        )}
+
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setStep(2)}
+                                disabled={!selectedAddressId || showNewAddressForm}
+                                className="btn btn-primary px-8"
+                            >
+                                Continue to Payment
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {step === 2 && (
+                    <div className="bg-white rounded-xl shadow-sm p-8">
+                        <h2 className="text-xl font-semibold mb-6">2. Payment Method</h2>
+
+                        <div className="space-y-4 mb-8">
+                            <div
+                                className={`p-4 border rounded-lg cursor-pointer flex items-center gap-4 ${paymentMethod === 'cod' ? 'border-green-600 bg-green-50' : 'border-gray-200'}`}
+                                onClick={() => setPaymentMethod('cod')}
+                            >
+                                <div className="text-2xl text-green-700"><i className="fas fa-money-bill-wave"></i></div>
+                                <div>
+                                    <p className="font-semibold">Cash on Delivery</p>
+                                    <p className="text-sm text-gray-500">Pay when you receive your order</p>
+                                </div>
+                            </div>
+
+                            <div
+                                className={`p-4 border rounded-lg cursor-pointer flex items-center gap-4 ${paymentMethod === 'stripe' ? 'border-green-600 bg-green-50' : 'border-gray-200'}`}
+                                onClick={() => setPaymentMethod('stripe')}
+                            >
+                                <div className="text-2xl text-blue-600"><i className="fab fa-stripe"></i></div>
+                                <div>
+                                    <p className="font-semibold">Pay Online (Stripe)</p>
+                                    <p className="text-sm text-gray-500">Credit / Debit Card</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {paymentMethod === 'stripe' && (
+                            <div className="mb-6 p-4 bg-blue-50 text-blue-800 rounded-lg text-sm">
+                                <i className="fas fa-info-circle mr-2"></i> This is a test mode. No real payment will be processed.
+                            </div>
+                        )}
+
+                        <div className="flex justify-between">
+                            <button onClick={() => setStep(1)} className="text-gray-600 font-medium">Back</button>
+                            <button
+                                onClick={handlePlaceOrder}
+                                disabled={loading}
+                                className="btn btn-primary px-8"
+                            >
+                                {loading ? 'Processing...' : 'Place Order'}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {step === 3 && (
+                    <div className="bg-white rounded-xl shadow-sm p-12 text-center">
+                        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600 text-4xl">
+                            <i className="fas fa-check"></i>
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Order Placed Successfully!</h2>
+                        <p className="text-gray-600 mb-8">Thank you for your order. You can track its status in your orders page.</p>
+                        <div className="flex justify-center gap-4">
+                            <button onClick={() => router.push('/dashboard/patient/orders')} className="btn btn-primary">
+                                View My Orders
+                            </button>
+                            <button onClick={() => router.push('/dashboard/patient/medicines')} className="btn btn-outline">
+                                Continue Shopping
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}

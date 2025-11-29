@@ -22,9 +22,10 @@ export default function MyOrdersPage() {
             return;
         }
 
+        let parsed = null;
         if (userData) {
             try {
-                const parsed = JSON.parse(userData);
+                parsed = JSON.parse(userData);
                 setUser(parsed);
                 if (parsed.role !== 'patient') {
                     router.replace('/dashboard');
@@ -35,7 +36,9 @@ export default function MyOrdersPage() {
             }
         }
 
-        fetch('http://localhost/api/orders/orders/user/1/detailed', {
+        const userId = parsed?.id || 1; // Fallback to 1 if no ID found
+
+        fetch(`http://localhost/api/orders/orders/user/${userId}/detailed`, {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then(res => {

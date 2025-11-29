@@ -33,6 +33,9 @@ export default function PatientNav({ username, onLogout }: PatientNavProps) {
                         <Link href="/dashboard/patient/medicines" className="btn btn-outline">
                             Browse Medicines
                         </Link>
+                        <Link href="/dashboard/patient/cart" className="btn btn-outline">
+                            <i className="fas fa-shopping-cart mr-2"></i> Cart
+                        </Link>
                         <button onClick={onLogout} className="btn btn-secondary">
                             Logout
                         </button>
