@@ -37,6 +37,7 @@ const Appointment = sequelize.define('Appointment', {
 
 const { Cart, CartItem } = require('./cart');
 const Address = require('./address');
+const Coupon = require('./Coupon')(sequelize);
 
 // Associations
 Cart.hasMany(CartItem, { foreignKey: 'cart_id', onDelete: 'CASCADE' });
@@ -45,4 +46,4 @@ CartItem.belongsTo(Cart, { foreignKey: 'cart_id' });
 // Order Associations (Optional, but good for future)
 Order.belongsTo(Address, { foreignKey: 'address_id', as: 'shippingAddress' });
 
-module.exports = { Order, Appointment, Cart, CartItem, Address };
+module.exports = { Order, Appointment, Cart, CartItem, Address, Coupon };

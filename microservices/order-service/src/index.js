@@ -15,6 +15,7 @@ app.use('/', orderRoutes);
 app.use('/appointments', appointmentRoutes);
 app.use('/cart', require('./routes/cart'));
 app.use('/checkout', require('./routes/checkout'));
+app.use('/', require('./routes/coupons'));
 
 // Health Check
 app.get('/health', (req, res) => {

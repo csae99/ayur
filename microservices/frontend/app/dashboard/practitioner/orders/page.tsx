@@ -69,15 +69,15 @@ export default function PractitionerOrdersPage() {
         try {
             const token = localStorage.getItem('token');
 
-            const body: { order_status: number; tracking_number?: string } = {
-                order_status: newStatus
+            const body: { status: number; tracking_number?: string } = {
+                status: newStatus
             };
 
             if (trackingNumber) {
                 body.tracking_number = trackingNumber;
             }
 
-            const response = await fetch(`http://localhost/api/orders/orders/${orderId}/status`, {
+            const response = await fetch(`http://localhost/api/orders/${orderId}/status`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -138,14 +138,20 @@ export default function PractitionerOrdersPage() {
     return (
         <div className="max-w-6xl mx-auto">
             {/* Header */}
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold text-primary mb-2">
-                    <i className="fas fa-box-open mr-3"></i>
-                    Order Management
-                </h1>
-                <p className="text-secondary">
-                    Manage and update order statuses for your patients
-                </p>
+            <div className="mb-6 flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold text-primary mb-2">
+                        <i className="fas fa-box-open mr-3"></i>
+                        Order Management
+                    </h1>
+                    <p className="text-secondary">
+                        Manage and update order statuses for your patients
+                    </p>
+                </div>
+                <a href="/dashboard/practitioner" className="btn btn-outline">
+                    <i className="fas fa-arrow-left mr-2"></i>
+                    Back to Dashboard
+                </a>
             </div>
 
             {/* Filters and Stats */}

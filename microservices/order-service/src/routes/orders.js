@@ -1,6 +1,13 @@
 const express = require('express');
 const { Order } = require('../models');
 const authMiddleware = require('../middleware/auth');
+const {
+    sendOrderConfirmation,
+    sendStatusUpdate,
+    sendCancellationEmail,
+    getStatusName,
+    getStatusMessage
+} = require('../utils/notifications');
 
 const router = express.Router();
 
@@ -33,8 +40,15 @@ router.post('/orders', authMiddleware, async (req, res) => {
             user_id,
             order_quantity,
             order_date: new Date(),
-            order_status: 0,
+            order_status: 1, // Changed from 0 to 1 (Confirmed)
+            estimated_delivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000) // 5 days from now
         });
+
+        // Send order confirmation email (async, don't wait)
+        sendOrderConfirmation(order).catch(err =>
+            console.error('Failed to send order confirmation:', err)
+        );
+
         res.status(201).json(order);
     } catch (error) {
         console.error('Error creating order:', error);
@@ -147,6 +161,16 @@ router.patch('/orders/:id/status', authMiddleware, async (req, res) => {
         }
 
         await order.update(updates);
+
+        // Send status update email for important statuses (Shipped, Delivered)
+        if (status === 4 || status === 6) {
+            const statusName = getStatusName(status);
+            const statusMessage = getStatusMessage(status);
+            sendStatusUpdate(order, statusName, statusMessage).catch(err =>
+                console.error('Failed to send status update email:', err)
+            );
+        }
+
         res.json(order);
     } catch (error) {
         console.error('Error updating order status:', error);
@@ -172,23 +196,15 @@ router.post('/orders/:id/cancel', authMiddleware, async (req, res) => {
         }
 
         await order.update({ order_status: 7 }); // 7 = Cancelled
+
+        // Send cancellation email
+        sendCancellationEmail(order).catch(err =>
+            console.error('Failed to send cancellation email:', err)
+        );
+
         res.json({ message: 'Order cancelled successfully', order });
     } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// Legacy DELETE (Admin only - hard delete)
-router.delete('/orders/:id', authMiddleware, async (req, res) => {
-    try {
-        if (req.user.type !== 'admin') {
-            return res.status(403).json({ error: 'Admin access required' });
-        }
-        const order = await Order.findByPk(req.params.id);
-        if (!order) return res.status(404).json({ error: 'Order not found' });
-        await order.destroy();
-        res.json({ message: 'Order deleted permanently' });
-    } catch (error) {
+        console.error('Error cancelling order:', error);
         res.status(500).json({ error: error.message });
     }
 });

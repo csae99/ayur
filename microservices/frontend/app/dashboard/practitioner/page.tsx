@@ -173,8 +173,24 @@ export default function PractitionerDashboard() {
                         </div>
                     </div>
 
+                    {/* Order Management Card */}
+                    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Order Management</h2>
+                            <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                                <i className="fas fa-box-open text-blue-600"></i>
+                            </div>
+                        </div>
+                        <p className="text-gray-600 mb-6">
+                            View and update status for patient orders.
+                        </p>
+                        <Link href="/dashboard/practitioner/orders" className="btn btn-primary w-full text-center">
+                            Manage Orders
+                        </Link>
+                    </div>
+
                     {/* Appointments Card */}
-                    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 md:col-span-2">
+                    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-2xl font-bold text-gray-800">Appointments</h2>
                             <Link href="/dashboard/practitioner/appointments" className="text-green-600 hover:text-green-700 font-medium">

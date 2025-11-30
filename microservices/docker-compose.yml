@@ -12,6 +12,7 @@ services:
       - catalog-service
       - order-service
       - ayurbot-service
+      - notification-service
     networks:
       - ayur-network
 
@@ -69,6 +70,17 @@ services:
       - JWT_SECRET=ayur_super_secret_key_2025
     depends_on:
       - postgres-db
+    networks:
+      - ayur-network
+
+  # Notification Service (Node.js)
+  notification-service:
+    build: ./notification-service
+    container_name: microservices-notification-service-1
+    volumes:
+      - ./notification-service/src:/app/src
+    ports:
+      - "3004:3004"
     networks:
       - ayur-network
 
