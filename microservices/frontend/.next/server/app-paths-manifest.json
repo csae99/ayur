@@ -1,3 +1,9 @@
 {
-  "/dashboard/patient/page": "app/dashboard/patient/page.js"
+  "/not-found": "app/not-found.js",
+  "/dashboard/patient/page": "app/dashboard/patient/page.js",
+  "/dashboard/patient/medicines/page": "app/dashboard/patient/medicines/page.js",
+  "/dashboard/patient/orders/page": "app/dashboard/patient/orders/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/login/page": "app/login/page.js",
+  "/dashboard/patient/practitioners/page": "app/dashboard/patient/practitioners/page.js"
 }

@@ -53,7 +53,7 @@ export default function DashboardPage() {
 
             {/* Dashboard Grid */}
             <div className="container mx-auto px-4 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
 
                     {/* Find Practitioner */}
                     <Link href="/dashboard/patient/practitioners" className="group">
@@ -104,6 +104,22 @@ export default function DashboardPage() {
                             <p className="text-gray-600">
                                 Track your medicine orders and view purchase history.
                             </p>
+                        </div>
+                    </Link>
+
+                    {/* AyurBot - AI Wellness Assistant */}
+                    <Link href="/dashboard/patient/ayurbot" className="group">
+                        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all h-full flex flex-col items-center text-center group-hover:border-green-500">
+                            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                <i className="fas fa-robot text-3xl text-white"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2">AyurBot</h3>
+                            <p className="text-gray-600">
+                                Chat with our AI assistant for personalized Ayurvedic wellness guidance.
+                            </p>
+                            <div className="mt-3 px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                                ✨ AI Powered
+                            </div>
                         </div>
                     </Link>
 
