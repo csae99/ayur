@@ -1,7 +1,1 @@
-{
-  "/page": "app/page.js",
-  "/dashboard/patient/page": "app/dashboard/patient/page.js",
-  "/login/page": "app/login/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/patient/ayurbot/page": "app/dashboard/patient/ayurbot/page.js"
-}
+{}
