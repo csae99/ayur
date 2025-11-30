@@ -1,9 +1,7 @@
 {
-  "/not-found": "app/not-found.js",
+  "/page": "app/page.js",
   "/dashboard/patient/page": "app/dashboard/patient/page.js",
-  "/dashboard/patient/medicines/page": "app/dashboard/patient/medicines/page.js",
-  "/dashboard/patient/orders/page": "app/dashboard/patient/orders/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
   "/login/page": "app/login/page.js",
-  "/dashboard/patient/practitioners/page": "app/dashboard/patient/practitioners/page.js"
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/patient/ayurbot/page": "app/dashboard/patient/ayurbot/page.js"
 }

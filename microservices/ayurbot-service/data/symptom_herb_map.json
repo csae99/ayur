@@ -1,0 +1,162 @@
+{
+    "stress": {
+        "herbs": [
+            "Ashwagandha",
+            "Brahmi",
+            "Tulsi"
+        ],
+        "description": "Adaptogenic herbs that help reduce cortisol and calm the mind"
+    },
+    "anxiety": {
+        "herbs": [
+            "Ashwagandha",
+            "Brahmi",
+            "Jatamansi"
+        ],
+        "description": "Nervine tonics that soothe anxiety and promote mental clarity"
+    },
+    "insomnia": {
+        "herbs": [
+            "Ashwagandha",
+            "Jatamansi",
+            "Shankhpushpi"
+        ],
+        "description": "Sleep-inducing herbs that calm the nervous system"
+    },
+    "digestion": {
+        "herbs": [
+            "Triphala",
+            "Ginger",
+            "Fennel"
+        ],
+        "description": "Digestive herbs that kindle agni (digestive fire)"
+    },
+    "constipation": {
+        "herbs": [
+            "Triphala",
+            "Psyllium Husk",
+            "Aloe Vera"
+        ],
+        "description": "Gentle laxatives that promote regular bowel movements"
+    },
+    "immunity": {
+        "herbs": [
+            "Tulsi",
+            "Turmeric",
+            "Amla"
+        ],
+        "description": "Immune-boosting herbs rich in antioxidants"
+    },
+    "inflammation": {
+        "herbs": [
+            "Turmeric",
+            "Boswellia",
+            "Ginger"
+        ],
+        "description": "Anti-inflammatory herbs that reduce swelling and pain"
+    },
+    "joint_pain": {
+        "herbs": [
+            "Boswellia",
+            "Turmeric",
+            "Guggul"
+        ],
+        "description": "Herbs that support joint health and reduce inflammation"
+    },
+    "memory": {
+        "herbs": [
+            "Brahmi",
+            "Shankhpushpi",
+            "Gotu Kola"
+        ],
+        "description": "Nootropic herbs that enhance cognitive function"
+    },
+    "focus": {
+        "herbs": [
+            "Brahmi",
+            "Gotu Kola",
+            "Ashwagandha"
+        ],
+        "description": "Herbs that improve concentration and mental clarity"
+    },
+    "fatigue": {
+        "herbs": [
+            "Ashwagandha",
+            "Shatavari",
+            "Gokshura"
+        ],
+        "description": "Rejuvenating herbs that restore energy and vitality"
+    },
+    "women_health": {
+        "herbs": [
+            "Shatavari",
+            "Ashoka",
+            "Lodhra"
+        ],
+        "description": "Female reproductive tonics that balance hormones"
+    },
+    "mens_health": {
+        "herbs": [
+            "Ashwagandha",
+            "Gokshura",
+            "Safed Musli"
+        ],
+        "description": "Male reproductive tonics that support vitality"
+    },
+    "skin": {
+        "herbs": [
+            "Neem",
+            "Turmeric",
+            "Manjistha"
+        ],
+        "description": "Blood-purifying herbs that promote clear, healthy skin"
+    },
+    "hair": {
+        "herbs": [
+            "Bhringraj",
+            "Amla",
+            "Brahmi"
+        ],
+        "description": "Herbs that nourish hair follicles and promote growth"
+    },
+    "respiratory": {
+        "herbs": [
+            "Tulsi",
+            "Vasaka",
+            "Licorice"
+        ],
+        "description": "Respiratory tonics that support lung health"
+    },
+    "diabetes": {
+        "herbs": [
+            "Gudmar",
+            "Bitter Melon",
+            "Fenugreek"
+        ],
+        "description": "Herbs that help regulate blood sugar levels"
+    },
+    "cholesterol": {
+        "herbs": [
+            "Guggul",
+            "Arjuna",
+            "Garlic"
+        ],
+        "description": "Herbs that support heart health and lipid metabolism"
+    },
+    "liver": {
+        "herbs": [
+            "Kutki",
+            "Punarnava",
+            "Bhumi Amla"
+        ],
+        "description": "Hepatoprotective herbs that support liver detoxification"
+    },
+    "detox": {
+        "herbs": [
+            "Triphala",
+            "Neem",
+            "Manjistha"
+        ],
+        "description": "Cleansing herbs that eliminate toxins from the body"
+    }
+}
