@@ -6,30 +6,50 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/page.js"
+    ],
+    "/login/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/login/page.js"
+    ],
+    "/dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/page.js"
+    ],
     "/dashboard/patient/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/patient/page.js"
     ],
-    "/dashboard/patient/practitioners/page": [
+    "/dashboard/patient/ayurbot/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/patient/practitioners/page.js"
-    ],
-    "/dashboard/patient/appointments/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/patient/appointments/page.js"
+      "static/chunks/app/dashboard/patient/ayurbot/page.js"
     ],
     "/dashboard/patient/medicines/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/patient/medicines/page.js"
     ],
-    "/page": [
+    "/dashboard/patient/appointments/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/dashboard/patient/appointments/page.js"
+    ],
+    "/dashboard/patient/cart/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/patient/cart/page.js"
+    ],
+    "/dashboard/patient/practitioners/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/dashboard/patient/practitioners/page.js"
     ],
     "/not-found": [
       "static/chunks/webpack.js",
