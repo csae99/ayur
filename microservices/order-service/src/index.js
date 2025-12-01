@@ -7,7 +7,7 @@ const appointmentRoutes = require('./routes/appointments');
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-app.use(cors());
+// app.use(cors()); // CORS handled by API Gateway
 app.use(express.json());
 
 // Routes

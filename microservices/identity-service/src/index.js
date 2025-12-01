@@ -8,7 +8,7 @@ const practitionerRoutes = require('./routes/practitioners');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+// app.use(cors()); // CORS handled by API Gateway
 app.use(express.json());
 
 // Routes

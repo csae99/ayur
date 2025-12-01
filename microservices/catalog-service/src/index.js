@@ -7,7 +7,7 @@ const adminRoutes = require('./routes/admin');
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-app.use(cors());
+// app.use(cors()); // CORS handled by API Gateway
 app.use(express.json());
 
 // Routes
