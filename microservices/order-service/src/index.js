@@ -11,11 +11,11 @@ const PORT = process.env.PORT || 3003;
 app.use(express.json());
 
 // Routes
-app.use('/', orderRoutes);
+app.use('/orders', orderRoutes);
 app.use('/appointments', appointmentRoutes);
 app.use('/cart', require('./routes/cart'));
 app.use('/checkout', require('./routes/checkout'));
-app.use('/', require('./routes/coupons'));
+app.use('/coupons', require('./routes/coupons'));
 
 // Health Check
 app.get('/health', (req, res) => {
