@@ -4,7 +4,6 @@ services:
   # API Gateway
   api-gateway:
     image: shubham554/ayur-api-gateway:latest
-    build: ./api-gateway
     ports:
       - "80:80"
     depends_on:
@@ -20,23 +19,14 @@ services:
   # Frontend (Next.js)
   frontend:
     image: shubham554/ayur-frontend:latest
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
     networks:
       - ayur-network
 
   # Identity Service (Node.js)
   identity-service:
     image: shubham554/ayur-identity-service:latest
-    build: ./identity-service
     environment:
       - PORT=3001
       - DB_HOST=postgres-db
@@ -51,7 +41,6 @@ services:
   # Catalog Service (Node.js)
   catalog-service:
     image: shubham554/ayur-catalog-service:latest
-    build: ./catalog-service
     environment:
       - PORT=3002
       - DB_HOST=postgres-db
@@ -66,7 +55,6 @@ services:
   # Order Service (Node.js)
   order-service:
     image: shubham554/ayur-order-service:latest
-    build: ./order-service
     environment:
       - PORT=3003
       - DB_HOST=postgres-db
@@ -81,10 +69,7 @@ services:
   # Notification Service (Node.js)
   notification-service:
     image: shubham554/ayur-notification-service:latest
-    build: ./notification-service
     container_name: microservices-notification-service-1
-    volumes:
-      - ./notification-service/src:/app/src
     ports:
       - "3004:3004"
     networks:
@@ -93,7 +78,6 @@ services:
   # AyurBot Service (Python)
   ayurbot-service:
     image: shubham554/ayur-ayurbot-service:latest
-    build: ./ayurbot-service
     environment:
       - PORT=8000
       - GEMINI_API_KEY=AIzaSyDtKb4tUk131cnKEwfPr7caYqgsQSa0UyY

@@ -11,10 +11,16 @@ app.use(express.json());
 
 let transporter;
 
-// Initialize transporter
-createTransporter().then(t => {
-    transporter = t;
-});
+// Initialize transporter with error handling
+createTransporter()
+    .then(t => {
+        transporter = t;
+        console.log('Email transporter initialized successfully');
+    })
+    .catch(err => {
+        console.warn('Failed to initialize email transporter on startup:', err.message);
+        console.warn('Email functionality will be initialized on first email send attempt');
+    });
 
 // Health check
 app.get('/health', (req, res) => {
