@@ -7,14 +7,16 @@ This project is configured to automatically restore both PostgreSQL and MongoDB 
 When you run `docker compose up -d --build` on a new machine (or after `docker compose down -v`), the databases will automatically restore from the backup files in the `backups/` directory.
 
 ### PostgreSQL Auto-Restore
-- **Backup File**: `backups/postgres_backup_20251130_233427.sql`
+- **Backup File**: `backups/postgres_backup_20251130_233427_utf8.sql`
 - **Restores**: Users, catalog items, orders, coupons, and all other application data
 - **Mechanism**: Mounted to `/docker-entrypoint-initdb.d/99_restore.sql` in the container
 
 ### MongoDB Auto-Restore
-- **Backup File**: `backups/mongo_backup_20251130_233427.archive`
+- **Status**: ⚠️ **DISABLED** - Backup file is corrupted
+- **Backup File**: `backups/mongo_backup_20251130_233427.archive` (corrupted - only 1 byte)
 - **Restores**: AyurBot conversation history and dosha assessments
 - **Mechanism**: Mounted archive + `mongo-init.sh` script in `/docker-entrypoint-initdb.d/`
+- **Action Required**: Create a new valid MongoDB backup to enable auto-restore
 
 ## Deploying to a New Machine
 
