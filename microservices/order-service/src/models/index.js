@@ -16,7 +16,10 @@ const Order = sequelize.define('Order', {
     shipped_date: { type: DataTypes.DATE },
     delivered_date: { type: DataTypes.DATE },
     estimated_delivery: { type: DataTypes.DATEONLY },
-    practitioner_id: { type: DataTypes.INTEGER, allowNull: true, comment: 'ID of the practitioner/pharmacy who sold the item' }
+    practitioner_id: { type: DataTypes.INTEGER, allowNull: true, comment: 'ID of the practitioner/pharmacy who sold the item' },
+    coupon_code: { type: DataTypes.STRING, allowNull: true },
+    discount_amount: { type: DataTypes.FLOAT, defaultValue: 0 },
+    final_amount: { type: DataTypes.FLOAT }
 }, {
     tableName: 'orders',
     timestamps: false,

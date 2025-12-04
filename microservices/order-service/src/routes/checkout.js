@@ -56,15 +56,99 @@ router.post('/', verifyToken, async (req, res) => {
         const deliveryDate = new Date();
         deliveryDate.setDate(deliveryDate.getDate() + 5); // 5 days from now
 
+        // Handle Coupon
+        const { coupon_code } = req.body;
+        let discountPerItem = 0;
+        let totalDiscount = 0;
+
+        if (coupon_code) {
+            const { Coupon } = require('../models');
+            const coupon = await Coupon.findOne({ where: { code: coupon_code } });
+
+            if (coupon && coupon.is_active) {
+                // Calculate total cart value
+                let cartTotal = 0;
+                for (const item of cart.CartItems) {
+                    // Fetch price (mock or real) - ideally should be from DB/Service
+                    // For now assuming we trust the frontend or have price in CartItem (we don't)
+                    // We need to fetch item details.
+                    try {
+                        const response = await fetch(`http://catalog-service:3002/items/${item.item_id}`);
+                        const product = await response.json();
+                        cartTotal += product.item_price * item.quantity;
+                        item.price = product.item_price; // Store for later
+                    } catch (e) {
+                        console.error('Error fetching item price', e);
+                    }
+                }
+
+                // Apply discount logic
+                if (coupon.discount_type === 'percentage') {
+                    totalDiscount = (cartTotal * coupon.discount_value) / 100;
+                    if (coupon.max_discount && totalDiscount > coupon.max_discount) {
+                        totalDiscount = coupon.max_discount;
+                    }
+                } else if (coupon.discount_type === 'fixed') {
+                    totalDiscount = coupon.discount_value;
+                }
+
+                // Cap discount
+                if (totalDiscount > cartTotal) totalDiscount = cartTotal;
+
+                // Increment usage
+                await coupon.increment('used_count');
+            }
+        }
+
         const orders = [];
+        // Distribute discount proportionally if needed, or just store on first order?
+        // Better: Store total discount on the order record(s). 
+        // Since we are splitting into multiple orders, it's tricky.
+        // Let's split discount proportionally based on item price.
+
+        // Re-calculate total for distribution (in case we didn't fetch prices above)
+        // If we didn't fetch prices above (no coupon), we need to fetch them now or just store 0.
+
         for (const item of cart.CartItems) {
+            // Fetch price if not already fetched
+            if (!item.price) {
+                try {
+                    const response = await fetch(`http://catalog-service:3002/items/${item.item_id}`);
+                    const product = await response.json();
+                    item.price = product.item_price;
+                } catch (e) {
+                    item.price = 0;
+                }
+            }
+
+            // Simple proportional discount
+            // This is a bit complex for a simple fix, let's simplify:
+            // If there's a coupon, we'll apply it to the first order or split it?
+            // Splitting is best.
+
+            // Total Cart Value for distribution
+            // We need the total cart value again if we didn't calculate it
+            // Let's assume we did or do it now.
+        }
+
+        const totalCartValue = cart.CartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+        for (const item of cart.CartItems) {
+            const itemTotal = item.price * item.quantity;
+            const itemShare = totalCartValue > 0 ? itemTotal / totalCartValue : 0;
+            const itemDiscount = totalDiscount * itemShare;
+            const finalAmount = itemTotal - itemDiscount;
+
             const order = await Order.create({
                 user_id: userId,
                 item_id: item.item_id,
                 order_quantity: item.quantity,
                 order_status: 1, // 1 = Confirmed
                 address_id: address_id,
-                estimated_delivery: deliveryDate
+                estimated_delivery: deliveryDate,
+                coupon_code: coupon_code || null,
+                discount_amount: parseFloat(itemDiscount.toFixed(2)),
+                final_amount: parseFloat(finalAmount.toFixed(2))
             });
             orders.push(order);
         }

@@ -18,7 +18,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:latest
+    image: shubham554/ayur-frontend:v1
     ports:
       - "3000:3000"
     networks:
@@ -54,7 +54,8 @@ services:
 
   # Order Service (Node.js)
   order-service:
-    image: shubham554/ayur-order-service:latest
+    image: shubham554/ayur-order-service:v3
+    build: ./order-service
     environment:
       - PORT=3003
       - DB_HOST=postgres-db

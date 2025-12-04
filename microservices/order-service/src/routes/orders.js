@@ -12,7 +12,7 @@ const {
 const router = express.Router();
 
 // Get all orders (Practitioner/Admin only)
-router.get('/orders', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
     try {
         // Only practitioners and admins can view all orders
         if (req.user.type !== 'practitioner' && req.user.type !== 'admin') {
@@ -30,7 +30,7 @@ router.get('/orders', authMiddleware, async (req, res) => {
 });
 
 // Create new order (protected)
-router.post('/orders', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
     try {
         const { item_id, order_quantity } = req.body;
         const user_id = req.user.id; // Get user ID from JWT token
@@ -57,7 +57,7 @@ router.post('/orders', authMiddleware, async (req, res) => {
 });
 
 // Get all orders for a user (protected)
-router.get('/orders/user/:userId', authMiddleware, async (req, res) => {
+router.get('/user/:userId', authMiddleware, async (req, res) => {
     try {
         // Ensure user can only view their own orders (unless admin)
         if (req.user.id !== parseInt(req.params.userId) && req.user.type !== 'admin') {
@@ -75,7 +75,7 @@ router.get('/orders/user/:userId', authMiddleware, async (req, res) => {
 });
 
 // Get orders with item details (protected)
-router.get('/orders/user/:userId/detailed', authMiddleware, async (req, res) => {
+router.get('/user/:userId/detailed', authMiddleware, async (req, res) => {
     try {
         // Ensure user can only view their own orders
         if (req.user.id !== parseInt(req.params.userId) && req.user.type !== 'admin') {
@@ -113,7 +113,7 @@ router.get('/orders/user/:userId/detailed', authMiddleware, async (req, res) => 
 });
 
 // Get order by ID (protected)
-router.get('/orders/:id', authMiddleware, async (req, res) => {
+router.get('/:id', authMiddleware, async (req, res) => {
     try {
         const order = await Order.findByPk(req.params.id);
         if (!order) return res.status(404).json({ error: 'Order not found' });
@@ -130,7 +130,7 @@ router.get('/orders/:id', authMiddleware, async (req, res) => {
 });
 
 // Update order status (Practitioner/Admin)
-router.patch('/orders/:id/status', authMiddleware, async (req, res) => {
+router.patch('/:id/status', authMiddleware, async (req, res) => {
     try {
         const { status, tracking_number } = req.body;
         const order = await Order.findByPk(req.params.id);
@@ -179,7 +179,7 @@ router.patch('/orders/:id/status', authMiddleware, async (req, res) => {
 });
 
 // Cancel order (Patient/Admin)
-router.post('/orders/:id/cancel', authMiddleware, async (req, res) => {
+router.post('/:id/cancel', authMiddleware, async (req, res) => {
     console.log(`[DEBUG] Cancel request for order ${req.params.id} by user ${req.user.id}`);
     try {
         const order = await Order.findByPk(req.params.id);

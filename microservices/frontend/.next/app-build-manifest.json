@@ -1,3 +1,218 @@
 {
-  "pages": {}
+  "pages": {
+    "/_not-found": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/app/_not-found-450f9a8926cd515c.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/css/60249ef04b331dd9.css",
+      "static/chunks/app/layout-3fb45235081bcc8c.js"
+    ],
+    "/dashboard/admin/medicines/[id]/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/admin/medicines/[id]/page-4e4f39eeab48a457.js"
+    ],
+    "/catalog/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/catalog/page-63c10c110a1a26d5.js"
+    ],
+    "/dashboard/admin/medicines/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/admin/medicines/page-4be9648a5f69fecf.js"
+    ],
+    "/dashboard/admin/practitioners/[id]/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/admin/practitioners/[id]/page-8a58e1c8d704d02c.js"
+    ],
+    "/dashboard/admin/patients/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/admin/patients/page-ba15e746b4cd1be6.js"
+    ],
+    "/dashboard/admin/practitioners/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/admin/practitioners/page-c9161f67bc23f03b.js"
+    ],
+    "/dashboard/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/app/dashboard/page-aa597ff8dbda53a6.js"
+    ],
+    "/dashboard/orders/[id]/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/orders/[id]/page-7ff22c7bb6c373e7.js"
+    ],
+    "/dashboard/patient/ayurbot/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/123-793da6ef0266755a.js",
+      "static/chunks/app/dashboard/patient/ayurbot/page-711b1ce676dbf2aa.js"
+    ],
+    "/dashboard/admin/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/admin/page-9bdeb674f26b0923.js"
+    ],
+    "/dashboard/patient/appointments/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/patient/appointments/page-53704dcc0e7129de.js"
+    ],
+    "/dashboard/patient/cart/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/patient/cart/page-661d50a11034f4f7.js"
+    ],
+    "/dashboard/patient/checkout/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/patient/checkout/page-684f4e232942b9d7.js"
+    ],
+    "/dashboard/patient/orders/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/patient/orders/page-73e8e4a71633c718.js"
+    ],
+    "/dashboard/patient/practitioners/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/patient/practitioners/page-e8adbd23807cd31d.js"
+    ],
+    "/dashboard/patient/medicines/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/patient/medicines/page-cf57b5d7cec5382c.js"
+    ],
+    "/dashboard/practitioner/add-medicine/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/practitioner/add-medicine/page-57389226e310c333.js"
+    ],
+    "/dashboard/practitioner/appointments/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/practitioner/appointments/page-a596140989e07f1b.js"
+    ],
+    "/dashboard/patient/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/patient/page-6a98df2c5cbf45ae.js"
+    ],
+    "/dashboard/practitioner/orders/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/app/dashboard/practitioner/orders/page-771df6152a19d403.js"
+    ],
+    "/dashboard/practitioner/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/practitioner/page-7bb863a1e0d3618d.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/page-cedc0379b1ba6824.js"
+    ],
+    "/dashboard/practitioner/medicines/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/dashboard/practitioner/medicines/page-df2b237ecf202141.js"
+    ],
+    "/login/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/login/page-332c14f56ce2b4fc.js"
+    ],
+    "/register/page": [
+      "static/chunks/webpack-cd84b81a7ed891d8.js",
+      "static/chunks/fd9d1056-f6b585437c1b6882.js",
+      "static/chunks/472-1fcd120531599481.js",
+      "static/chunks/main-app-31849297803fe8c1.js",
+      "static/chunks/176-f703f2fcbe19efc2.js",
+      "static/chunks/app/register/page-f8b6e5e3a2900ee3.js"
+    ]
+  }
 }

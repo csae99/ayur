@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import PatientNav from '@/components/dashboard/patient/PatientNav';
 
 interface Address {
@@ -32,6 +32,7 @@ interface Cart {
 
 export default function CheckoutPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [step, setStep] = useState(1); // 1: Address, 2: Payment, 3: Success
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
@@ -43,6 +44,8 @@ export default function CheckoutPage() {
         zip: '',
         phone: ''
     });
+    const [couponCode, setCouponCode] = useState<string | null>(null);
+    const [discountAmount, setDiscountAmount] = useState(0);
     const [showNewAddressForm, setShowNewAddressForm] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<'cod' | 'stripe'>('cod');
     const [loading, setLoading] = useState(false);
@@ -64,7 +67,49 @@ export default function CheckoutPage() {
 
         fetchAddresses();
         fetchCart();
-    }, [router]);
+
+        const coupon = searchParams.get('coupon');
+        if (coupon) {
+            setCouponCode(coupon);
+        }
+    }, [router, searchParams]);
+
+    // Effect to apply coupon once cart is loaded
+    useEffect(() => {
+        if (cart && couponCode && discountAmount === 0) {
+            applyCoupon(couponCode);
+        }
+    }, [cart, couponCode]);
+
+    const applyCoupon = async (code: string) => {
+        const token = localStorage.getItem('token');
+        const pricing = calculatePricing(); // This calculates without discount first
+
+        try {
+            const response = await fetch('http://localhost/api/orders/coupons/apply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    code: code,
+                    order_amount: pricing.subtotal
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setDiscountAmount(data.discount_amount);
+            } else {
+                console.error('Failed to apply coupon:', data.error);
+                setCouponCode(null); // Reset if invalid
+            }
+        } catch (error) {
+            console.error('Error applying coupon:', error);
+        }
+    };
 
     const fetchCart = () => {
         const token = localStorage.getItem('token');
@@ -134,7 +179,8 @@ export default function CheckoutPage() {
                 body: JSON.stringify({
                     address_id: selectedAddressId,
                     payment_method: paymentMethod,
-                    payment_id: paymentMethod === 'stripe' ? 'mock_stripe_id' : null
+                    payment_id: paymentMethod === 'stripe' ? 'mock_stripe_id' : null,
+                    coupon_code: couponCode
                 })
             });
 
@@ -154,7 +200,7 @@ export default function CheckoutPage() {
 
     const calculatePricing = () => {
         if (!cart || !cart.CartItems) {
-            return { subtotal: 0, shipping: 0, tax: 0, total: 0 };
+            return { subtotal: 0, shipping: 0, tax: 0, total: 0, discount: 0 };
         }
 
         const subtotal = cart.CartItems.reduce((sum, item) => {
@@ -163,14 +209,16 @@ export default function CheckoutPage() {
         }, 0);
 
         const shipping = subtotal >= 500 ? 0 : 50;
-        const tax = subtotal * 0.05; // 5% GST
-        const total = subtotal + shipping + tax;
+        const subtotalAfterDiscount = subtotal - discountAmount;
+        const tax = subtotalAfterDiscount * 0.05; // 5% GST
+        const total = subtotalAfterDiscount + shipping + tax;
 
         return {
             subtotal: Math.round(subtotal * 100) / 100,
             shipping: Math.round(shipping * 100) / 100,
             tax: Math.round(tax * 100) / 100,
-            total: Math.round(total * 100) / 100
+            total: Math.round(total * 100) / 100,
+            discount: discountAmount
         };
     };
 
@@ -360,6 +408,12 @@ export default function CheckoutPage() {
                                                     <span>Subtotal</span>
                                                     <span className="font-semibold">₹{pricing.subtotal.toFixed(2)}</span>
                                                 </div>
+                                                {pricing.discount > 0 && (
+                                                    <div className="flex justify-between text-green-700">
+                                                        <span>Discount ({couponCode})</span>
+                                                        <span className="font-semibold">-₹{pricing.discount.toFixed(2)}</span>
+                                                    </div>
+                                                )}
                                                 <div className="flex justify-between text-gray-700">
                                                     <span className="flex items-center gap-2">
                                                         Shipping

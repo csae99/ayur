@@ -417,7 +417,7 @@ export default function CartPage() {
                                 </div>
                                 <div className="px-6 pb-6">
                                     <Link
-                                        href="/dashboard/patient/checkout"
+                                        href={`/dashboard/patient/checkout${appliedCoupon ? `?coupon=${appliedCoupon.code}` : ''}`}
                                         className="btn btn-primary w-full text-center py-3 text-lg font-semibold"
                                     >
                                         Proceed to Checkout

@@ -5,7 +5,7 @@ const authMiddleware = require('../middleware/auth');
 const router = express.Router();
 
 // Create coupon (Admin only)
-router.post('/coupons', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
     try {
         // Only admins can create coupons
         if (req.user.type !== 'admin') {
@@ -67,7 +67,7 @@ router.post('/coupons', authMiddleware, async (req, res) => {
 });
 
 // Get all coupons (Admin only)
-router.get('/coupons', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
     try {
         if (req.user.type !== 'admin') {
             return res.status(403).json({ error: 'Admin access required' });
@@ -85,7 +85,7 @@ router.get('/coupons', authMiddleware, async (req, res) => {
 });
 
 // Apply/Validate coupon (Any authenticated user)
-router.post('/coupons/apply', authMiddleware, async (req, res) => {
+router.post('/apply', authMiddleware, async (req, res) => {
     try {
         const { code, order_amount } = req.body;
 
@@ -166,7 +166,7 @@ router.post('/coupons/apply', authMiddleware, async (req, res) => {
 });
 
 // Update coupon (Admin only)
-router.patch('/coupons/:id', authMiddleware, async (req, res) => {
+router.patch('/:id', authMiddleware, async (req, res) => {
     try {
         if (req.user.type !== 'admin') {
             return res.status(403).json({ error: 'Admin access required' });
@@ -193,7 +193,7 @@ router.patch('/coupons/:id', authMiddleware, async (req, res) => {
 });
 
 // Delete coupon (Admin only)
-router.delete('/coupons/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
     try {
         if (req.user.type !== 'admin') {
             return res.status(403).json({ error: 'Admin access required' });
