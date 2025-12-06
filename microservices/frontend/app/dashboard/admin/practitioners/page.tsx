@@ -88,6 +88,9 @@ export default function PractitionersPage() {
                                 <Link href="/dashboard/admin/patients" className="text-white hover:text-indigo-200 transition-colors">
                                     Patients
                                 </Link>
+                                <Link href="/dashboard/admin/coupons" className="text-white hover:text-indigo-200 transition-colors">
+                                    Coupons
+                                </Link>
                             </div>
                         </div>
                         <button onClick={handleLogout} className="btn btn-outline text-white border-white hover:bg-white hover:text-indigo-700">
@@ -111,8 +114,8 @@ export default function PractitionersPage() {
                             <Link
                                 href="/dashboard/admin/practitioners?status=all"
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${statusFilter === 'all'
-                                        ? 'bg-indigo-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 All
@@ -120,8 +123,8 @@ export default function PractitionersPage() {
                             <Link
                                 href="/dashboard/admin/practitioners?status=pending"
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${statusFilter === 'pending'
-                                        ? 'bg-yellow-500 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-yellow-500 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 Pending
@@ -129,8 +132,8 @@ export default function PractitionersPage() {
                             <Link
                                 href="/dashboard/admin/practitioners?status=verified"
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${statusFilter === 'verified'
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-green-500 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 Verified

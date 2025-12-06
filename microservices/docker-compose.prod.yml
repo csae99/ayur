@@ -18,7 +18,8 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:v1
+    image: shubham554/ayur-frontend:v2
+    build: ./frontend
     ports:
       - "3000:3000"
     networks:
@@ -54,7 +55,7 @@ services:
 
   # Order Service (Node.js)
   order-service:
-    image: shubham554/ayur-order-service:v3
+    image: shubham554/ayur-order-service:v4
     build: ./order-service
     environment:
       - PORT=3003
@@ -101,7 +102,7 @@ services:
       - ./catalog-service/migrations/init.sql:/docker-entrypoint-initdb.d/catalog_init.sql
       - ./order-service/migrations/init.sql:/docker-entrypoint-initdb.d/order_init.sql
       - ./backups/postgres_backup_20251130_233427_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
-      - ./backups:/backups # Mount backups directory for easy access
+      - ./backups:/backups
     networks:
       - ayur-network
 
@@ -109,10 +110,7 @@ services:
     image: mongo:6.0
     volumes:
       - mongo_data:/data/db
-      # MongoDB backup is corrupted - commented out until a valid backup is created
-      # - ./backups/mongo_backup_20251130_233427.archive:/backups/latest_mongo_backup.archive
-      # - ./mongo-init.sh:/docker-entrypoint-initdb.d/restore_mongo.sh
-      - ./backups:/backups # Mount backups directory for easy access
+      - ./backups:/backups
     networks:
       - ayur-network
 

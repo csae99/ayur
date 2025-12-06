@@ -84,6 +84,35 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
+// Get available coupons for patients (active, not expired, within usage limit)
+router.get('/available', authMiddleware, async (req, res) => {
+    try {
+        const { Op } = require('sequelize');
+        const now = new Date();
+
+        const coupons = await Coupon.findAll({
+            where: {
+                is_active: true,
+                [Op.or]: [
+                    { expiry_date: null },
+                    { expiry_date: { [Op.gt]: now } }
+                ],
+                [Op.or]: [
+                    { usage_limit: null },
+                    { used_count: { [Op.lt]: require('sequelize').col('usage_limit') } }
+                ]
+            },
+            attributes: ['id', 'code', 'discount_type', 'discount_value', 'min_order_value', 'max_discount', 'expiry_date'],
+            order: [['discount_value', 'DESC']]
+        });
+
+        res.json(coupons);
+    } catch (error) {
+        console.error('Error fetching available coupons:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Apply/Validate coupon (Any authenticated user)
 router.post('/apply', authMiddleware, async (req, res) => {
     try {

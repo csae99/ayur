@@ -105,6 +105,9 @@ export default function AdminDashboard() {
                                 <Link href="/dashboard/admin/patients" className="text-white hover:text-indigo-200 transition-colors">
                                     Patients
                                 </Link>
+                                <Link href="/dashboard/admin/coupons" className="text-white hover:text-indigo-200 transition-colors">
+                                    Coupons
+                                </Link>
                             </div>
                         </div>
                         <div className="flex items-center gap-4">

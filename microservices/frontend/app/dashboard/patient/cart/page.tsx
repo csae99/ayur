@@ -44,6 +44,16 @@ interface CouponData {
     final_amount: number;
 }
 
+interface AvailableCoupon {
+    id: number;
+    code: string;
+    discount_type: 'percentage' | 'fixed';
+    discount_value: number;
+    min_order_value: number;
+    max_discount: number | null;
+    expiry_date: string | null;
+}
+
 export default function CartPage() {
     const router = useRouter();
     const [cart, setCart] = useState<Cart | null>(null);
@@ -53,6 +63,8 @@ export default function CartPage() {
     const [appliedCoupon, setAppliedCoupon] = useState<CouponData | null>(null);
     const [couponError, setCouponError] = useState('');
     const [applyingCoupon, setApplyingCoupon] = useState(false);
+    const [availableCoupons, setAvailableCoupons] = useState<AvailableCoupon[]>([]);
+    const [showCouponDropdown, setShowCouponDropdown] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -68,7 +80,21 @@ export default function CartPage() {
         }
 
         fetchCart();
+        fetchAvailableCoupons();
     }, [router]);
+
+    const fetchAvailableCoupons = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const res = await fetch('http://localhost/api/orders/coupons/available', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            setAvailableCoupons(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error('Failed to fetch available coupons:', error);
+        }
+    };
 
     const fetchCart = () => {
         const token = localStorage.getItem('token');
@@ -372,22 +398,72 @@ export default function CartPage() {
                                                 </button>
                                             </div>
                                         ) : (
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="text"
-                                                    value={couponCode}
-                                                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                                    placeholder="Enter code"
-                                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 uppercase"
-                                                    disabled={applyingCoupon}
-                                                />
-                                                <button
-                                                    onClick={handleApplyCoupon}
-                                                    disabled={!couponCode.trim() || applyingCoupon}
-                                                    className="px-4 py-2 bg-green-700 text-white font-medium rounded-lg hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                                                >
-                                                    {applyingCoupon ? 'Applying...' : 'Apply'}
-                                                </button>
+                                            <div className="space-y-2">
+                                                {/* Available Coupons Dropdown */}
+                                                {availableCoupons.length > 0 && (
+                                                    <div className="relative">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowCouponDropdown(!showCouponDropdown)}
+                                                            className="w-full px-3 py-2 text-left border border-gray-300 rounded-lg bg-white hover:bg-gray-50 flex justify-between items-center"
+                                                        >
+                                                            <span className="text-gray-600">Select from available coupons</span>
+                                                            <i className={`fas fa-chevron-${showCouponDropdown ? 'up' : 'down'} text-gray-400`}></i>
+                                                        </button>
+                                                        {showCouponDropdown && (
+                                                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                                                {availableCoupons.map(coupon => {
+                                                                    const meetsMinOrder = pricing.subtotal >= coupon.min_order_value;
+                                                                    return (
+                                                                        <button
+                                                                            key={coupon.id}
+                                                                            type="button"
+                                                                            disabled={!meetsMinOrder}
+                                                                            onClick={() => {
+                                                                                setCouponCode(coupon.code);
+                                                                                setShowCouponDropdown(false);
+                                                                            }}
+                                                                            className={`w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0 ${!meetsMinOrder ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                                        >
+                                                                            <div className="flex justify-between items-center">
+                                                                                <div>
+                                                                                    <span className="font-mono font-bold text-green-600">{coupon.code}</span>
+                                                                                    <p className="text-xs text-gray-500">
+                                                                                        {coupon.discount_type === 'percentage'
+                                                                                            ? `${coupon.discount_value}% off`
+                                                                                            : `₹${coupon.discount_value} off`}
+                                                                                        {coupon.min_order_value > 0 && ` • Min ₹${coupon.min_order_value}`}
+                                                                                    </p>
+                                                                                </div>
+                                                                                {!meetsMinOrder && (
+                                                                                    <span className="text-xs text-red-500">Need ₹{coupon.min_order_value - pricing.subtotal} more</span>
+                                                                                )}
+                                                                            </div>
+                                                                        </button>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                {/* Manual Input */}
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="text"
+                                                        value={couponCode}
+                                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                                        placeholder="Or enter code manually"
+                                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 uppercase"
+                                                        disabled={applyingCoupon}
+                                                    />
+                                                    <button
+                                                        onClick={handleApplyCoupon}
+                                                        disabled={!couponCode.trim() || applyingCoupon}
+                                                        className="px-4 py-2 bg-green-700 text-white font-medium rounded-lg hover:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                                    >
+                                                        {applyingCoupon ? 'Applying...' : 'Apply'}
+                                                    </button>
+                                                </div>
                                             </div>
                                         )}
                                         {couponError && (
