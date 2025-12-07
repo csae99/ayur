@@ -44,3 +44,16 @@ CREATE TABLE IF NOT EXISTS admins (
     status VARCHAR(100) DEFAULT 'active',
     joined_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Refresh tokens for persistent login sessions
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    user_type VARCHAR(20) NOT NULL CHECK (user_type IN ('patient', 'practitioner', 'admin')),
+    token VARCHAR(500) UNIQUE NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id, user_type);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token ON refresh_tokens(token);

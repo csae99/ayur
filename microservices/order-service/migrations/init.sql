@@ -17,3 +17,16 @@ CREATE TABLE IF NOT EXISTS appointments (
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Order status history for timeline tracking
+CREATE TABLE IF NOT EXISTS order_status_history (
+    id SERIAL PRIMARY KEY,
+    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    status INTEGER NOT NULL,
+    status_name VARCHAR(50) NOT NULL,
+    notes TEXT,
+    created_by INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_order_status_history_order ON order_status_history(order_id);

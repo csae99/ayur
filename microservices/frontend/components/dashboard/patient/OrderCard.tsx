@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
-import OrderStatusTimeline from './OrderStatusTimeline';
+import OrderTimeline from './OrderTimeline';
 
 export interface OrderItem {
     id: number;
@@ -13,6 +13,12 @@ export interface OrderItem {
     shipped_date?: string;
     delivered_date?: string;
     estimated_delivery?: string;
+    statusHistory?: {
+        status: number;
+        status_name: string;
+        notes: string;
+        created_at: string;
+    }[];
     item?: {
         id: number;
         item_title: string;
@@ -60,7 +66,7 @@ export default function OrderCard({ order, onCancel }: OrderCardProps) {
     };
 
     return (
-        <div className="card">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all hover:shadow-md">
             <div className="flex gap-6">
                 {/* Item Image */}
                 <div className="w-24 h-24 bg-gradient-to-br from-green-50 to-amber-50 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -114,17 +120,24 @@ export default function OrderCard({ order, onCancel }: OrderCardProps) {
                             {canCancel() && (
                                 <button
                                     onClick={() => onCancel(order.id)}
-                                    className="btn bg-red-50 text-red-600 hover:bg-red-100 border-red-100 text-sm"
+                                    className="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 text-sm font-medium transition-colors"
                                 >
                                     Cancel Order
                                 </button>
                             )}
                             <button
                                 onClick={() => setShowTimeline(!showTimeline)}
-                                className="btn btn-outline text-sm"
+                                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors flex items-center gap-2"
                             >
-                                <i className={`fas fa-${showTimeline ? 'chevron-up' : 'route'} mr-2`}></i>
-                                {showTimeline ? 'Hide' : 'Track Order'}
+                                {showTimeline ? 'Hide Timeline' : 'Track Order'}
+                                <svg
+                                    className={`w-4 h-4 transition-transform ${showTimeline ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -132,13 +145,24 @@ export default function OrderCard({ order, onCancel }: OrderCardProps) {
                     {/* Expandable Timeline */}
                     {showTimeline && (
                         <div className="mt-6 pt-6 border-t border-gray-200">
-                            <OrderStatusTimeline
-                                currentStatus={order.order_status}
-                                estimatedDelivery={order.estimated_delivery}
-                                trackingNumber={order.tracking_number}
-                                shippedDate={order.shipped_date}
-                                deliveredDate={order.delivered_date}
+                            <OrderTimeline
+                                status={order.order_status}
+                                history={order.statusHistory || []}
                             />
+                            {order.tracking_number && (
+                                <div className="mt-4 p-3 bg-blue-50 rounded-lg flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-blue-600 font-medium uppercase tracking-wider">Tracking Number</p>
+                                        <p className="text-sm font-mono font-bold text-blue-800">{order.tracking_number}</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

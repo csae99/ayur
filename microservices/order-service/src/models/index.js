@@ -38,6 +38,18 @@ const Appointment = sequelize.define('Appointment', {
     timestamps: false,
 });
 
+const OrderStatusHistory = sequelize.define('OrderStatusHistory', {
+    order_id: { type: DataTypes.INTEGER, allowNull: false },
+    status: { type: DataTypes.INTEGER, allowNull: false },
+    status_name: { type: DataTypes.STRING(50), allowNull: false },
+    notes: { type: DataTypes.TEXT },
+    created_by: { type: DataTypes.INTEGER },
+    created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+}, {
+    tableName: 'order_status_history',
+    timestamps: false,
+});
+
 const { Cart, CartItem } = require('./cart');
 const Address = require('./address');
 const Coupon = require('./Coupon')(sequelize);
@@ -46,7 +58,9 @@ const Coupon = require('./Coupon')(sequelize);
 Cart.hasMany(CartItem, { foreignKey: 'cart_id', onDelete: 'CASCADE' });
 CartItem.belongsTo(Cart, { foreignKey: 'cart_id' });
 
-// Order Associations (Optional, but good for future)
+// Order Associations
 Order.belongsTo(Address, { foreignKey: 'address_id', as: 'shippingAddress' });
+Order.hasMany(OrderStatusHistory, { foreignKey: 'order_id', as: 'statusHistory' });
+OrderStatusHistory.belongsTo(Order, { foreignKey: 'order_id' });
 
-module.exports = { Order, Appointment, Cart, CartItem, Address, Coupon };
+module.exports = { Order, Appointment, Cart, CartItem, Address, Coupon, OrderStatusHistory };

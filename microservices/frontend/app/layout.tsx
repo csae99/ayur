@@ -1,4 +1,5 @@
 import './globals.css'
+import ClientWrapper from '@/components/ClientWrapper'
 
 export const metadata = {
   title: 'Ayurveda - Natural Wellness Solutions',
@@ -12,7 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ClientWrapper>{children}</ClientWrapper>
+      </body>
     </html>
   )
 }

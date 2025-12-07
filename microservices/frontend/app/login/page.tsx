@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { authUtils } from '@/utils/auth';
 
 export default function LoginPage() {
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [type, setType] = useState('patient');
+    const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -21,14 +23,14 @@ export default function LoginPage() {
             const res = await fetch('http://localhost/api/identity/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password, type }),
+                body: JSON.stringify({ username, password, type, rememberMe }),
             });
 
             const data = await res.json();
 
             if (res.ok) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+                // Use auth utility to store tokens
+                authUtils.setTokens(data);
                 router.push('/dashboard');
             } else {
                 setError(data.error || 'Login failed');
@@ -98,6 +100,20 @@ export default function LoginPage() {
                                 placeholder="Enter your password"
                                 required
                             />
+                        </div>
+
+                        {/* Remember Me Checkbox */}
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                id="rememberMe"
+                                checked={rememberMe}
+                                onChange={(e) => setRememberMe(e.target.checked)}
+                                className="w-4 h-4 text-green-700 border-gray-300 rounded focus:ring-green-500"
+                            />
+                            <label htmlFor="rememberMe" className="text-sm text-gray-600">
+                                Remember me for 7 days
+                            </label>
                         </div>
 
                         <button

@@ -1,10 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { Patient, Practitioner, Admin } = require('../models');
+const crypto = require('crypto');
+const { Patient, Practitioner, Admin, RefreshToken } = require('../models');
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET || 'your_jwt_secret';
+const ACCESS_TOKEN_EXPIRY = '1h';
+const REFRESH_TOKEN_EXPIRY_DAYS = 7;
 
 // Register Patient
 router.post('/register/patient', async (req, res) => {
@@ -43,7 +46,7 @@ router.post('/register/practitioner', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
     try {
-        const { username, password, type } = req.body; // type: 'patient', 'practitioner', 'admin'
+        const { username, password, type, rememberMe } = req.body;
         let user;
 
         if (type === 'patient') {
@@ -60,20 +63,109 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        const token = jwt.sign({ id: user.id, username: user.username, type }, SECRET_KEY, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, username: user.username, type }, SECRET_KEY, { expiresIn: ACCESS_TOKEN_EXPIRY });
 
         // Remove password and set correct role
         const userData = user.toJSON();
-        delete userData.password;  // Remove password
-        userData.role = type;       // Override database role with actual type
+        delete userData.password;
+        userData.role = type;
 
-        res.json({ token, user: userData });
+        const response = { token, user: userData };
+
+        // Generate refresh token if "Remember Me" is checked
+        if (rememberMe) {
+            try {
+                const refreshTokenValue = crypto.randomBytes(64).toString('hex');
+                const expiresAt = new Date();
+                expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
+
+                await RefreshToken.create({
+                    user_id: user.id,
+                    user_type: type,
+                    token: refreshTokenValue,
+                    expires_at: expiresAt
+                });
+
+                response.refreshToken = refreshTokenValue;
+                response.refreshTokenExpiresAt = expiresAt;
+            } catch (refreshError) {
+                console.error('Failed to create refresh token:', refreshError);
+                // Continue without refresh token
+            }
+        }
+
+        res.json(response);
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Refresh Token
+router.post('/refresh', async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(400).json({ error: 'Refresh token required' });
+        }
+
+        const tokenRecord = await RefreshToken.findOne({ where: { token: refreshToken } });
+
+        if (!tokenRecord) {
+            return res.status(401).json({ error: 'Invalid refresh token' });
+        }
+
+        if (new Date() > new Date(tokenRecord.expires_at)) {
+            await tokenRecord.destroy();
+            return res.status(401).json({ error: 'Refresh token expired' });
+        }
+
+        let user;
+        if (tokenRecord.user_type === 'patient') {
+            user = await Patient.findByPk(tokenRecord.user_id);
+        } else if (tokenRecord.user_type === 'practitioner') {
+            user = await Practitioner.findByPk(tokenRecord.user_id);
+        } else if (tokenRecord.user_type === 'admin') {
+            user = await Admin.findByPk(tokenRecord.user_id);
+        }
+
+        if (!user) {
+            await tokenRecord.destroy();
+            return res.status(401).json({ error: 'User not found' });
+        }
+
+        const accessToken = jwt.sign(
+            { id: user.id, username: user.username, type: tokenRecord.user_type },
+            SECRET_KEY,
+            { expiresIn: ACCESS_TOKEN_EXPIRY }
+        );
+
+        const userData = user.toJSON();
+        delete userData.password;
+        userData.role = tokenRecord.user_type;
+
+        res.json({ token: accessToken, user: userData });
+    } catch (error) {
+        console.error('Refresh token error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Logout
+router.post('/logout', async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+        if (refreshToken) {
+            await RefreshToken.destroy({ where: { token: refreshToken } });
+        }
+        res.json({ message: 'Logged out successfully' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
 
-// Get Current User (Protected)
+// Get Current User
 router.get('/me', async (req, res) => {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) return res.status(401).json({ error: 'No token provided' });
@@ -86,7 +178,7 @@ router.get('/me', async (req, res) => {
     }
 });
 
-// Get Practitioner Details (Public/Protected?)
+// Get Practitioner Details
 router.get('/practitioner/:username', async (req, res) => {
     try {
         const { username } = req.params;
@@ -94,7 +186,6 @@ router.get('/practitioner/:username', async (req, res) => {
         if (!practitioner) {
             return res.status(404).json({ error: 'Practitioner not found' });
         }
-        // Exclude password
         const { password, ...practitionerData } = practitioner.toJSON();
         res.json(practitionerData);
     } catch (error) {

@@ -1,5 +1,5 @@
 const express = require('express');
-const { Order } = require('../models');
+const { Order, OrderStatusHistory } = require('../models');
 const authMiddleware = require('../middleware/auth');
 const {
     sendOrderConfirmation,
@@ -42,6 +42,15 @@ router.post('/', authMiddleware, async (req, res) => {
             order_date: new Date(),
             order_status: 1, // Changed from 0 to 1 (Confirmed)
             estimated_delivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000) // 5 days from now
+        });
+
+        // Add to history
+        await OrderStatusHistory.create({
+            order_id: order.id,
+            status: 1,
+            status_name: getStatusName(1),
+            notes: 'Order placed successfully',
+            created_by: user_id
         });
 
         // Send order confirmation email (async, don't wait)
@@ -115,7 +124,14 @@ router.get('/user/:userId/detailed', authMiddleware, async (req, res) => {
 // Get order by ID (protected)
 router.get('/:id', authMiddleware, async (req, res) => {
     try {
-        const order = await Order.findByPk(req.params.id);
+        const order = await Order.findByPk(req.params.id, {
+            include: [{
+                model: OrderStatusHistory,
+                as: 'statusHistory',
+                attributes: ['status', 'status_name', 'notes', 'created_at']
+            }],
+            order: [[{ model: OrderStatusHistory, as: 'statusHistory' }, 'created_at', 'ASC']]
+        });
         if (!order) return res.status(404).json({ error: 'Order not found' });
 
         // Ensure user can only view their own orders
@@ -162,6 +178,15 @@ router.patch('/:id/status', authMiddleware, async (req, res) => {
 
         await order.update(updates);
 
+        // Add to history
+        await OrderStatusHistory.create({
+            order_id: order.id,
+            status: status,
+            status_name: getStatusName(status),
+            notes: `Status updated to ${getStatusName(status)}`,
+            created_by: req.user.id
+        });
+
         // Send status update email for important statuses (Shipped, Delivered)
         if (status === 4 || status === 6) {
             const statusName = getStatusName(status);
@@ -196,6 +221,15 @@ router.post('/:id/cancel', authMiddleware, async (req, res) => {
         }
 
         await order.update({ order_status: 7 }); // 7 = Cancelled
+
+        // Add to history
+        await OrderStatusHistory.create({
+            order_id: order.id,
+            status: 7,
+            status_name: getStatusName(7),
+            notes: 'Order cancelled by user',
+            created_by: req.user.id
+        });
 
         // Send cancellation email
         sendCancellationEmail(order).catch(err =>

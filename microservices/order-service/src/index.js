@@ -11,11 +11,14 @@ const PORT = process.env.PORT || 3003;
 app.use(express.json());
 
 // Routes
-app.use('/orders', orderRoutes);
 app.use('/appointments', appointmentRoutes);
 app.use('/cart', require('./routes/cart'));
 app.use('/checkout', require('./routes/checkout'));
 app.use('/coupons', require('./routes/coupons'));
+
+// Orders routes (mounted at root as default handler, must be last to avoid capturing other routes)
+app.use('/orders', orderRoutes); // Keep for backward compatibility
+app.use('/', orderRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {

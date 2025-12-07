@@ -54,4 +54,19 @@ const Admin = sequelize.define('Admin', {
     timestamps: false,
 });
 
-module.exports = { Patient, Practitioner, Admin };
+const RefreshToken = sequelize.define('RefreshToken', {
+    user_id: { type: DataTypes.INTEGER, allowNull: false },
+    user_type: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        validate: { isIn: [['patient', 'practitioner', 'admin']] }
+    },
+    token: { type: DataTypes.STRING(500), unique: true, allowNull: false },
+    expires_at: { type: DataTypes.DATE, allowNull: false },
+    created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+}, {
+    tableName: 'refresh_tokens',
+    timestamps: false,
+});
+
+module.exports = { Patient, Practitioner, Admin, RefreshToken };
