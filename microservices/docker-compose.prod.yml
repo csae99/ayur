@@ -70,8 +70,13 @@ services:
 
   # Notification Service (Node.js)
   notification-service:
-    image: shubham554/ayur-notification-service:latest
+    image: shubham554/ayur-notification-service:v2
     container_name: microservices-notification-service-1
+    environment:
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_USER=
+      - SMTP_PASS=
+      - SMTP_PORT=587
     ports:
       - "3004:3004"
     networks:

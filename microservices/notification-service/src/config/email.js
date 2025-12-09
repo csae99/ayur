@@ -1,11 +1,32 @@
 const nodemailer = require('nodemailer');
 
-// Create reusable transporter object using the default SMTP transport
-// For development, we use Ethereal Email (fake SMTP)
+// Create reusable transporter object
 const createTransporter = async () => {
     try {
-        // Generate test SMTP service account from ethereal.email with timeout
-        // Only needed if you don't have a real mail account for testing
+        // 1. Check for real SMTP configuration first
+        if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+            console.log('Using Real SMTP Configuration');
+            console.log('Host:', process.env.SMTP_HOST);
+            console.log('User:', process.env.SMTP_USER);
+
+            const transporter = nodemailer.createTransport({
+                host: process.env.SMTP_HOST,
+                port: process.env.SMTP_PORT || 587,
+                secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+                auth: {
+                    user: process.env.SMTP_USER,
+                    pass: process.env.SMTP_PASS,
+                },
+            });
+
+            // Verify connection configuration
+            await transporter.verify();
+            console.log('Real SMTP connection verified');
+            return transporter;
+        }
+
+        // 2. Fallback to Ethereal (Mock)
+        console.log('No SMTP config found. Generating Ethereal mock account...');
         const testAccount = await Promise.race([
             nodemailer.createTestAccount(),
             new Promise((_, reject) =>
@@ -16,29 +37,27 @@ const createTransporter = async () => {
         const transporter = nodemailer.createTransport({
             host: "smtp.ethereal.email",
             port: 587,
-            secure: false, // true for 465, false for other ports
+            secure: false,
             auth: {
-                user: testAccount.user, // generated ethereal user
-                pass: testAccount.pass, // generated ethereal password
+                user: testAccount.user,
+                pass: testAccount.pass,
             },
         });
 
-        console.log('Email Transporter Configured');
+        console.log('Email Transporter Configured (Ethereal Mock)');
         console.log('Ethereal User:', testAccount.user);
 
         return transporter;
     } catch (error) {
-        console.error('Error creating Ethereal test account:', error.message);
-        console.log('Falling back to console-only mode (emails will be logged, not sent)');
+        console.error('Error configuring email transporter:', error.message);
+        console.log('Falling back to console-only mode');
 
-        // Return a mock transporter that just logs
         return {
             sendMail: async (mailOptions) => {
-                console.log('=== EMAIL (NOT SENT - Ethereal unavailable) ===');
+                console.log('=== EMAIL (NOT SENT - Config Failed) ===');
                 console.log('To:', mailOptions.to);
                 console.log('Subject:', mailOptions.subject);
-                console.log('From:', mailOptions.from);
-                console.log('===============================================');
+                console.log('========================================');
                 return {
                     messageId: 'mock-' + Date.now(),
                     accepted: [mailOptions.to],
