@@ -41,7 +41,8 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:latest
+    image: shubham554/ayur-catalog-service:v2
+    build: ./catalog-service
     environment:
       - PORT=3002
       - DB_HOST=postgres-db
@@ -107,6 +108,7 @@ services:
       - ./catalog-service/migrations/init.sql:/docker-entrypoint-initdb.d/catalog_init.sql
       - ./order-service/migrations/init.sql:/docker-entrypoint-initdb.d/order_init.sql
       - ./backups/postgres_backup_20251130_233427_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
+      - ./backups/postgres_backup_20251209_232046_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
       - ./backups:/backups
     networks:
       - ayur-network

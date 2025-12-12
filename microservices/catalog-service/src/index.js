@@ -1,8 +1,11 @@
 const express = require('express');
+console.log('--- STARTING NEW VERSION V2 ---');
 const cors = require('cors');
 const sequelize = require('./config/database');
 const catalogRoutes = require('./routes/catalog');
 const adminRoutes = require('./routes/admin');
+
+const reviewRoutes = require('./routes/reviews');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -10,7 +13,14 @@ const PORT = process.env.PORT || 3002;
 // app.use(cors()); // CORS handled by API Gateway
 app.use(express.json());
 
+// Request logger
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
+
 // Routes
+app.use('/', reviewRoutes); // Handles /items/:itemId/reviews directly
 app.use('/', catalogRoutes);
 app.use('/admin', adminRoutes);
 

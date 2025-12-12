@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import WishlistButton from '@/components/wishlist/WishlistButton';
 
 interface Item {
     id: number;
@@ -200,16 +201,22 @@ export default function CatalogPage() {
                 ) : (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredItems.map((item) => (
-                            <div key={item.id} className="card group cursor-pointer">
+                            <Link href={`/catalog/${item.id}`} key={item.id} className="card group cursor-pointer block hover:shadow-lg transition-all duration-300">
                                 <div className="aspect-square bg-gradient-to-br from-green-50 to-amber-50 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                                     <img
                                         src={`/images/${item.item_image}`}
                                         alt={item.item_title}
-                                        className="w-full h-full object-cover"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                                         onError={(e) => {
                                             const target = e.target as HTMLImageElement;
                                             target.src = '/images/Medicine.png';
                                         }}
+                                    />
+                                </div>
+                                <div className="absolute top-2 right-2 z-20">
+                                    <WishlistButton
+                                        itemId={item.id}
+                                        className="bg-white/90 backdrop-blur p-2 rounded-full shadow-sm hover:scale-110 transition-transform"
                                     />
                                 </div>
 
@@ -241,25 +248,19 @@ export default function CatalogPage() {
                                         )}
                                     </div>
                                 </div>
-
-                                <button
-                                    onClick={() => handleAddToCart(item.id, item.item_title)}
-                                    disabled={addingToCart === item.id || item.item_quantity === 0}
-                                    className="btn btn-primary w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {addingToCart === item.id ? (
-                                        <span className="flex items-center justify-center gap-2">
-                                            <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            Adding...
-                                        </span>
-                                    ) : (
-                                        item.item_quantity === 0 ? 'Out of Stock' : 'Add to Cart'
-                                    )}
-                                </button>
-                            </div>
+                                <div className="mt-4">
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault(); // Prevent navigation
+                                            handleAddToCart(item.id, item.item_title);
+                                        }}
+                                        disabled={addingToCart === item.id || item.item_quantity === 0}
+                                        className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed z-10 relative"
+                                    >
+                                        {addingToCart === item.id ? 'Adding...' : item.item_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                                    </button>
+                                </div>
+                            </Link>
                         ))}
                     </div>
                 )}

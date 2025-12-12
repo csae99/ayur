@@ -149,13 +149,13 @@ export default function BrowseMedicinesPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {medicines.map((medicine) => (
-                            <div key={medicine.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col">
-                                <div className="h-48 bg-gray-200 relative">
+                            <Link href={`/catalog/${medicine.id}`} key={medicine.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col group text-left">
+                                <div className="h-48 bg-gray-200 relative overflow-hidden">
                                     {medicine.item_image ? (
                                         <img
                                             src={`/images/${medicine.item_image}`}
                                             alt={medicine.item_title}
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                                             onError={(e) => {
                                                 const target = e.target as HTMLImageElement;
                                                 target.src = '/images/Medicine.png';
@@ -174,7 +174,7 @@ export default function BrowseMedicinesPage() {
                                 </div>
                                 <div className="p-6 flex-1 flex flex-col">
                                     <div className="flex justify-between items-start mb-2">
-                                        <h3 className="text-xl font-bold text-gray-800">{medicine.item_title}</h3>
+                                        <h3 className="text-xl font-bold text-gray-800 group-hover:text-green-700 transition">{medicine.item_title}</h3>
                                     </div>
                                     <div className="mb-3">
                                         <span className="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded-full">
@@ -197,9 +197,13 @@ export default function BrowseMedicinesPage() {
                                             )}
                                         </div>
                                         <button
-                                            onClick={() => handleAddToCart(medicine)}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                handleAddToCart(medicine);
+                                            }}
                                             disabled={addingToCart === medicine.id || medicine.item_quantity === 0}
-                                            className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                            className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 z-10 relative"
                                         >
                                             {addingToCart === medicine.id ? (
                                                 <>
@@ -212,7 +216,7 @@ export default function BrowseMedicinesPage() {
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 )}

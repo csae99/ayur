@@ -17,4 +17,22 @@ const Item = sequelize.define('Item', {
     timestamps: false,
 });
 
-module.exports = { Item };
+
+
+const Review = sequelize.define('Review', {
+    item_id: { type: DataTypes.INTEGER, allowNull: false },
+    user_id: { type: DataTypes.INTEGER, allowNull: false },
+    user_name: { type: DataTypes.STRING(100), allowNull: false },
+    rating: { type: DataTypes.INTEGER, allowNull: false, validate: { min: 1, max: 5 } },
+    comment: { type: DataTypes.TEXT, allowNull: true },
+    created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
+}, {
+    tableName: 'reviews',
+    timestamps: false
+});
+
+// Associations
+Item.hasMany(Review, { foreignKey: 'item_id', as: 'reviews' });
+Review.belongsTo(Item, { foreignKey: 'item_id' });
+
+module.exports = { Item, Review };

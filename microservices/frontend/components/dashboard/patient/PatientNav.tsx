@@ -27,6 +27,9 @@ export default function PatientNav({ username, onLogout }: PatientNavProps) {
                         <Link href="/dashboard/patient/practitioners" className="btn btn-outline">
                             Find Practitioners
                         </Link>
+                        <Link href="/dashboard/patient/wishlist" className="btn btn-outline">
+                            My Wishlist
+                        </Link>
                         <Link href="/dashboard/patient/appointments" className="btn btn-outline">
                             My Appointments
                         </Link>

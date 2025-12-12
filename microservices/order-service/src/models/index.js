@@ -63,4 +63,6 @@ Order.belongsTo(Address, { foreignKey: 'address_id', as: 'shippingAddress' });
 Order.hasMany(OrderStatusHistory, { foreignKey: 'order_id', as: 'statusHistory' });
 OrderStatusHistory.belongsTo(Order, { foreignKey: 'order_id' });
 
-module.exports = { Order, Appointment, Cart, CartItem, Address, Coupon, OrderStatusHistory };
+const Wishlist = require('./Wishlist');
+
+module.exports = { Order, Appointment, Cart, CartItem, Address, Coupon, OrderStatusHistory, Wishlist };
