@@ -46,7 +46,7 @@ export default function MyAppointmentsPage() {
             console.error('Error parsing user data', e);
         }
 
-        const fetchAppointments = fetch('http://localhost/api/orders/appointments/patient', {
+        const fetchAppointments = fetch('http://localhost/api/identity/appointments/patient', {
             headers: { 'Authorization': `Bearer ${token}` }
         }).then(res => res.json());
 
@@ -85,7 +85,7 @@ export default function MyAppointmentsPage() {
 
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`http://localhost/api/orders/appointments/${id}/status`, {
+            const res = await fetch(`http://localhost/api/identity/appointments/${id}/status`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ export default function MyAppointmentsPage() {
 
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`http://localhost/api/orders/appointments/${rescheduleModal.appointment.id}`, {
+            const res = await fetch(`http://localhost/api/identity/appointments/${rescheduleModal.appointment.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ export default function MyAppointmentsPage() {
                                 <tbody className="divide-y divide-gray-100">
                                     {appointments.map(appt => {
                                         const pract = practitioners[appt.practitioner_id];
-                                        const canModify = appt.status === 'Pending' || appt.status === 'Confirmed';
+                                        const canModify = appt.status.toLowerCase() === 'pending' || appt.status.toLowerCase() === 'confirmed';
 
                                         return (
                                             <tr key={appt.id} className="hover:bg-gray-50">

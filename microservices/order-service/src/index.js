@@ -16,6 +16,7 @@ app.use('/cart', require('./routes/cart'));
 app.use('/checkout', require('./routes/checkout'));
 app.use('/coupons', require('./routes/coupons'));
 app.use('/wishlist', require('./routes/wishlist'));
+app.use('/analytics', require('./routes/analytics'));
 
 // Orders routes (mounted at root as default handler, must be last to avoid capturing other routes)
 app.use('/orders', orderRoutes); // Keep for backward compatibility

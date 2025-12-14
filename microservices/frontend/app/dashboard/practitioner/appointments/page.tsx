@@ -7,10 +7,15 @@ import Link from 'next/link';
 interface Appointment {
     id: number;
     patient_id: number;
-    date: string;
-    time: string;
+    practitioner_id: number;
+    appointment_date: string;
+    appointment_time: string;
     status: string;
     notes: string;
+    Patient?: { // Included from association
+        fname: string;
+        lname: string;
+    };
 }
 
 export default function PractitionerAppointmentsPage() {
@@ -32,7 +37,7 @@ export default function PractitionerAppointmentsPage() {
             return;
         }
 
-        fetch('http://localhost/api/orders/appointments/practitioner', {
+        fetch('http://localhost/api/identity/appointments/practitioner', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => res.json())
@@ -52,7 +57,7 @@ export default function PractitionerAppointmentsPage() {
 
     const handleStatusUpdate = (id: number, newStatus: string) => {
         const token = localStorage.getItem('token');
-        fetch(`http://localhost/api/orders/appointments/${id}/status`, {
+        fetch(`http://localhost/api/identity/appointments/${id}/status`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -60,24 +65,36 @@ export default function PractitionerAppointmentsPage() {
             },
             body: JSON.stringify({ status: newStatus })
         })
-            .then(res => res.json())
+            .then(async res => {
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.error || `Failed to update status: ${res.status}`);
+                }
+                return res.json();
+            })
             .then(updatedAppt => {
                 setAppointments(prev => prev.map(a =>
                     a.id === id ? { ...a, status: newStatus } : a
                 ));
+                // Optional: Show success notification
             })
-            .catch(err => console.error('Error updating status:', err));
+            .catch(err => {
+                console.error('Error updating status:', err);
+                alert(`Error: ${err.message}`);
+            });
     };
 
     const getStatusBadge = (status: string) => {
+        const normalizedStatus = status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
         const styles = {
             'Confirmed': 'bg-green-100 text-green-700',
             'Pending': 'bg-yellow-100 text-yellow-700',
             'Rejected': 'bg-red-100 text-red-700',
-            'Completed': 'bg-blue-100 text-blue-700'
+            'Completed': 'bg-blue-100 text-blue-700',
+            'Cancelled': 'bg-gray-100 text-gray-700'
         };
-        const style = styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-700';
-        return <span className={`px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{status}</span>;
+        const style = styles[normalizedStatus as keyof typeof styles] || 'bg-gray-100 text-gray-700';
+        return <span className={`px-3 py-1 rounded-full text-xs font-semibold ${style}`}>{normalizedStatus}</span>;
     };
 
     return (
@@ -116,12 +133,12 @@ export default function PractitionerAppointmentsPage() {
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
                                         <span className="font-bold text-lg text-gray-800">
-                                            {appt.date} at {appt.time}
+                                            {appt.appointment_date} at {appt.appointment_time}
                                         </span>
                                         {getStatusBadge(appt.status)}
                                     </div>
                                     <p className="text-gray-600">
-                                        <span className="font-medium">Patient ID:</span> {appt.patient_id}
+                                        <span className="font-medium">Patient:</span> {appt.Patient ? `${appt.Patient.fname} ${appt.Patient.lname}` : `ID: ${appt.patient_id}`}
                                     </p>
                                     {appt.notes && (
                                         <p className="text-gray-500 text-sm mt-2 bg-gray-50 p-2 rounded">
@@ -130,7 +147,7 @@ export default function PractitionerAppointmentsPage() {
                                     )}
                                 </div>
 
-                                {appt.status === 'Pending' && (
+                                {appt.status.toLowerCase() === 'pending' && (
                                     <div className="flex gap-3">
                                         <button
                                             onClick={() => handleStatusUpdate(appt.id, 'Confirmed')}
@@ -146,7 +163,7 @@ export default function PractitionerAppointmentsPage() {
                                         </button>
                                     </div>
                                 )}
-                                {appt.status === 'Confirmed' && (
+                                {appt.status.toLowerCase() === 'confirmed' && (
                                     <button
                                         onClick={() => handleStatusUpdate(appt.id, 'Completed')}
                                         className="btn bg-blue-500 hover:bg-blue-600 text-white border-none"

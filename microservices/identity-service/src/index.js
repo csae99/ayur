@@ -4,6 +4,7 @@ const sequelize = require('./config/database');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const practitionerRoutes = require('./routes/practitioners');
+const prescriptionRoutes = require('./routes/prescriptions'); // Added prescriptionRoutes
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -11,10 +12,23 @@ const PORT = process.env.PORT || 3001;
 // app.use(cors()); // CORS handled by API Gateway
 app.use(express.json());
 
+// Debug Middleware
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    if (req.method === 'POST') console.log('Body:', JSON.stringify(req.body));
+    next();
+});
+
 // Routes
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/practitioners', practitionerRoutes);
+console.log('Mounting /availability routes');
+app.use('/availability', require('./routes/availability'));
+console.log('Mounting /appointments routes');
+app.use('/appointments', require('./routes/appointments'));
+console.log('Mounting /prescriptions routes');
+app.use('/prescriptions', prescriptionRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {

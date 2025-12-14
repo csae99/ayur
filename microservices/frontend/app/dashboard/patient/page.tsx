@@ -81,6 +81,19 @@ export default function DashboardPage() {
                         </div>
                     </Link>
 
+                    {/* My Prescriptions */}
+                    <Link href="/dashboard/patient/prescriptions" className="group">
+                        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all h-full flex flex-col items-center text-center group-hover:border-teal-500">
+                            <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mb-6 group-hover:bg-teal-600 transition-colors">
+                                <i className="fas fa-file-prescription text-3xl text-teal-600 group-hover:text-white"></i>
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2">My Prescriptions</h3>
+                            <p className="text-gray-600">
+                                View prescriptions from your doctors and buy medicines.
+                            </p>
+                        </div>
+                    </Link>
+
                     {/* Browse Medicines */}
                     <Link href="/dashboard/patient/medicines" className="group">
                         <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all h-full flex flex-col items-center text-center group-hover:border-purple-500">

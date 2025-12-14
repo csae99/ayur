@@ -204,6 +204,38 @@ export default function PractitionerDashboard() {
                             Manage Appointments
                         </Link>
                     </div>
+
+                    {/* Availability Card */}
+                    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Availability</h2>
+                            <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center">
+                                <i className="fas fa-calendar-alt text-purple-600"></i>
+                            </div>
+                        </div>
+                        <p className="text-gray-600 mb-6">
+                            Set your weekly schedule and working hours.
+                        </p>
+                        <Link href="/dashboard/practitioner/availability" className="btn btn-outline w-full text-center">
+                            Manage Schedule
+                        </Link>
+                    </div>
+
+                    {/* Prescriptions Card */}
+                    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Prescriptions</h2>
+                            <div className="w-10 h-10 bg-teal-50 rounded-full flex items-center justify-center">
+                                <i className="fas fa-file-prescription text-teal-600"></i>
+                            </div>
+                        </div>
+                        <p className="text-gray-600 mb-6">
+                            Write and manage digital prescriptions for your patients.
+                        </p>
+                        <Link href="/dashboard/practitioner/prescriptions" className="btn btn-primary w-full text-center">
+                            Manage Prescriptions
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

@@ -28,6 +28,7 @@ services:
   # Identity Service (Node.js)
   identity-service:
     image: shubham554/ayur-identity-service:v2
+    build: ./identity-service
     environment:
       - PORT=3001
       - DB_HOST=postgres-db

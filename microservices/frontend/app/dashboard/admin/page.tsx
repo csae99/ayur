@@ -270,6 +270,9 @@ export default function AdminDashboard() {
                         <Link href="/dashboard/admin/patients" className="btn btn-primary text-center">
                             <i className="fas fa-users mr-2"></i> View All Patients
                         </Link>
+                        <Link href="/dashboard/admin/analytics" className="btn btn-outline text-center border-indigo-600 text-indigo-700 hover:bg-indigo-50">
+                            <i className="fas fa-chart-line mr-2"></i> View Analytics
+                        </Link>
                     </div>
                 </div>
             </div>
