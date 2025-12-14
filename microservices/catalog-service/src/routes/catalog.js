@@ -4,9 +4,29 @@ const { Item } = require('../models');
 const router = express.Router();
 
 // Get all items
+// Get all items with filtering
 router.get('/items', async (req, res) => {
     try {
-        const items = await Item.findAll();
+        const { q, category, min_price, max_price } = req.query;
+        const { Op } = require('sequelize');
+        const where = {};
+
+        if (q) {
+            // Case-insensitive search for title
+            where.item_title = { [Op.iLike]: `%${q}%` };
+        }
+
+        if (category && category !== 'All') {
+            where.item_cat = { [Op.iLike]: category };
+        }
+
+        if (min_price || max_price) {
+            where.item_price = {};
+            if (min_price) where.item_price[Op.gte] = parseFloat(min_price);
+            if (max_price) where.item_price[Op.lte] = parseFloat(max_price);
+        }
+
+        const items = await Item.findAll({ where });
         res.json(items);
     } catch (error) {
         res.status(500).json({ error: error.message });
