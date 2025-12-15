@@ -23,12 +23,22 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 app.use('/admin', adminRoutes);
 app.use('/practitioners', practitionerRoutes);
-console.log('Mounting /availability routes');
-app.use('/availability', require('./routes/availability'));
-console.log('Mounting /appointments routes');
-app.use('/appointments', require('./routes/appointments'));
-console.log('Mounting /prescriptions routes');
-app.use('/prescriptions', prescriptionRoutes);
+try {
+    console.log('Mounting /availability routes');
+    app.use('/availability', require('./routes/availability'));
+    console.log('Mounting /availability routes - DONE');
+
+    console.log('Mounting /appointments routes');
+    app.use('/appointments', require('./routes/appointments'));
+    console.log('Mounting /appointments routes - DONE');
+
+    console.log('Mounting /prescriptions routes');
+    app.use('/prescriptions', prescriptionRoutes);
+    console.log('Mounting /prescriptions routes - DONE');
+} catch (err) {
+    console.error('CRITICAL ERROR MOUNTING ROUTES:', err);
+    process.exit(1);
+}
 
 // Health Check
 app.get('/health', (req, res) => {

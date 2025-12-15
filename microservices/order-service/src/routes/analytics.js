@@ -1,5 +1,6 @@
 const express = require('express');
-const { Order, Sequelize } = require('../models');
+const { Order } = require('../models');
+const Sequelize = require('sequelize');
 const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
@@ -18,7 +19,8 @@ router.get('/stats', authMiddleware, async (req, res) => {
         // Status mapping: 0=Pending, 1=Confirmed, 2=Processing, 3=Shipped, 4=Out for Delivery, 5=Delivered, 6=Cancelled
         const ordersByStatus = await Order.findAll({
             attributes: ['order_status', [Sequelize.fn('COUNT', Sequelize.col('id')), 'count']],
-            group: ['order_status']
+            group: [Sequelize.literal('order_status')],
+            raw: true
         });
 
         // Recent Orders (Last 5)
@@ -38,11 +40,12 @@ router.get('/stats', authMiddleware, async (req, res) => {
                 }
             },
             attributes: [
-                [Sequelize.fn('DATE', Sequelize.col('order_date')), 'date'],
+                ['order_date', 'date'],
                 [Sequelize.fn('COUNT', Sequelize.col('id')), 'count']
             ],
-            group: [Sequelize.fn('DATE', Sequelize.col('order_date'))],
-            order: [[Sequelize.fn('DATE', Sequelize.col('order_date')), 'ASC']]
+            group: [Sequelize.literal('order_date')],
+            order: [['order_date', 'ASC']],
+            raw: true
         });
 
         res.json({
@@ -52,7 +55,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
             ordersLast7Days
         });
     } catch (error) {
-        console.error('Error fetching analytics:', error);
+        console.error('Error fetching analytics FULL DETAILS:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
         res.status(500).json({ error: error.message });
     }
 });

@@ -25,18 +25,7 @@ const Order = sequelize.define('Order', {
     timestamps: false,
 });
 
-const Appointment = sequelize.define('Appointment', {
-    patient_id: { type: DataTypes.INTEGER, allowNull: false },
-    practitioner_id: { type: DataTypes.INTEGER, allowNull: false },
-    date: { type: DataTypes.DATEONLY, allowNull: false },
-    time: { type: DataTypes.TIME, allowNull: false },
-    status: { type: DataTypes.STRING, defaultValue: 'Pending' }, // Pending, Confirmed, Rejected, Completed
-    notes: { type: DataTypes.TEXT },
-    created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
-}, {
-    tableName: 'appointments',
-    timestamps: false,
-});
+// Appointment model removed - Managed by Identity Service
 
 const OrderStatusHistory = sequelize.define('OrderStatusHistory', {
     order_id: { type: DataTypes.INTEGER, allowNull: false },
@@ -65,4 +54,4 @@ OrderStatusHistory.belongsTo(Order, { foreignKey: 'order_id' });
 
 const Wishlist = require('./Wishlist');
 
-module.exports = { Order, Appointment, Cart, CartItem, Address, Coupon, OrderStatusHistory, Wishlist };
+module.exports = { Order, Cart, CartItem, Address, Coupon, OrderStatusHistory, Wishlist };

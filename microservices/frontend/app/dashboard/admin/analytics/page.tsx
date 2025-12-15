@@ -42,21 +42,21 @@ export default function AdminAnalyticsPage() {
             }
         }
 
-        Promise.all([
+        Promise.allSettled([
             fetch('http://localhost/api/orders/analytics/stats', {
                 headers: { 'Authorization': `Bearer ${token}` }
-            }).then(res => res.json()),
+            }).then(res => res.ok ? res.json() : null),
             fetch('http://localhost/api/identity/admin/stats', {
                 headers: { 'Authorization': `Bearer ${token}` }
-            }).then(res => res.json())
+            }).then(res => res.ok ? res.json() : null)
         ])
-            .then(([oStats, uStats]) => {
-                setOrderStats(oStats);
-                setUserStats(uStats);
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error('Error fetching analytics:', err);
+            .then(([orderResult, userResult]) => {
+                if (orderResult.status === 'fulfilled') {
+                    setOrderStats(orderResult.value);
+                }
+                if (userResult.status === 'fulfilled') {
+                    setUserStats(userResult.value);
+                }
                 setLoading(false);
             });
     }, [router]);
@@ -76,7 +76,7 @@ export default function AdminAnalyticsPage() {
     };
 
     // Calculate max value for chart scaling
-    const maxOrders = orderStats?.ordersLast7Days.reduce((acc, curr) => Math.max(acc, parseInt(curr.count as any)), 0) || 1;
+    const maxOrders = orderStats?.ordersLast7Days?.reduce((acc, curr) => Math.max(acc, parseInt(curr.count as any)), 0) || 1;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -124,7 +124,7 @@ export default function AdminAnalyticsPage() {
                     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                         <h3 className="text-xl font-bold text-gray-800 mb-6">Orders (Last 7 Days)</h3>
                         <div className="h-64 flex items-end justify-between gap-2">
-                            {orderStats?.ordersLast7Days.map((stat, idx) => {
+                            {orderStats?.ordersLast7Days?.map((stat, idx) => {
                                 const heightPercent = (stat.count / maxOrders) * 100;
                                 return (
                                     <div key={idx} className="flex flex-col items-center w-full group relative">
@@ -142,7 +142,7 @@ export default function AdminAnalyticsPage() {
                                     </div>
                                 );
                             })}
-                            {orderStats?.ordersLast7Days.length === 0 && (
+                            {orderStats?.ordersLast7Days?.length === 0 && (
                                 <p className="text-gray-500 text-center w-full">No data available</p>
                             )}
                         </div>
@@ -152,7 +152,7 @@ export default function AdminAnalyticsPage() {
                     <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                         <h3 className="text-xl font-bold text-gray-800 mb-6">Order Status Distribution</h3>
                         <div className="space-y-4">
-                            {orderStats?.ordersByStatus.map((stat) => (
+                            {orderStats?.ordersByStatus?.map((stat) => (
                                 <div key={stat.order_status} className="flex items-center justify-between">
                                     <span className="font-medium text-gray-600 w-32">{getStatusName(stat.order_status)}</span>
                                     <div className="flex-1 mx-4 bg-gray-100 rounded-full h-3">
@@ -184,7 +184,7 @@ export default function AdminAnalyticsPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {orderStats?.recentOrders.map((order) => (
+                                {orderStats?.recentOrders?.map((order) => (
                                     <tr key={order.id} className="hover:bg-gray-50">
                                         <td className="px-8 py-4 font-medium text-indigo-600">#{order.id}</td>
                                         <td className="px-8 py-4 text-gray-600">
