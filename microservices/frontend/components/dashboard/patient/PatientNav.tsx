@@ -1,4 +1,8 @@
+'use client';
+
 import Link from 'next/link';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useTranslation } from '@/context/TranslationContext';
 
 interface PatientNavProps {
     username?: string;
@@ -6,6 +10,8 @@ interface PatientNavProps {
 }
 
 export default function PatientNav({ username, onLogout }: PatientNavProps) {
+    const { t } = useTranslation();
+
     return (
         <nav className="bg-white shadow-sm">
             <div className="container py-4">
@@ -19,28 +25,29 @@ export default function PatientNav({ username, onLogout }: PatientNavProps) {
 
                     <div className="flex gap-3 items-center">
                         <span className="text-sm text-secondary">
-                            Welcome, <span className="font-semibold text-primary">{username}</span>
+                            {t('common.welcome')}, <span className="font-semibold text-primary">{username}</span>
                         </span>
                         <Link href="/dashboard/patient" className="btn btn-outline">
-                            Dashboard
+                            {t('navigation.dashboard')}
                         </Link>
                         <Link href="/dashboard/patient/practitioners" className="btn btn-outline">
-                            Find Practitioners
+                            {t('navigation.findPractitioner')}
                         </Link>
                         <Link href="/dashboard/patient/wishlist" className="btn btn-outline">
-                            My Wishlist
+                            {t('navigation.myWishlist')}
                         </Link>
                         <Link href="/dashboard/patient/appointments" className="btn btn-outline">
-                            My Appointments
+                            {t('navigation.myAppointments')}
                         </Link>
                         <Link href="/dashboard/patient/medicines" className="btn btn-outline">
-                            Browse Medicines
+                            {t('navigation.browseMedicines')}
                         </Link>
                         <Link href="/dashboard/patient/cart" className="btn btn-outline">
-                            <i className="fas fa-shopping-cart mr-2"></i> Cart
+                            <i className="fas fa-shopping-cart mr-2"></i> {t('navigation.cart')}
                         </Link>
+                        <LanguageSwitcher />
                         <button onClick={onLogout} className="btn btn-secondary">
-                            Logout
+                            {t('common.logout')}
                         </button>
                     </div>
                 </div>
@@ -48,3 +55,5 @@ export default function PatientNav({ username, onLogout }: PatientNavProps) {
         </nav>
     );
 }
+
+

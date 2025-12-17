@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # API Gateway
   api-gateway:
-    image: shubham554/ayur-api-gateway:v2
+    image: shubham554/ayur-api-gateway:v3
     build: ./api-gateway
     ports:
       - "80:80"
@@ -19,7 +19,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:v5
+    image: shubham554/ayur-frontend:v6
     build: ./frontend
     ports:
       - "3000:3000"
@@ -28,7 +28,7 @@ services:
 
   # Identity Service (Node.js)
   identity-service:
-    image: shubham554/ayur-identity-service:v3
+    image: shubham554/ayur-identity-service:v4
     build: ./identity-service
     environment:
       - PORT=3001
@@ -43,7 +43,7 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:v3
+    image: shubham554/ayur-catalog-service:v4
     build: ./catalog-service
     environment:
       - PORT=3002
@@ -58,7 +58,7 @@ services:
 
   # Order Service (Node.js)
   order-service:
-    image: shubham554/ayur-order-service:v7
+    image: shubham554/ayur-order-service:v8
     build: ./order-service
     environment:
       - PORT=3003
@@ -73,7 +73,7 @@ services:
 
   # Notification Service (Node.js)
   notification-service:
-    image: shubham554/ayur-notification-service:v3
+    image: shubham554/ayur-notification-service:v4
     build: ./notification-service
     container_name: microservices-notification-service-1
     environment:
@@ -88,7 +88,7 @@ services:
 
   # AyurBot Service (Python)
   ayurbot-service:
-    image: shubham554/ayur-ayurbot-service:v2
+    image: shubham554/ayur-ayurbot-service:v3
     build: ./ayurbot-service
     environment:
       - PORT=8000
@@ -111,7 +111,7 @@ services:
       - ./identity-service/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./catalog-service/migrations/init.sql:/docker-entrypoint-initdb.d/catalog_init.sql
       - ./order-service/migrations/init.sql:/docker-entrypoint-initdb.d/order_init.sql
-      - ./backups/postgres_backup_20251216_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
+      - ./backups/postgres_backup_20251217_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
       - ./backups:/backups
     networks:
       - ayur-network

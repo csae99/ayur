@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useTranslation } from '@/context/TranslationContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function Home() {
     const [mounted, setMounted] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         setMounted(true);
@@ -31,29 +34,30 @@ export default function Home() {
                         <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-green-700 to-green-600 bg-clip-text text-transparent">
                             🌿 AyurCare
                         </Link>
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 items-center">
                             <Link href="/catalog" className="text-green-700 hover:text-green-800 font-medium">
-                                Catalog
+                                {t('navigation.browseMedicines')}
                             </Link>
                             {isLoggedIn ? (
                                 <>
                                     <Link href="/dashboard" className="text-green-700 hover:text-green-800 font-medium">
-                                        My Orders
+                                        {t('navigation.myOrders')}
                                     </Link>
                                     <button onClick={handleLogout} className="text-green-700 hover:text-green-800 font-medium">
-                                        Logout
+                                        {t('common.logout')}
                                     </button>
                                 </>
                             ) : (
                                 <>
                                     <Link href="/login" className="text-green-700 hover:text-green-800 font-medium">
-                                        Login
+                                        {t('common.login')}
                                     </Link>
                                     <Link href="/register" className="btn btn-primary">
-                                        Register
+                                        {t('common.register')}
                                     </Link>
                                 </>
                             )}
+                            <LanguageSwitcher />
                         </div>
                     </div>
                 </div>

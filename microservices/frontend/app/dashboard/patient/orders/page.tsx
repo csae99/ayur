@@ -38,7 +38,7 @@ export default function MyOrdersPage() {
 
         const userId = parsed?.id || 1; // Fallback to 1 if no ID found
 
-        fetch(`http://localhost/api/orders/orders/user/${userId}/detailed`, {
+        fetch(`/api/orders/orders/user/${userId}/detailed`, {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then(res => {
@@ -71,7 +71,7 @@ export default function MyOrdersPage() {
 
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`http://localhost/api/orders/orders/${orderId}/cancel`, {
+            const response = await fetch(`/api/orders/orders/${orderId}/cancel`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
             });

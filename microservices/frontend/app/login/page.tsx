@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authUtils } from '@/utils/auth';
+import { useTranslation } from '@/context/TranslationContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function LoginPage() {
     const router = useRouter();
+    const { t } = useTranslation();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [type, setType] = useState('patient');
@@ -33,11 +36,11 @@ export default function LoginPage() {
                 authUtils.setTokens(data);
                 router.push('/dashboard');
             } else {
-                setError(data.error || 'Login failed');
+                setError(data.error || t('auth.loginError'));
             }
         } catch (err) {
             console.error('Login error details:', err);
-            setError('An error occurred. Please try again.');
+            setError(t('common.error'));
         } finally {
             setLoading(false);
         }
@@ -48,15 +51,18 @@ export default function LoginPage() {
             {/* Left Side - Form */}
             <div className="flex-1 flex items-center justify-center p-8">
                 <div className="w-full max-w-md">
-                    <Link href="/" className="flex items-center gap-2 mb-8">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green-700 to-green-900 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                            A
-                        </div>
-                        <span className="text-2xl font-bold gradient-text">Ayurveda</span>
-                    </Link>
+                    <div className="flex items-center justify-between mb-8">
+                        <Link href="/" className="flex items-center gap-2">
+                            <div className="w-10 h-10 bg-gradient-to-br from-green-700 to-green-900 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                                A
+                            </div>
+                            <span className="text-2xl font-bold gradient-text">Ayurveda</span>
+                        </Link>
+                        <LanguageSwitcher />
+                    </div>
 
-                    <h2 className="text-3xl font-bold mb-2">Welcome back</h2>
-                    <p className="text-secondary mb-8">Sign in to your account to continue</p>
+                    <h2 className="text-3xl font-bold mb-2">{t('dashboard.welcomeBack')}</h2>
+                    <p className="text-secondary mb-8">{t('auth.signIn')}</p>
 
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
@@ -66,38 +72,38 @@ export default function LoginPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div>
-                            <label className="label">Account Type</label>
+                            <label className="label">{t('auth.accountType')}</label>
                             <select
                                 value={type}
                                 onChange={(e) => setType(e.target.value)}
                                 className="input"
                             >
-                                <option value="patient">Patient</option>
-                                <option value="practitioner">Practitioner</option>
-                                <option value="admin">Admin</option>
+                                <option value="patient">{t('auth.patient')}</option>
+                                <option value="practitioner">{t('auth.practitioner')}</option>
+                                <option value="admin">{t('auth.admin')}</option>
                             </select>
                         </div>
 
                         <div>
-                            <label className="label">Username</label>
+                            <label className="label">{t('auth.username')}</label>
                             <input
                                 type="text"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="input"
-                                placeholder="Enter your username"
+                                placeholder={t('auth.username')}
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="label">Password</label>
+                            <label className="label">{t('auth.password')}</label>
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="input"
-                                placeholder="Enter your password"
+                                placeholder={t('auth.password')}
                                 required
                             />
                         </div>
@@ -112,7 +118,7 @@ export default function LoginPage() {
                                 className="w-4 h-4 text-green-700 border-gray-300 rounded focus:ring-green-500"
                             />
                             <label htmlFor="rememberMe" className="text-sm text-gray-600">
-                                Remember me for 7 days
+                                {t('auth.rememberMe')}
                             </label>
                         </div>
 
@@ -121,14 +127,14 @@ export default function LoginPage() {
                             disabled={loading}
                             className="btn btn-primary w-full"
                         >
-                            {loading ? 'Signing in...' : 'Sign In'}
+                            {loading ? t('common.loading') : t('auth.signIn')}
                         </button>
                     </form>
 
                     <p className="text-center mt-6 text-secondary">
-                        Don't have an account?{' '}
+                        {t('auth.noAccount')}{' '}
                         <Link href="/register" className="text-green-700 font-medium hover:underline">
-                            Register here
+                            {t('auth.registerNow')}
                         </Link>
                     </p>
                 </div>

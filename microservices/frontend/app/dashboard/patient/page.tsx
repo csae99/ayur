@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import PatientNav from '@/components/dashboard/patient/PatientNav';
+import { useTranslation } from '@/context/TranslationContext';
 
 export default function DashboardPage() {
     const router = useRouter();
+    const { t } = useTranslation();
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
@@ -44,9 +46,9 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="bg-gradient-to-br from-green-600 to-teal-700 text-white py-12">
                 <div className="container mx-auto px-4">
-                    <h1 className="text-4xl font-bold mb-2">Welcome back, {user?.fname || 'Patient'}!</h1>
+                    <h1 className="text-4xl font-bold mb-2">{t('dashboard.welcomeBack')}, {user?.fname || t('auth.patient')}!</h1>
                     <p className="text-green-100 text-lg">
-                        Manage your health, appointments, and orders all in one place.
+                        {t('dashboard.manageHealth')}
                     </p>
                 </div>
             </div>
@@ -61,9 +63,9 @@ export default function DashboardPage() {
                             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 group-hover:bg-green-600 transition-colors">
                                 <i className="fas fa-user-md text-3xl text-green-600 group-hover:text-white"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">Find Practitioner</h3>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2">{t('navigation.findPractitioner')}</h3>
                             <p className="text-gray-600">
-                                Browse verified Ayurvedic practitioners and book appointments.
+                                {t('dashboard.findPractitionerDesc')}
                             </p>
                         </div>
                     </Link>
@@ -74,9 +76,9 @@ export default function DashboardPage() {
                             <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6 group-hover:bg-blue-600 transition-colors">
                                 <i className="fas fa-calendar-check text-3xl text-blue-600 group-hover:text-white"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">My Appointments</h3>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2">{t('navigation.myAppointments')}</h3>
                             <p className="text-gray-600">
-                                View upcoming appointments, reschedule, or cancel bookings.
+                                {t('dashboard.myAppointmentsDesc')}
                             </p>
                         </div>
                     </Link>
@@ -87,9 +89,9 @@ export default function DashboardPage() {
                             <div className="w-20 h-20 bg-teal-100 rounded-full flex items-center justify-center mb-6 group-hover:bg-teal-600 transition-colors">
                                 <i className="fas fa-file-prescription text-3xl text-teal-600 group-hover:text-white"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">My Prescriptions</h3>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2">{t('navigation.myPrescriptions')}</h3>
                             <p className="text-gray-600">
-                                View prescriptions from your doctors and buy medicines.
+                                {t('dashboard.myPrescriptionsDesc')}
                             </p>
                         </div>
                     </Link>
@@ -100,9 +102,9 @@ export default function DashboardPage() {
                             <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6 group-hover:bg-purple-600 transition-colors">
                                 <i className="fas fa-pills text-3xl text-purple-600 group-hover:text-white"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">Browse Medicines</h3>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2">{t('navigation.browseMedicines')}</h3>
                             <p className="text-gray-600">
-                                Explore our catalog of Ayurvedic medicines and products.
+                                {t('dashboard.browseMedicinesDesc')}
                             </p>
                         </div>
                     </Link>
@@ -113,9 +115,9 @@ export default function DashboardPage() {
                             <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mb-6 group-hover:bg-orange-600 transition-colors">
                                 <i className="fas fa-shopping-bag text-3xl text-orange-600 group-hover:text-white"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">My Orders</h3>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2">{t('navigation.myOrders')}</h3>
                             <p className="text-gray-600">
-                                Track your medicine orders and view purchase history.
+                                {t('dashboard.myOrdersDesc')}
                             </p>
                         </div>
                     </Link>
@@ -126,12 +128,12 @@ export default function DashboardPage() {
                             <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                                 <i className="fas fa-robot text-3xl text-white"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-2">AyurBot</h3>
+                            <h3 className="text-2xl font-bold text-gray-800 mb-2">{t('navigation.ayurbot')}</h3>
                             <p className="text-gray-600">
-                                Chat with our AI assistant for personalized Ayurvedic wellness guidance.
+                                {t('dashboard.ayurbotDesc')}
                             </p>
                             <div className="mt-3 px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
-                                ✨ AI Powered
+                                ✨ {t('dashboard.aiPowered')}
                             </div>
                         </div>
                     </Link>
@@ -141,3 +143,4 @@ export default function DashboardPage() {
         </div>
     );
 }
+

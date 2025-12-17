@@ -20,9 +20,16 @@ app.use((req, res, next) => {
 });
 
 // Routes
+// Routes
+// Support both direct and gateway-proxied paths
 app.use('/auth', authRoutes);
+app.use('/api/identity/auth', authRoutes);
+
 app.use('/admin', adminRoutes);
+app.use('/api/identity/admin', adminRoutes);
+
 app.use('/practitioners', practitionerRoutes);
+app.use('/api/identity/practitioners', practitionerRoutes);
 try {
     console.log('Mounting /availability routes');
     app.use('/availability', require('./routes/availability'));

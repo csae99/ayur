@@ -3,9 +3,12 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslation } from '@/context/TranslationContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function RegisterPage() {
     const router = useRouter();
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState('patient');
     const [formData, setFormData] = useState({
         username: '',
@@ -45,10 +48,10 @@ export default function RegisterPage() {
             if (res.ok) {
                 router.push('/login');
             } else {
-                setError(data.error || 'Registration failed');
+                setError(data.error || t('common.error'));
             }
         } catch (err) {
-            setError('An error occurred. Please try again.');
+            setError(t('common.error'));
         } finally {
             setLoading(false);
         }
@@ -59,35 +62,38 @@ export default function RegisterPage() {
             {/* Left Side - Form */}
             <div className="flex-1 flex items-center justify-center p-8">
                 <div className="w-full max-w-md">
-                    <Link href="/" className="flex items-center gap-2 mb-8">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green-700 to-green-900 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                            A
-                        </div>
-                        <span className="text-2xl font-bold gradient-text">Ayurveda</span>
-                    </Link>
+                    <div className="flex items-center justify-between mb-8">
+                        <Link href="/" className="flex items-center gap-2">
+                            <div className="w-10 h-10 bg-gradient-to-br from-green-700 to-green-900 rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                                A
+                            </div>
+                            <span className="text-2xl font-bold gradient-text">Ayurveda</span>
+                        </Link>
+                        <LanguageSwitcher />
+                    </div>
 
-                    <h2 className="text-3xl font-bold mb-2">Create an account</h2>
-                    <p className="text-secondary mb-6">Join us to start your wellness journey</p>
+                    <h2 className="text-3xl font-bold mb-2">{t('auth.signUp')}</h2>
+                    <p className="text-secondary mb-6">{t('common.welcome')}</p>
 
                     {/* Tabs */}
                     <div className="flex gap-2 mb-6 p-1 bg-gray-100 rounded-lg">
                         <button
                             className={`flex-1 py-2 px-4 rounded-md font-medium transition ${activeTab === 'patient'
-                                    ? 'bg-white shadow-sm text-green-700'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                ? 'bg-white shadow-sm text-green-700'
+                                : 'text-gray-600 hover:text-gray-900'
                                 }`}
                             onClick={() => setActiveTab('patient')}
                         >
-                            Patient
+                            {t('auth.patient')}
                         </button>
                         <button
                             className={`flex-1 py-2 px-4 rounded-md font-medium transition ${activeTab === 'practitioner'
-                                    ? 'bg-white shadow-sm text-green-700'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                ? 'bg-white shadow-sm text-green-700'
+                                : 'text-gray-600 hover:text-gray-900'
                                 }`}
                             onClick={() => setActiveTab('practitioner')}
                         >
-                            Practitioner
+                            {t('auth.practitioner')}
                         </button>
                     </div>
 
@@ -100,38 +106,33 @@ export default function RegisterPage() {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="label">First Name</label>
-                                <input name="fname" onChange={handleChange} className="input" placeholder="John" required />
+                                <label className="label">{t('auth.firstName')}</label>
+                                <input name="fname" onChange={handleChange} className="input" placeholder={t('auth.firstName')} required />
                             </div>
                             <div>
-                                <label className="label">Last Name</label>
-                                <input name="lname" onChange={handleChange} className="input" placeholder="Doe" required />
+                                <label className="label">{t('auth.lastName')}</label>
+                                <input name="lname" onChange={handleChange} className="input" placeholder={t('auth.lastName')} required />
                             </div>
                         </div>
 
                         <div>
-                            <label className="label">Username</label>
-                            <input name="username" onChange={handleChange} className="input" placeholder="johndoe" required />
+                            <label className="label">{t('auth.username')}</label>
+                            <input name="username" onChange={handleChange} className="input" placeholder={t('auth.username')} required />
                         </div>
 
                         <div>
-                            <label className="label">Email</label>
-                            <input name="email" type="email" onChange={handleChange} className="input" placeholder="john@example.com" required />
+                            <label className="label">{t('auth.email')}</label>
+                            <input name="email" type="email" onChange={handleChange} className="input" placeholder={t('auth.email')} required />
                         </div>
 
                         <div>
-                            <label className="label">Password</label>
+                            <label className="label">{t('auth.password')}</label>
                             <input name="password" type="password" onChange={handleChange} className="input" placeholder="••••••••" required />
                         </div>
 
                         <div>
-                            <label className="label">Phone</label>
+                            <label className="label">{t('auth.phone')}</label>
                             <input name="phone" onChange={handleChange} className="input" placeholder="+91 98765 43210" />
-                        </div>
-
-                        <div>
-                            <label className="label">Address</label>
-                            <input name="address" onChange={handleChange} className="input" placeholder="123 Main St, City" />
                         </div>
 
                         {activeTab === 'practitioner' && (
@@ -152,14 +153,14 @@ export default function RegisterPage() {
                             disabled={loading}
                             className="btn btn-primary w-full mt-6"
                         >
-                            {loading ? 'Creating account...' : `Register as ${activeTab === 'patient' ? 'Patient' : 'Practitioner'}`}
+                            {loading ? t('common.loading') : `${t('common.register')} ${activeTab === 'patient' ? t('auth.patient') : t('auth.practitioner')}`}
                         </button>
                     </form>
 
                     <p className="text-center mt-6 text-secondary">
-                        Already have an account?{' '}
+                        {t('auth.haveAccount')}{' '}
                         <Link href="/login" className="text-green-700 font-medium hover:underline">
-                            Login here
+                            {t('common.login')}
                         </Link>
                     </p>
                 </div>

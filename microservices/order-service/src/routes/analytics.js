@@ -60,4 +60,83 @@ router.get('/stats', authMiddleware, async (req, res) => {
     }
 });
 
+// Get Practitioner Sales Analytics (Practitioner only)
+router.get('/practitioner/stats', authMiddleware, async (req, res) => {
+    try {
+        const userRole = req.user.role || req.user.type;
+        if (userRole !== 'practitioner') {
+            return res.status(403).json({ error: 'Unauthorized: Only practitioners can access sales stats' });
+        }
+
+        const practitionerId = req.user.id;
+
+        // 1. Total Revenue (Only Confirmed to Delivered: 1-6)
+        const totalRevenueResult = await Order.sum('final_amount', {
+            where: {
+                practitioner_id: practitionerId,
+                order_status: {
+                    [Sequelize.Op.between]: [1, 6] // 1=Confirmed...6=Delivered
+                }
+            }
+        });
+        const totalRevenue = totalRevenueResult || 0;
+
+        // 2. Total Orders Fulfilled (Status 1-6)
+        const totalOrders = await Order.count({
+            where: {
+                practitioner_id: practitionerId,
+                order_status: {
+                    [Sequelize.Op.between]: [1, 6]
+                }
+            }
+        });
+
+        // 3. Average Order Value
+        const avgOrderValue = totalOrders > 0 ? (totalRevenue / totalOrders).toFixed(2) : 0;
+
+        // 4. Order Status Distribution (All statuses for visibility)
+        const ordersByStatus = await Order.findAll({
+            where: { practitioner_id: practitionerId },
+            attributes: ['order_status', [Sequelize.fn('COUNT', Sequelize.col('id')), 'count']],
+            group: [Sequelize.literal('order_status')],
+            raw: true
+        });
+
+        // 5. Daily Revenue (Last 7 Days - Only Valid Sales)
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        const revenueLast7Days = await Order.findAll({
+            where: {
+                practitioner_id: practitionerId,
+                order_status: {
+                    [Sequelize.Op.between]: [1, 6]
+                },
+                order_date: {
+                    [Sequelize.Op.gte]: sevenDaysAgo
+                }
+            },
+            attributes: [
+                ['order_date', 'date'],
+                [Sequelize.fn('SUM', Sequelize.col('final_amount')), 'revenue']
+            ],
+            group: [Sequelize.literal('order_date')],
+            order: [['order_date', 'ASC']],
+            raw: true
+        });
+
+        res.json({
+            totalRevenue,
+            totalOrders,
+            avgOrderValue,
+            ordersByStatus,
+            revenueLast7Days
+        });
+
+    } catch (error) {
+        console.error('Error fetching practitioner sales stats:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;

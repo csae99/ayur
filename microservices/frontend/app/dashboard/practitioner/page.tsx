@@ -236,6 +236,22 @@ export default function PractitionerDashboard() {
                             Manage Prescriptions
                         </Link>
                     </div>
+
+                    {/* Analytics Card */}
+                    <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">Practice Analytics</h2>
+                            <div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center">
+                                <i className="fas fa-chart-line text-indigo-600"></i>
+                            </div>
+                        </div>
+                        <p className="text-gray-600 mb-6">
+                            View insights about your patients, appointments, and prescriptions.
+                        </p>
+                        <Link href="/dashboard/practitioner/analytics" className="btn btn-outline w-full text-center">
+                            View Analytics
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

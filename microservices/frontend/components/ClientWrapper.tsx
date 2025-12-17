@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { TranslationProvider } from '@/context/TranslationContext';
 
 interface Props {
     children: ReactNode;
@@ -10,7 +11,10 @@ interface Props {
 export default function ClientWrapper({ children }: Props) {
     return (
         <ErrorBoundary>
-            {children}
+            <TranslationProvider>
+                {children}
+            </TranslationProvider>
         </ErrorBoundary>
     );
 }
+
