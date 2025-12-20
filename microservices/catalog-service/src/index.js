@@ -6,6 +6,7 @@ const catalogRoutes = require('./routes/catalog');
 const adminRoutes = require('./routes/admin');
 
 const reviewRoutes = require('./routes/reviews');
+const translateRoutes = require('./routes/translate');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -20,6 +21,7 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/', translateRoutes); // Translation with Redis caching
 app.use('/', reviewRoutes); // Handles /items/:itemId/reviews directly
 app.use('/', catalogRoutes);
 app.use('/admin', adminRoutes);

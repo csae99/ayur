@@ -7,6 +7,7 @@ import StarRating from '@/components/reviews/StarRating';
 import ReviewList from '@/components/reviews/ReviewList';
 import ReviewForm from '@/components/reviews/ReviewForm';
 import WishlistButton from '@/components/wishlist/WishlistButton';
+import TranslatedText from '@/components/TranslatedText';
 
 interface Item {
     id: number;
@@ -98,7 +99,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch('http://localhost/api/orders/orders', {
+            const response = await fetch('http://localhost/api/orders/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -106,7 +107,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
                 },
                 body: JSON.stringify({
                     item_id: item.id,
-                    order_quantity: 1
+                    quantity: 1
                 })
             });
 
@@ -195,7 +196,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
-                                {item.item_cat}
+                                <TranslatedText text={item.item_cat} />
                             </span>
                             {item.item_quantity > 0 ? (
                                 <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
@@ -211,7 +212,9 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
                             <WishlistButton itemId={item.id} className="bg-white p-2 rounded-full shadow-md hover:scale-110 transition-transform" />
                         </div>
 
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">{item.item_title}</h1>
+                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                            <TranslatedText text={item.item_title} />
+                        </h1>
 
                         {/* Rating Summary */}
                         <div className="flex items-center gap-2 mb-6">
@@ -226,7 +229,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
 
                         <div className="prose prose-green max-w-none text-gray-600 mb-8">
                             <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
-                            <p>{item.item_details}</p>
+                            <p><TranslatedText text={item.item_details} /></p>
                         </div>
 
                         <button

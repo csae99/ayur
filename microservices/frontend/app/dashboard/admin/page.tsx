@@ -108,10 +108,15 @@ export default function AdminDashboard() {
                                 <Link href="/dashboard/admin/coupons" className="text-white hover:text-indigo-200 transition-colors">
                                     Coupons
                                 </Link>
+                                <Link href="/dashboard/admin/admins" className="text-white hover:text-indigo-200 transition-colors">
+                                    Admins
+                                </Link>
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            <span className="text-white">Admin: {user?.username}</span>
+                            <Link href="/dashboard/admin/profile" className="text-white hover:text-indigo-200">
+                                <i className="fas fa-user-circle mr-1"></i> {user?.username}
+                            </Link>
                             <button onClick={handleLogout} className="btn btn-outline text-white border-white hover:bg-white hover:text-indigo-700">
                                 Logout
                             </button>
@@ -260,15 +265,15 @@ export default function AdminDashboard() {
                 {/* Quick Actions */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
                     <h2 className="text-2xl font-bold text-gray-800 mb-6">Quick Actions</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <Link href="/dashboard/admin/practitioners?status=pending" className="btn btn-primary text-center">
                             <i className="fas fa-user-check mr-2"></i> Verify Practitioners
                         </Link>
                         <Link href="/dashboard/admin/medicines?status=Pending" className="btn btn-primary text-center">
                             <i className="fa fa-clipboard-check mr-2"></i> Review Medicines
                         </Link>
-                        <Link href="/dashboard/admin/patients" className="btn btn-primary text-center">
-                            <i className="fas fa-users mr-2"></i> View All Patients
+                        <Link href="/dashboard/admin/admins" className="btn btn-primary text-center">
+                            <i className="fas fa-user-shield mr-2"></i> Manage Admins
                         </Link>
                         <Link href="/dashboard/admin/analytics" className="btn btn-outline text-center border-indigo-600 text-indigo-700 hover:bg-indigo-50">
                             <i className="fas fa-chart-line mr-2"></i> View Analytics

@@ -143,7 +143,12 @@ router.post('/', verifyToken, async (req, res) => {
                 user_id: userId,
                 item_id: item.item_id,
                 order_quantity: item.quantity,
-                order_status: 1, // 1 = Confirmed
+                order_quantity: item.quantity,
+                // If payment method is COD, confirm immediately (1). Else pending (0).
+                order_status: (payment_method === 'cod') ? 1 : 0,
+                razorpay_order_id: null,
+                razorpay_payment_id: null,
+                payment_method: payment_method, // Store explicit method
                 address_id: address_id,
                 estimated_delivery: deliveryDate,
                 coupon_code: coupon_code || null,

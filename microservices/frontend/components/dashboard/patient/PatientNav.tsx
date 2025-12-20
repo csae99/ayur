@@ -45,6 +45,9 @@ export default function PatientNav({ username, onLogout }: PatientNavProps) {
                         <Link href="/dashboard/patient/cart" className="btn btn-outline">
                             <i className="fas fa-shopping-cart mr-2"></i> {t('navigation.cart')}
                         </Link>
+                        <Link href="/dashboard/patient/profile" className="btn btn-outline">
+                            <i className="fas fa-user-circle mr-2"></i> Profile
+                        </Link>
                         <LanguageSwitcher />
                         <button onClick={onLogout} className="btn btn-secondary">
                             {t('common.logout')}

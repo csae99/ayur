@@ -12,6 +12,7 @@ export default function MyOrdersPage() {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
     const [displayCount, setDisplayCount] = useState(5);
+    const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -90,6 +91,93 @@ export default function MyOrdersPage() {
         }
     };
 
+    const handleCompletePayment = async (orderId: number) => {
+        const token = localStorage.getItem('token');
+        const order = orders.find(o => o.id === orderId);
+        if (!order) return;
+
+        try {
+            // Get Razorpay config
+            const configRes = await fetch('/api/orders/payments/config');
+            const config = await configRes.json();
+
+            // Calculate amount (item price * quantity)
+            const amount = order.item ? order.item.item_price * order.order_quantity : 0;
+
+            // Create Razorpay order
+            const rzpOrderRes = await fetch('/api/orders/payments/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    amount: amount,
+                    currency: 'INR',
+                    receipt: `retry_order_${orderId}`
+                })
+            });
+
+            const rzpOrder = await rzpOrderRes.json();
+
+            const options = {
+                key: config.key_id,
+                amount: rzpOrder.amount,
+                currency: rzpOrder.currency,
+                name: 'AyurCare',
+                description: `Payment for Order #${orderId}`,
+                image: '/images/Medicine.png',
+                order_id: rzpOrder.id,
+                handler: async function (response: any) {
+                    try {
+                        const verifyRes = await fetch('/api/orders/payments/verify', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                order_ids: [orderId]
+                            })
+                        });
+
+                        if (verifyRes.ok) {
+                            alert('Payment successful!');
+                            // Update local state to confirmed
+                            setOrders(orders.map(o =>
+                                o.id === orderId ? { ...o, order_status: 1 } : o
+                            ));
+                        } else {
+                            alert('Payment verification failed');
+                        }
+                    } catch (e) {
+                        alert('Payment verification failed');
+                    }
+                },
+                prefill: {
+                    name: user?.full_name || '',
+                    email: user?.email || '',
+                    contact: user?.phone || ''
+                },
+                theme: {
+                    color: '#15803d'
+                }
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function (response: any) {
+                alert(response.error.description);
+            });
+            rzp.open();
+        } catch (error) {
+            console.error('Error initiating payment:', error);
+            alert('Failed to initiate payment');
+        }
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
             <PatientNav username={user?.username} onLogout={handleLogout} />
@@ -107,25 +195,96 @@ export default function MyOrdersPage() {
                         <Link href="/dashboard/patient/medicines" className="btn btn-primary">Browse Medicines</Link>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {orders.slice(0, displayCount).map((order) => (
-                            <OrderCard
-                                key={order.id}
-                                order={order}
-                                onCancel={handleCancelOrder}
-                            />
-                        ))}
-                        {displayCount < orders.length && (
-                            <div className="flex justify-center mt-4">
-                                <button
-                                    onClick={() => setDisplayCount(prev => prev + 5)}
-                                    className="btn btn-primary"
-                                >
-                                    Load More
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                    <>
+                        {/* Filter Tabs */}
+                        <div className="flex flex-wrap gap-2 mb-6">
+                            <button
+                                onClick={() => { setStatusFilter('all'); setDisplayCount(5); }}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'all'
+                                        ? 'bg-green-600 text-white'
+                                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                    }`}
+                            >
+                                All Orders ({orders.length})
+                            </button>
+                            <button
+                                onClick={() => { setStatusFilter('pending'); setDisplayCount(5); }}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'pending'
+                                        ? 'bg-yellow-500 text-white'
+                                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                    }`}
+                            >
+                                Pending Payment ({orders.filter(o => o.order_status === 0).length})
+                            </button>
+                            <button
+                                onClick={() => { setStatusFilter('confirmed'); setDisplayCount(5); }}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'confirmed'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                    }`}
+                            >
+                                Confirmed ({orders.filter(o => o.order_status >= 1 && o.order_status <= 6).length})
+                            </button>
+                            <button
+                                onClick={() => { setStatusFilter('cancelled'); setDisplayCount(5); }}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'cancelled'
+                                        ? 'bg-red-600 text-white'
+                                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                    }`}
+                            >
+                                Cancelled ({orders.filter(o => o.order_status === 7).length})
+                            </button>
+                        </div>
+
+                        {/* Filtered Orders */}
+                        <div className="space-y-4">
+                            {orders
+                                .filter(order => {
+                                    if (statusFilter === 'pending') return order.order_status === 0;
+                                    if (statusFilter === 'confirmed') return order.order_status >= 1 && order.order_status <= 6;
+                                    if (statusFilter === 'cancelled') return order.order_status === 7;
+                                    return true; // 'all'
+                                })
+                                .slice(0, displayCount)
+                                .map((order) => (
+                                    <OrderCard
+                                        key={order.id}
+                                        order={order}
+                                        onCancel={handleCancelOrder}
+                                        onCompletePayment={handleCompletePayment}
+                                    />
+                                ))
+                            }
+                            {(() => {
+                                const filteredOrders = orders.filter(order => {
+                                    if (statusFilter === 'pending') return order.order_status === 0;
+                                    if (statusFilter === 'confirmed') return order.order_status >= 1 && order.order_status <= 6;
+                                    if (statusFilter === 'cancelled') return order.order_status === 7;
+                                    return true;
+                                });
+                                if (filteredOrders.length === 0) {
+                                    return (
+                                        <div className="text-center py-10 bg-white rounded-xl shadow-sm">
+                                            <p className="text-gray-500">No orders found in this category.</p>
+                                        </div>
+                                    );
+                                }
+                                if (displayCount < filteredOrders.length) {
+                                    return (
+                                        <div className="flex justify-center mt-4">
+                                            <button
+                                                onClick={() => setDisplayCount(prev => prev + 5)}
+                                                className="btn btn-primary"
+                                            >
+                                                Load More
+                                            </button>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            })()}
+                        </div>
+                    </>
                 )}
             </div>
         </div>

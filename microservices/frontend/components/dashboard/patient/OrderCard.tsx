@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import OrderTimeline from './OrderTimeline';
+import TranslatedText from '@/components/TranslatedText';
 
 export interface OrderItem {
     id: number;
@@ -32,10 +33,13 @@ export interface OrderItem {
 interface OrderCardProps {
     order: OrderItem;
     onCancel: (orderId: number) => void;
+    onCompletePayment?: (orderId: number) => void;
 }
 
-export default function OrderCard({ order, onCancel }: OrderCardProps) {
+export default function OrderCard({ order, onCancel, onCompletePayment }: OrderCardProps) {
     const [showTimeline, setShowTimeline] = useState(false);
+
+    const isPendingPayment = order.order_status === 0;
 
     const getStatusBadge = (status: number) => {
         const statusConfig: Record<number, { label: string; color: string }> = {
@@ -55,14 +59,14 @@ export default function OrderCard({ order, onCancel }: OrderCardProps) {
 
         return (
             <span className={`text-xs font-medium px-3 py-1 rounded-full bg-${config.color}-100 text-${config.color}-700`}>
-                {config.label}
+                <TranslatedText text={config.label} />
             </span>
         );
     };
 
     const canCancel = () => {
-        // Can cancel only if status <= 3 (Packed)
-        return order.order_status > 0 && order.order_status <= 3;
+        // Can cancel if status is 0 (Pending Payment) or <= 3 (Packed)
+        return order.order_status >= 0 && order.order_status <= 3;
     };
 
     return (
@@ -90,7 +94,7 @@ export default function OrderCard({ order, onCancel }: OrderCardProps) {
                     <div className="flex items-start justify-between mb-2">
                         <div>
                             <h3 className="text-xl font-semibold text-primary">
-                                {order.item?.item_title || `Item #${order.item_id}`}
+                                <TranslatedText text={order.item?.item_title || `Item #${order.item_id}`} />
                             </h3>
                             <p className="text-sm text-secondary">
                                 Order #{order.id} • {new Date(order.order_date).toLocaleDateString()}
@@ -117,6 +121,14 @@ export default function OrderCard({ order, onCancel }: OrderCardProps) {
                             )}
                         </div>
                         <div className="flex gap-3">
+                            {isPendingPayment && onCompletePayment && (
+                                <button
+                                    onClick={() => onCompletePayment(order.id)}
+                                    className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 text-sm font-medium transition-colors"
+                                >
+                                    Complete Payment
+                                </button>
+                            )}
                             {canCancel() && (
                                 <button
                                     onClick={() => onCancel(order.id)}

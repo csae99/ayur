@@ -98,6 +98,9 @@ export default function PractitionerDashboard() {
                             <span className="text-sm text-secondary">
                                 Dr. <span className="font-semibold text-primary">{practitioner?.fname} {practitioner?.lname}</span>
                             </span>
+                            <Link href="/dashboard/practitioner/profile" className="btn btn-outline">
+                                <i className="fas fa-user-circle mr-2"></i> Profile
+                            </Link>
                             <button onClick={handleLogout} className="btn btn-secondary">
                                 Logout
                             </button>

@@ -42,6 +42,10 @@ const wishlistRoutes = require('./routes/wishlist');
 app.use('/wishlist', wishlistRoutes);
 app.use('/api/orders/wishlist', wishlistRoutes);
 
+const paymentRoutes = require('./routes/payments');
+app.use('/payments', paymentRoutes);
+app.use('/api/orders/payments', paymentRoutes);
+
 // Orders routes (mounted at root as default handler, must be last)
 // Also support explicit paths
 app.use('/orders', orderRoutes);
@@ -56,8 +60,8 @@ const connectWithRetry = async () => {
             await sequelize.authenticate();
             console.log('Database connected...');
 
-            // Sync models with database
-            await sequelize.sync({ alter: true });
+            // Sync models with database (force: false to avoid dropping tables)
+            await sequelize.sync({ force: false });
             console.log('Database models synced...');
 
             app.listen(PORT, () => {

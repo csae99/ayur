@@ -25,11 +25,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    # volumes removed - using built image for production
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
     networks:
       - ayur-network
 
@@ -58,8 +56,11 @@ services:
       - DB_USER=user
       - DB_PASSWORD=password
       - JWT_SECRET=ayur_super_secret_key_2025
+      - REDIS_URL=redis://redis:6379
+      - LIBRETRANSLATE_URL=http://libretranslate:5000
     depends_on:
       - postgres-db
+      - redis
     networks:
       - ayur-network
 
@@ -73,6 +74,8 @@ services:
       - DB_USER=user
       - DB_PASSWORD=password
       - JWT_SECRET=ayur_super_secret_key_2025
+      - RAZORPAY_KEY_ID=rzp_test_RtYXaPIq6upWnh
+      - RAZORPAY_KEY_SECRET=qR11lfeylvfz0y3Mm3pSd9v8
     depends_on:
       - postgres-db
     networks:
@@ -131,6 +134,24 @@ services:
     networks:
       - ayur-network
 
+  # LibreTranslate Service (Free Translation API)
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    environment:
+      - LT_LOAD_ONLY=en,hi,es,fr,zh
+    ports:
+      - "5000:5000"
+    networks:
+      - ayur-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - ayur-network
+
 networks:
   ayur-network:
     driver: bridge
@@ -138,3 +159,5 @@ networks:
 volumes:
   postgres_data:
   mongo_data:
+
+

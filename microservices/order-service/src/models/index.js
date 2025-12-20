@@ -19,7 +19,12 @@ const Order = sequelize.define('Order', {
     practitioner_id: { type: DataTypes.INTEGER, allowNull: true, comment: 'ID of the practitioner/pharmacy who sold the item' },
     coupon_code: { type: DataTypes.STRING, allowNull: true },
     discount_amount: { type: DataTypes.FLOAT, defaultValue: 0 },
-    final_amount: { type: DataTypes.FLOAT }
+    final_amount: { type: DataTypes.FLOAT },
+    // Payment Fields
+    razorpay_order_id: { type: DataTypes.STRING },
+    razorpay_payment_id: { type: DataTypes.STRING },
+    razorpay_signature: { type: DataTypes.STRING },
+    payment_method: { type: DataTypes.STRING, comment: 'UPI, Card, Netbanking' }
 }, {
     tableName: 'orders',
     timestamps: false,

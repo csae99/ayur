@@ -48,3 +48,8 @@ microservices/*/.next/
 # Database data (if mounted locally)
 postgres_data/
 mongo_data/
+
+# PWA
+public/sw.js
+public/workbox-*.js
+public/worker-*.js

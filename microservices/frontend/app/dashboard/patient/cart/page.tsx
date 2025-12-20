@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import PatientNav from '@/components/dashboard/patient/PatientNav';
+import TranslatedText from '@/components/TranslatedText';
 
 interface Product {
     id: number;
@@ -284,15 +285,15 @@ export default function CartPage() {
                                                 {/* Product Details */}
                                                 <div className="flex-1 min-w-0">
                                                     <h3 className="font-semibold text-lg text-gray-800 mb-1">
-                                                        {item.product?.item_title || `Item #${item.item_id}`}
+                                                        <TranslatedText text={item.product?.item_title || `Item #${item.item_id}`} />
                                                     </h3>
                                                     {item.product?.item_cat && (
                                                         <span className="inline-block text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mb-2">
-                                                            {item.product.item_cat}
+                                                            <TranslatedText text={item.product.item_cat} />
                                                         </span>
                                                     )}
                                                     <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-                                                        {item.product?.item_description || 'No description available'}
+                                                        <TranslatedText text={item.product?.item_description || 'No description available'} />
                                                     </p>
                                                     <div className="flex items-center gap-4">
                                                         <span className="text-xl font-bold text-green-700">

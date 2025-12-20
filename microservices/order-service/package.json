@@ -16,6 +16,7 @@
         "node-fetch": "^2.7.0",
         "pg": "^8.11.3",
         "pg-hstore": "^2.3.4",
+        "razorpay": "^2.9.2",
         "sequelize": "^6.35.1"
     },
     "devDependencies": {

@@ -193,4 +193,130 @@ router.get('/practitioner/:username', async (req, res) => {
     }
 });
 
+// ==================== PROFILE MANAGEMENT ====================
+
+// Middleware to get current user from token
+const getCurrentUser = async (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        req.currentUser = decoded;
+        next();
+    } catch (error) {
+        res.status(401).json({ error: 'Invalid token' });
+    }
+};
+
+// GET /profile - Get current user's full profile
+router.get('/profile', getCurrentUser, async (req, res) => {
+    try {
+        const { id, type } = req.currentUser;
+        let user;
+
+        if (type === 'patient') {
+            user = await Patient.findByPk(id);
+        } else if (type === 'practitioner') {
+            user = await Practitioner.findByPk(id);
+        } else if (type === 'admin') {
+            user = await Admin.findByPk(id);
+        }
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const { password, ...userData } = user.toJSON();
+        userData.role = type;
+        res.json(userData);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// PUT /profile - Update current user's profile
+router.put('/profile', getCurrentUser, async (req, res) => {
+    try {
+        const { id, type } = req.currentUser;
+        let user;
+        let allowedFields;
+
+        if (type === 'patient') {
+            user = await Patient.findByPk(id);
+            allowedFields = ['fname', 'lname', 'phone', 'address', 'email', 'profile'];
+        } else if (type === 'practitioner') {
+            user = await Practitioner.findByPk(id);
+            allowedFields = ['fname', 'lname', 'phone', 'office_name', 'address', 'bio', 'facebook', 'twitter', 'email', 'profile'];
+        } else if (type === 'admin') {
+            user = await Admin.findByPk(id);
+            allowedFields = ['firstname', 'lastname'];
+        }
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Filter to only allowed fields
+        const updates = {};
+        for (const field of allowedFields) {
+            if (req.body[field] !== undefined) {
+                updates[field] = req.body[field];
+            }
+        }
+
+        await user.update(updates);
+
+        const { password, ...userData } = user.toJSON();
+        userData.role = type;
+        res.json({ message: 'Profile updated successfully', user: userData });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// PUT /profile/password - Change password
+router.put('/profile/password', getCurrentUser, async (req, res) => {
+    try {
+        const { id, type } = req.currentUser;
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ error: 'Current password and new password are required' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ error: 'New password must be at least 6 characters' });
+        }
+
+        let user;
+        if (type === 'patient') {
+            user = await Patient.findByPk(id);
+        } else if (type === 'practitioner') {
+            user = await Practitioner.findByPk(id);
+        } else if (type === 'admin') {
+            user = await Admin.findByPk(id);
+        }
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Verify current password
+        const isValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isValid) {
+            return res.status(401).json({ error: 'Current password is incorrect' });
+        }
+
+        // Hash and update new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await user.update({ password: hashedPassword });
+
+        res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
+

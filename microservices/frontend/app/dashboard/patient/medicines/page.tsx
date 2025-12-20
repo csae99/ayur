@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import PatientNav from '@/components/dashboard/patient/PatientNav';
 import FilterSidebar from '@/components/catalog/FilterSidebar';
 import WishlistButton from '@/components/wishlist/WishlistButton';
+import TranslatedText from '@/components/TranslatedText';
 
 interface Medicine {
     id: number;
@@ -105,7 +106,8 @@ export default function BrowseMedicinesPage() {
         setAddingToCart(medicine.id);
 
         try {
-            const response = await fetch('http://localhost/api/orders/orders', {
+            console.log('Adding to cart...', 'http://localhost/api/orders/cart/add', { item_id: medicine.id, quantity: 1 });
+            const response = await fetch('http://localhost/api/orders/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -113,7 +115,7 @@ export default function BrowseMedicinesPage() {
                 },
                 body: JSON.stringify({
                     item_id: medicine.id,
-                    order_quantity: 1
+                    quantity: 1
                 })
             });
 
@@ -239,15 +241,17 @@ export default function BrowseMedicinesPage() {
                                         </div>
                                         <div className="p-6 flex-1 flex flex-col">
                                             <div className="flex justify-between items-start mb-2">
-                                                <h3 className="text-xl font-bold text-gray-800 group-hover:text-green-700 transition">{medicine.item_title}</h3>
+                                                <h3 className="text-xl font-bold text-gray-800 group-hover:text-green-700 transition">
+                                                    <TranslatedText text={medicine.item_title} />
+                                                </h3>
                                             </div>
                                             <div className="mb-3">
                                                 <span className="text-xs font-medium text-green-700 bg-green-100 px-2 py-1 rounded-full">
-                                                    {medicine.item_cat}
+                                                    <TranslatedText text={medicine.item_cat} />
                                                 </span>
                                             </div>
                                             <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
-                                                {medicine.item_details || medicine.item_description}
+                                                <TranslatedText text={medicine.item_details || medicine.item_description} />
                                             </p>
 
                                             <div className="pt-4 border-t border-gray-100">
