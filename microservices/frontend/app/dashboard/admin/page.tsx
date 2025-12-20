@@ -96,17 +96,20 @@ export default function AdminDashboard() {
                                 <Link href="/dashboard/admin" className="text-white hover:text-indigo-200 transition-colors">
                                     Dashboard
                                 </Link>
+                                <Link href="/dashboard/admin/orders" className="text-white hover:text-indigo-200 transition-colors">
+                                    Orders
+                                </Link>
+                                <Link href="/dashboard/admin/inventory" className="text-white hover:text-indigo-200 transition-colors">
+                                    Inventory
+                                </Link>
+                                <Link href="/dashboard/admin/reports" className="text-white hover:text-indigo-200 transition-colors">
+                                    Reports
+                                </Link>
                                 <Link href="/dashboard/admin/practitioners" className="text-white hover:text-indigo-200 transition-colors">
                                     Practitioners
                                 </Link>
                                 <Link href="/dashboard/admin/medicines" className="text-white hover:text-indigo-200 transition-colors">
                                     Medicines
-                                </Link>
-                                <Link href="/dashboard/admin/patients" className="text-white hover:text-indigo-200 transition-colors">
-                                    Patients
-                                </Link>
-                                <Link href="/dashboard/admin/coupons" className="text-white hover:text-indigo-200 transition-colors">
-                                    Coupons
                                 </Link>
                                 <Link href="/dashboard/admin/admins" className="text-white hover:text-indigo-200 transition-colors">
                                     Admins

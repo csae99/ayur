@@ -90,6 +90,17 @@ services:
       - ./notification-service/src:/app/src
     ports:
       - "3004:3004"
+    environment:
+      - PORT=3004
+      # Email (Gmail SMTP) - Add your Gmail credentials below
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=
+      - SMTP_PASS=
+      # SMS (Twilio) - Add your Twilio credentials below
+      - TWILIO_ACCOUNT_SID=
+      - TWILIO_AUTH_TOKEN=
+      - TWILIO_PHONE_NUMBER=
     networks:
       - ayur-network
 
@@ -118,7 +129,7 @@ services:
       - ./identity-service/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./catalog-service/migrations/init.sql:/docker-entrypoint-initdb.d/catalog_init.sql
       - ./order-service/migrations/init.sql:/docker-entrypoint-initdb.d/order_init.sql
-      - ./backups/postgres_backup_20251130_233427_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
+      - ./backups/postgres_backup_20251220_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
       - ./backups:/backups # Mount backups directory for easy access
     networks:
       - ayur-network

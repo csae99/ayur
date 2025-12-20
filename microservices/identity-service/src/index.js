@@ -30,6 +30,12 @@ app.use('/api/identity/admin', adminRoutes);
 
 app.use('/practitioners', practitionerRoutes);
 app.use('/api/identity/practitioners', practitionerRoutes);
+
+// Internal route for fetching patient details (used by other services)
+const patientRoutes = require('./routes/patients');
+app.use('/patients', patientRoutes);
+app.use('/api/identity/patients', patientRoutes);
+
 try {
     console.log('Mounting /availability routes');
     app.use('/availability', require('./routes/availability'));

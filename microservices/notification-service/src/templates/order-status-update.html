@@ -3,95 +3,391 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
+            background: #f4f4f4;
+        }
+
+        .container {
             max-width: 600px;
             margin: 0 auto;
-            padding: 20px;
+            background: #ffffff;
         }
 
         .header {
-            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%);
             color: white;
-            padding: 30px;
+            padding: 40px 30px;
             text-align: center;
-            border-radius: 10px 10px 0 0;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .logo span {
+            color: #7dd3fc;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .status-banner {
+            background: linear-gradient(135deg, {
+                    {
+                    statusColor
+                }
+            }
+
+            0%, {
+                {
+                statusColorDark
+            }
+        }
+
+        100%);
+        color: white;
+        padding: 25px;
+        text-align: center;
+        }
+
+        .status-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .status-text {
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .content {
-            background: #f8f9fa;
             padding: 30px;
-            border-radius: 0 0 10px 10px;
         }
 
-        .status-badge {
-            display: inline-block;
-            background: #0891b2;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin: 10px 0;
+        .greeting {
+            font-size: 18px;
+            color: #1e3a5f;
+            margin-bottom: 20px;
         }
 
-        .timeline {
-            background: white;
+        .message-box {
+            background: #f8fafc;
+            border-left: 4px solid #3d7ab5;
             padding: 20px;
-            border-radius: 8px;
             margin: 20px 0;
+            border-radius: 0 8px 8px 0;
         }
 
-        .button {
-            display: inline-block;
-            background: #0891b2;
+        .order-details {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 25px 0;
+        }
+
+        .order-header {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .order-header h3 {
+            color: #1e3a5f;
+            font-size: 16px;
+        }
+
+        .order-body {
+            padding: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .tracking-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px dashed #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .tracking-label {
+            font-size: 12px;
+            color: #92400e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .tracking-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #78350f;
+            letter-spacing: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .progress-container {
+            margin: 30px 0;
+        }
+
+        .progress-track {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .progress-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: 12px 30px;
+        }
+
+        .step-circle.current {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+        }
+
+        .step-label {
+            font-size: 11px;
+            color: #64748b;
+        }
+
+        .step-label.active {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .step-label.current {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .cta-button {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #1e3a5f 0%, #3d7ab5 100%);
+            color: white;
             text-decoration: none;
-            border-radius: 6px;
-            margin: 20px 0;
+            padding: 16px 30px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 16px;
+            margin: 25px 0;
+        }
+
+        .help-section {
+            background: #f8fafc;
+            padding: 25px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .help-section p {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .help-section a {
+            color: #3d7ab5;
+            text-decoration: none;
+            font-weight: 600;
         }
 
         .footer {
+            background: #1e3a5f;
+            color: #94a3b8;
+            padding: 30px;
             text-align: center;
-            color: #6b7280;
             font-size: 12px;
-            margin-top: 30px;
+        }
+
+        .footer-logo {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .social-links {
+            margin: 20px 0;
+        }
+
+        .social-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+
+        .footer-text {
+            margin-top: 20px;
+            line-height: 1.8;
         }
     </style>
 </head>
 
 <body>
-    <div class="header">
-        <h1>📦 Order Status Update</h1>
-        <div class="status-badge">{{statusName}}</div>
-    </div>
-    <div class="content">
-        <p>Dear {{customerName}},</p>
-        <p>Great news! Your order #{{orderNumber}} has been updated.</p>
-
-        <div class="timeline">
-            <h3>Current Status: {{statusName}}</h3>
-            <p>{{statusMessage}}</p>
-            {{#trackingNumber}}
-            <p><strong>Tracking Number:</strong> {{trackingNumber}}</p>
-            {{/trackingNumber}}
-            {{#estimatedDelivery}}
-            <p><strong>Estimated Delivery:</strong> {{estimatedDelivery}}</p>
-            {{/estimatedDelivery}}
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🌿 <span>Ayurveda</span> Platform</div>
+            <h1>Order Status Update</h1>
         </div>
 
-        <p>Track your order in real-time from your dashboard.</p>
+        <!-- Status Banner -->
+        <div class="status-banner"
+            style="background: linear-gradient(135deg, {{statusColor}} 0%, {{statusColorDark}} 100%);">
+            <div class="status-icon">{{statusIcon}}</div>
+            <div class="status-text">{{statusName}}</div>
+        </div>
 
-        <center>
-            <a href="{{trackingUrl}}" class="button">View Order Details</a>
-        </center>
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">Hello {{customerName}},</p>
 
+            <div class="message-box">
+                <p>{{statusMessage}}</p>
+            </div>
+
+            <!-- Order Details -->
+            <div class="order-details">
+                <div class="order-header">
+                    <h3>📦 Order Details</h3>
+                </div>
+                <div class="order-body">
+                    <div class="detail-row">
+                        <span class="detail-label">Order Number</span>
+                        <span class="detail-value">#{{orderNumber}}</span>
+                    </div>
+                    {{#itemName}}
+                    <div class="detail-row">
+                        <span class="detail-label">Item</span>
+                        <span class="detail-value">{{itemName}}</span>
+                    </div>
+                    {{/itemName}}
+                    {{#estimatedDelivery}}
+                    <div class="detail-row">
+                        <span class="detail-label">Expected Delivery</span>
+                        <span class="detail-value">{{estimatedDelivery}}</span>
+                    </div>
+                    {{/estimatedDelivery}}
+                </div>
+            </div>
+
+            <!-- Tracking Number (if shipped) -->
+            {{#trackingNumber}}
+            <div class="tracking-box">
+                <div class="tracking-label">Your Tracking Number</div>
+                <div class="tracking-number">{{trackingNumber}}</div>
+            </div>
+            {{/trackingNumber}}
+
+            <!-- Progress Timeline -->
+            <div class="progress-container">
+                <div class="progress-track">
+                    <div class="progress-step">
+                        <div class="step-circle {{confirmedClass}}">{{confirmedIcon}}</div>
+                        <div class="step-label {{confirmedClass}}">Confirmed</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-circle {{processingClass}}">{{processingIcon}}</div>
+                        <div class="step-label {{processingClass}}">Processing</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-circle {{shippedClass}}">{{shippedIcon}}</div>
+                        <div class="step-label {{shippedClass}}">Shipped</div>
+                    </div>
+                    <div class="progress-step">
+                        <div class="step-circle {{deliveredClass}}">{{deliveredIcon}}</div>
+                        <div class="step-label {{deliveredClass}}">Delivered</div>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{{trackingUrl}}" class="cta-button">Track Your Order →</a>
+        </div>
+
+        <!-- Help Section -->
+        <div class="help-section">
+            <p>Need help with your order?</p>
+            <a href="mailto:support@ayurveda.com">Contact Support</a>
+        </div>
+
+        <!-- Footer -->
         <div class="footer">
-            <p>Questions? Contact us at support@ayurveda.com</p>
-            <p>&copy; 2025 Ayurveda Platform. All rights reserved.</p>
+            <div class="footer-logo">🌿 Ayurveda Platform</div>
+            <div class="social-links">
+                <a href="#">Facebook</a> |
+                <a href="#">Twitter</a> |
+                <a href="#">Instagram</a>
+            </div>
+            <div class="footer-text">
+                <p>This email was sent regarding your order on Ayurveda Platform.</p>
+                <p>© 2025 Ayurveda Platform. All rights reserved.</p>
+            </div>
         </div>
     </div>
 </body>

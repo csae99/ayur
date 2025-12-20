@@ -51,6 +51,11 @@ app.use('/api/orders/payments', paymentRoutes);
 app.use('/orders', orderRoutes);
 app.use('/api/orders', orderRoutes);
 
+// Admin routes
+const adminRoutes = require('./routes/admin');
+app.use('/admin', adminRoutes);
+app.use('/api/orders/admin', adminRoutes);
+
 // Database Connection and Server Start
 const connectWithRetry = async () => {
     const maxRetries = 10;
