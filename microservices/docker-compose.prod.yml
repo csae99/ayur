@@ -116,7 +116,7 @@ services:
       - ./identity-service/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./catalog-service/migrations/init.sql:/docker-entrypoint-initdb.d/catalog_init.sql
       - ./order-service/migrations/init.sql:/docker-entrypoint-initdb.d/order_init.sql
-      - ./backups/postgres_backup_20251220_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
+      - ./backups/postgres_backup_20251221_utf8.sql:/docker-entrypoint-initdb.d/99_restore.sql
       - ./backups:/backups
     networks:
       - ayur-network
