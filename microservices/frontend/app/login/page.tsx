@@ -80,7 +80,6 @@ export default function LoginPage() {
                             >
                                 <option value="patient">{t('auth.patient')}</option>
                                 <option value="practitioner">{t('auth.practitioner')}</option>
-                                <option value="admin">{t('auth.admin')}</option>
                             </select>
                         </div>
 
