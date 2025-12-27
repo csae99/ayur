@@ -9,7 +9,7 @@ router.get('/items', async (req, res) => {
     try {
         const { q, category, min_price, max_price } = req.query;
         const { Op } = require('sequelize');
-        const where = {};
+        const where = { status: 'Approved' };
 
         if (q) {
             // Case-insensitive search for title
@@ -48,7 +48,7 @@ router.get('/items/practitioner/:username', async (req, res) => {
 router.get('/items/:id', async (req, res) => {
     try {
         const item = await Item.findByPk(req.params.id);
-        if (!item) return res.status(404).json({ error: 'Item not found' });
+        if (!item || item.status !== 'Approved') return res.status(404).json({ error: 'Item not found' });
         res.json(item);
     } catch (error) {
         res.status(500).json({ error: error.message });

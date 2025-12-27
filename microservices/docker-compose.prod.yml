@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # API Gateway
   api-gateway:
-    image: shubham554/ayur-api-gateway:latest
+    image: shubham554/ayur-api-gateway:dev
     build: ./api-gateway
     ports:
       - "80:80"
@@ -19,7 +19,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:v1
+    image: shubham554/ayur-frontend:dev
     build: ./frontend
     ports:
       - "3000:3000"
@@ -28,7 +28,7 @@ services:
 
   # Identity Service (Node.js)
   identity-service:
-    image: shubham554/ayur-identity-service:latest
+    image: shubham554/ayur-identity-service:dev
     build: ./identity-service
     environment:
       - PORT=3001
@@ -43,7 +43,7 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:latest
+    image: shubham554/ayur-catalog-service:dev
     build: ./catalog-service
     environment:
       - PORT=3002
@@ -61,7 +61,7 @@ services:
 
   # Order Service (Node.js)
   order-service:
-    image: shubham554/ayur-order-service:latest
+    image: shubham554/ayur-order-service:dev
     build: ./order-service
     environment:
       - PORT=3003
@@ -78,7 +78,7 @@ services:
 
   # Notification Service (Node.js)
   notification-service:
-    image: shubham554/ayur-notification-service:latest
+    image: shubham554/ayur-notification-service:dev
     build: ./notification-service
     container_name: microservices-notification-service-1
     environment:
@@ -93,7 +93,7 @@ services:
 
   # AyurBot Service (Python)
   ayurbot-service:
-    image: shubham554/ayur-ayurbot-service:latest
+    image: shubham554/ayur-ayurbot-service:dev
     build: ./ayurbot-service
     environment:
       - PORT=8000

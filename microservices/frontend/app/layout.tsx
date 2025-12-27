@@ -1,5 +1,7 @@
 import './globals.css'
 import ClientWrapper from '@/components/ClientWrapper'
+import ThemeProvider from '@/components/ThemeProvider'
+
 import type { Metadata } from 'next' // Assuming Metadata type is from 'next'
 
 export const metadata: Metadata = {
@@ -26,8 +28,13 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
         <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       </head>
-      <body>
-        <ClientWrapper>{children}</ClientWrapper>
+      <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
+        <ClientWrapper>
+          <ThemeProvider>
+
+            {children}
+          </ThemeProvider>
+        </ClientWrapper>
       </body>
     </html>
   )

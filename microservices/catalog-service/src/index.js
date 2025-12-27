@@ -1,5 +1,4 @@
 const express = require('express');
-console.log('--- STARTING NEW VERSION V2 ---');
 const cors = require('cors');
 const sequelize = require('./config/database');
 const catalogRoutes = require('./routes/catalog');
