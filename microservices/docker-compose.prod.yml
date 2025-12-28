@@ -83,8 +83,8 @@ services:
     container_name: microservices-notification-service-1
     environment:
       - SMTP_HOST=smtp.gmail.com
-      - SMTP_USER=csae99@gmail.com
-      - SMTP_PASS=jitmzrbeowuyrasn
+      - SMTP_USER=<gmail>
+      - SMTP_PASS=<app password>
       - SMTP_PORT=587
     ports:
       - "3004:3004"
