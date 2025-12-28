@@ -9,24 +9,24 @@ The project follows a **Microservices Architecture** where each distinct busines
 ### Architecture Diagram
 ```mermaid
 graph TD
-    Client[Web Client / Mobile] --> Gateway[API Gateway (Nginx)]
+    Client["Web Client / Mobile"] --> Gateway["API Gateway (Nginx)"]
     
-    Gateway --> |/auth, /admin, /practitioners| Identity[Identity Service]
-    Gateway --> |/items, /categories| Catalog[Catalog Service]
-    Gateway --> |/orders, /cart, /checkout| Order[Order Service]
-    Gateway --> |/chat, /dosha| AyurBot[AyurBot Service AI]
+    Gateway --> |"/auth, /admin, /practitioners"| Identity["Identity Service"]
+    Gateway --> |"/items, /categories"| Catalog["Catalog Service"]
+    Gateway --> |"/orders, /cart, /checkout"| Order["Order Service"]
+    Gateway --> |"/chat, /dosha"| AyurBot["AyurBot Service AI"]
     
-    Order --> |Trigger Email| Notification[Notification Service]
-    Order --> |Get User Info| Identity
-    Order --> |Get Item Info| Catalog
+    Order --> |"Trigger Email"| Notification["Notification Service"]
+    Order --> |"Get User Info"| Identity
+    Order --> |"Get Item Info"| Catalog
     
-    Identity --> PG[(PostgreSQL)]
+    Identity --> PG[("PostgreSQL")]
     Catalog --> PG
-    Catalog --> Redis[(Redis Cache)]
+    Catalog --> Redis[("Redis Cache")]
     Order --> PG
-    AyurBot --> Mongo[(MongoDB)]
-    AyurBot --> Gemini[Gemini AI API]
-    Notification --> SMTP[Gmail SMTP]
+    AyurBot --> Mongo[("MongoDB")]
+    AyurBot --> Gemini["Gemini AI API"]
+    Notification --> SMTP["Gmail SMTP"]
 ```
 
 ## 3. Microservices Breakdown
