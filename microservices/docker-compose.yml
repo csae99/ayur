@@ -95,8 +95,8 @@ services:
       # Email (Gmail SMTP) - Add your Gmail credentials below
       - SMTP_HOST=smtp.gmail.com
       - SMTP_PORT=587
-      - SMTP_USER=
-      - SMTP_PASS=
+      - SMTP_USER=csae99@gmail.com
+      - SMTP_PASS=jitmzrbeowuyrasn
       # SMS (Twilio) - Add your Twilio credentials below
       - TWILIO_ACCOUNT_SID=
       - TWILIO_AUTH_TOKEN=

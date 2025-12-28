@@ -5,6 +5,7 @@ const { Order } = require('../models');
 const Address = require('../models/address');
 const verifyToken = require('../middleware/auth');
 const { estimateDelivery } = require('../utils/pricing');
+const { sendOrderConfirmation } = require('../utils/notifications');
 
 // Create Payment Intent (Mock Stripe)
 router.post('/payment-intent', verifyToken, async (req, res) => {
@@ -155,6 +156,12 @@ router.post('/', verifyToken, async (req, res) => {
                 discount_amount: parseFloat(itemDiscount.toFixed(2)),
                 final_amount: parseFloat(finalAmount.toFixed(2))
             });
+
+            // Trigger notification
+            sendOrderConfirmation(order).catch(err =>
+                console.error(`Failed to send confirmation for order ${order.id}:`, err)
+            );
+
             orders.push(order);
         }
 
