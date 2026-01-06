@@ -114,11 +114,24 @@ graph TD
 
 ## 6. Infrastructure & Deployment
 The entire stack is containerized.
-- **Dev Mode**: `docker-compose.yml` (Hot-reloading for Node services)
-- **Prod Mode**: `docker-compose.prod.yml` (Optimized images, restart policies)
+
+### Deployment Options
+1. **Local Postgres (Default)**:
+   ```bash
+   docker-compose up -d
+   ```
+   Uses a local `postgres:15-alpine` container. Data stored in `postgres_data` volume.
+
+2. **Cloud (Supabase + Mongo Atlas)**:
+   ```bash
+   docker-compose -f docker-compose.cloud.yml up -d
+   ```
+   Connects services to managed cloud databases:
+   - **Postgres**: Supabase
+   - **MongoDB**: MongoDB Atlas
 
 ### Data Persistence
-- **Postgres Data**: Stored in named volume `postgres_data`
+- **Postgres Data**: Stored in named volume `postgres_data` (Local mode only)
 - **Mongo Data**: Stored in named volume `mongo_data`
 - **Redis Data**: Stored in named volume `redis_data`
 

@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    image: shubham554/ayur-api-gateway:dev
+    build: ./api-gateway
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - identity-service
+      - catalog-service
+      - order-service
+      - ayurbot-service
+      - notification-service
+    networks:
+      - ayur-network
+
+  # Frontend (Next.js)
+  frontend:
+    image: shubham554/ayur-frontend:dev
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - ayur-network
+
+  # Identity Service (Node.js)
+  identity-service:
+    image: shubham554/ayur-identity-service:dev
+    build: ./identity-service
+    environment:
+      - PORT=3001
+      - DB_HOST=aws-1-ap-northeast-2.pooler.supabase.com
+      - DB_PORT=5432
+      - DB_USER=postgres.mdbkdbfztsfhzfjhlper
+      - DB_NAME=postgres
+      # REPLACE WITH YOUR ACTUAL SUPABASE DATABASE PASSWORD
+      - DB_PASSWORD=Shubham@191
+      - JWT_SECRET=ayur_super_secret_key_2025
+    networks:
+      - ayur-network
+
+  # Catalog Service (Node.js)
+  catalog-service:
+    image: shubham554/ayur-catalog-service:dev
+    build: ./catalog-service
+    environment:
+      - PORT=3002
+      - DB_HOST=aws-1-ap-northeast-2.pooler.supabase.com
+      - DB_PORT=5432
+      - DB_USER=postgres.mdbkdbfztsfhzfjhlper
+      - DB_NAME=postgres
+      # REPLACE WITH YOUR ACTUAL SUPABASE DATABASE PASSWORD
+      - DB_PASSWORD=Shubham@191
+      - JWT_SECRET=ayur_super_secret_key_2025
+      - REDIS_URL=redis://redis:6379
+      - LIBRETRANSLATE_URL=http://libretranslate:5000
+    depends_on:
+      - redis
+    networks:
+      - ayur-network
+
+  # Order Service (Node.js)
+  order-service:
+    image: shubham554/ayur-order-service:dev
+    build: ./order-service
+    environment:
+      - PORT=3003
+      - DB_HOST=aws-1-ap-northeast-2.pooler.supabase.com
+      - DB_PORT=5432
+      - DB_USER=postgres.mdbkdbfztsfhzfjhlper
+      - DB_NAME=postgres
+      # REPLACE WITH YOUR ACTUAL SUPABASE DATABASE PASSWORD
+      - DB_PASSWORD=Shubham@191
+      - JWT_SECRET=ayur_super_secret_key_2025
+      - RAZORPAY_KEY_ID=rzp_test_RtYXaPIq6upWnh
+      - RAZORPAY_KEY_SECRET=qR11lfeylvfz0y3Mm3pSd9v8
+    networks:
+      - ayur-network
+
+  # Notification Service (Node.js)
+  notification-service:
+    image: shubham554/ayur-notification-service:dev
+    build: ./notification-service
+    container_name: microservices-notification-service-1
+    environment:
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_USER=csae99@gmail.com
+      - SMTP_PASS=jitmzrbeowuyrasn
+      - SMTP_PORT=587
+    ports:
+      - "3004:3004"
+    networks:
+      - ayur-network
+
+  # AyurBot Service (Python)
+  ayurbot-service:
+    image: shubham554/ayur-ayurbot-service:dev
+    build: ./ayurbot-service
+    environment:
+      - PORT=8000
+      - GEMINI_API_KEY=AIzaSyDtKb4tUk131cnKEwfPr7caYqgsQSa0UyY
+      - MONGO_URI=mongodb+srv://csae99_db_user:d6RWAUHwpfXsqjyO@ayur-cluster.zpdhgsh.mongodb.net/?retryWrites=true&w=majority&appName=Ayur-Cluster
+    ports:
+      - "8000:8000"
+    networks:
+      - ayur-network
+
+  # Databases
+  # Postgres is on Supabase
+  # MongoDB is on Atlas
+
+  # LibreTranslate Service (Free Translation API)
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    environment:
+      - LT_LOAD_ONLY=en,hi,es,fr,zh
+    ports:
+      - "5000:5000"
+    networks:
+      - ayur-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - ayur-network
+
+networks:
+  ayur-network:
+    driver: bridge
