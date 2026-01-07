@@ -148,8 +148,8 @@ export default function PractitionerDashboard() {
                                 : "Your account is currently pending verification. You cannot add medicines until you are verified."}
                         </p>
                         {!practitioner?.verified && (
-                            <button className="btn btn-primary w-full" onClick={() => alert('Verification request sent!')}>
-                                Request Verification
+                            <button className="btn btn-primary w-full" onClick={() => router.push('/dashboard/practitioner/profile')}>
+                                Complete Verification in Profile
                             </button>
                         )}
                     </div>

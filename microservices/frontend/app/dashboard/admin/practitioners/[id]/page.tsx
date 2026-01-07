@@ -18,6 +18,7 @@ interface Practitioner {
     nida: string;
     verified: boolean;
     joined_on: string;
+    license: string;
 }
 
 export default function PractitionerDetailPage() {
@@ -195,7 +196,24 @@ export default function PractitionerDetailPage() {
                                 </div>
                                 <div>
                                     <label className="text-sm font-semibold text-gray-600">NIDA Number</label>
-                                    <p className="text-gray-800">{practitioner.nida || 'N/A'}</p>
+                                    <p className="text-gray-800 font-mono bg-gray-50 px-2 py-1 rounded inline-block">
+                                        {practitioner.nida || 'N/A'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label className="text-sm font-semibold text-gray-600">Verification Document</label>
+                                    {practitioner.license ? (
+                                        <a
+                                            href={`http://localhost/api/identity${practitioner.license}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block text-indigo-600 hover:underline mt-1"
+                                        >
+                                            <i className="fas fa-file-alt mr-2"></i> View Document
+                                        </a>
+                                    ) : (
+                                        <p className="text-gray-500 italic">No document uploaded</p>
+                                    )}
                                 </div>
                                 <div>
                                     <label className="text-sm font-semibold text-gray-600">Member Since</label>

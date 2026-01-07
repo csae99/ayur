@@ -9,6 +9,34 @@ const SECRET_KEY = process.env.JWT_SECRET || 'your_jwt_secret';
 const ACCESS_TOKEN_EXPIRY = '1h';
 const REFRESH_TOKEN_EXPIRY_DAYS = 7;
 
+// Configure Multer for file uploads
+const multer = require('multer');
+const path = require('path');
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, '../uploads/'));
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'doc-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const upload = multer({ storage: storage });
+
+// Upload Document Route
+router.post('/upload-document', upload.single('document'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        // Return relative path that can be served via static middleware
+        const fileUrl = `/uploads/${req.file.filename}`;
+        res.json({ url: fileUrl });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Register Patient
 router.post('/register/patient', async (req, res) => {
     try {
@@ -247,7 +275,7 @@ router.put('/profile', getCurrentUser, async (req, res) => {
             allowedFields = ['fname', 'lname', 'phone', 'address', 'email', 'profile'];
         } else if (type === 'practitioner') {
             user = await Practitioner.findByPk(id);
-            allowedFields = ['fname', 'lname', 'phone', 'office_name', 'address', 'bio', 'facebook', 'twitter', 'email', 'profile'];
+            allowedFields = ['fname', 'lname', 'phone', 'office_name', 'address', 'bio', 'facebook', 'twitter', 'email', 'profile', 'nida', 'license'];
         } else if (type === 'admin') {
             user = await Admin.findByPk(id);
             allowedFields = ['firstname', 'lastname'];

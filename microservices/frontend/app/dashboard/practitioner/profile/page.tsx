@@ -20,6 +20,8 @@ interface Profile {
     professionality: string;
     verified: boolean;
     joined_on: string;
+    nida?: string;
+    license?: string;
 }
 
 export default function PractitionerProfilePage() {
@@ -43,8 +45,17 @@ export default function PractitionerProfilePage() {
         address: '',
         bio: '',
         facebook: '',
-        twitter: ''
+        twitter: '',
+        nida: ''
     });
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedFile(e.target.files[0]);
+        }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -84,7 +95,8 @@ export default function PractitionerProfilePage() {
                     address: data.address || '',
                     bio: data.bio || '',
                     facebook: data.facebook || '',
-                    twitter: data.twitter || ''
+                    twitter: data.twitter || '',
+                    nida: data.nida || ''
                 });
             }
         } catch (error) {
@@ -100,13 +112,34 @@ export default function PractitionerProfilePage() {
         setMessage(null);
 
         try {
+            // Upload file first if selected
+            let documentUrl = profile?.license || '';
+
+            if (selectedFile) {
+                const uploadData = new FormData();
+                uploadData.append('document', selectedFile);
+
+                const uploadRes = await fetch('/api/identity/auth/upload-document', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: uploadData
+                });
+
+                if (uploadRes.ok) {
+                    const uploadResult = await uploadRes.json();
+                    documentUrl = uploadResult.url;
+                } else {
+                    throw new Error('Failed to upload document');
+                }
+            }
+
             const res = await fetch('/api/identity/auth/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({ ...formData, license: documentUrl })
             });
 
             const data = await res.json();
@@ -323,6 +356,49 @@ export default function PractitionerProfilePage() {
                             />
                         </div>
 
+                        {/* Verification Info */}
+                        <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 mb-6">
+                            <h3 className="text-lg font-semibold text-blue-800 mb-4">Verification Details</h3>
+                            <p className="text-sm text-blue-600 mb-4">
+                                Provide these details to get verified and unlock listing features.
+                            </p>
+
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">NIDA Number</label>
+                                    <input
+                                        type="text"
+                                        value={formData.nida}
+                                        onChange={(e) => setFormData({ ...formData, nida: e.target.value })}
+                                        disabled={!isEditing}
+                                        placeholder="Enter your NIDA ID"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 disabled:bg-gray-50 text-gray-900"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Verification Document</label>
+                                    {isEditing ? (
+                                        <input
+                                            type="file"
+                                            onChange={handleFileChange}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white"
+                                            accept="image/*,.pdf"
+                                        />
+                                    ) : (
+                                        <div className="py-3 px-4 bg-gray-50 border border-gray-300 rounded-lg text-gray-500">
+                                            {profile?.license ? (
+                                                <a href={`http://localhost/api/identity${profile.license}`} target="_blank" rel="noopener noreferrer" className="text-teal-700 hover:underline">
+                                                    View Uploaded Document
+                                                </a>
+                                            ) : (
+                                                'No document uploaded'
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Social Links */}
                         <h3 className="text-lg font-semibold text-gray-800 pt-4 border-t">Social Links</h3>
 
@@ -375,7 +451,8 @@ export default function PractitionerProfilePage() {
                                                     address: profile.address || '',
                                                     bio: profile.bio || '',
                                                     facebook: profile.facebook || '',
-                                                    twitter: profile.twitter || ''
+                                                    twitter: profile.twitter || '',
+                                                    nida: profile.nida || ''
                                                 });
                                             }
                                         }}

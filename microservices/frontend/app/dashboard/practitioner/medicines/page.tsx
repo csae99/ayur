@@ -15,9 +15,14 @@ interface Medicine {
     item_image: string;
 }
 
+interface Practitioner {
+    verified: boolean;
+}
+
 export default function MyMedicinesPage() {
     const router = useRouter();
     const [medicines, setMedicines] = useState<Medicine[]>([]);
+    const [practitioner, setPractitioner] = useState<Practitioner | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -32,29 +37,38 @@ export default function MyMedicinesPage() {
             return;
         }
 
-        fetch(`http://localhost/api/catalog/items/practitioner/${user.username}`)
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
+        const fetchData = async () => {
+            // Fetch practitioner details for verification status
+            try {
+                const practRes = await fetch(`http://localhost/api/identity/auth/practitioner/${user.username}`);
+                if (practRes.ok) {
+                    const practData = await practRes.json();
+                    setPractitioner(practData);
                 }
-                return res.json();
-            })
-            .then(data => {
-                console.log('API Response:', data);
-                // Ensure data is an array
+            } catch (err) {
+                console.error('Error fetching practitioner details:', err);
+            }
+
+            // Fetch medicines
+            try {
+                const res = await fetch(`http://localhost/api/catalog/items/practitioner/${user.username}`);
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                const data = await res.json();
+
                 if (Array.isArray(data)) {
                     setMedicines(data);
                 } else {
-                    console.error('API did not return an array:', data);
                     setMedicines([]);
                 }
-                setLoading(false);
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Error fetching medicines:', err);
                 setMedicines([]);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchData();
     }, [router]);
 
     const getStatusBadge = (status: string) => {
@@ -98,7 +112,10 @@ export default function MyMedicinesPage() {
                             </div>
                             <span className="text-2xl font-bold gradient-text">Ayurveda <span className="text-sm text-gray-500 font-normal">Practitioner</span></span>
                         </Link>
-                        <Link href="/dashboard/practitioner/add-medicine" className="btn btn-primary">
+                        <Link
+                            href="/dashboard/practitioner/add-medicine"
+                            className={`btn btn-primary ${!practitioner?.verified ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                        >
                             Add New Medicine
                         </Link>
                     </div>
@@ -115,7 +132,10 @@ export default function MyMedicinesPage() {
                 ) : medicines.length === 0 ? (
                     <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-100">
                         <p className="text-xl text-gray-500 mb-4">You haven't added any medicines yet.</p>
-                        <Link href="/dashboard/practitioner/add-medicine" className="btn btn-primary">
+                        <Link
+                            href="/dashboard/practitioner/add-medicine"
+                            className={`btn btn-primary ${!practitioner?.verified ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                        >
                             Add Your First Medicine
                         </Link>
                     </div>

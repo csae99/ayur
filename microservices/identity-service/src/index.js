@@ -12,6 +12,15 @@ const PORT = process.env.PORT || 3001;
 // app.use(cors()); // CORS handled by API Gateway
 app.use(express.json());
 
+// Serve static files
+const path = require('path');
+const fs = require('fs');
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadDir));
+
 // Debug Middleware
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
