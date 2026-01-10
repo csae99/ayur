@@ -9,31 +9,59 @@ const SECRET_KEY = process.env.JWT_SECRET || 'your_jwt_secret';
 const ACCESS_TOKEN_EXPIRY = '1h';
 const REFRESH_TOKEN_EXPIRY_DAYS = 7;
 
-// Configure Multer for file uploads
+// Configure Multer for memory storage (S3 upload)
 const multer = require('multer');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const path = require('path');
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, '../uploads/'));
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'doc-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+// S3 Client Configuration
+const s3Client = new S3Client({
+    region: process.env.S3_REGION,
+    endpoint: process.env.S3_ENDPOINT,
+    credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECRET_KEY
+    },
+    forcePathStyle: true
+});
+
 // Upload Document Route
-router.post('/upload-document', upload.single('document'), (req, res) => {
+router.post('/upload-document', upload.single('document'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        // Return relative path that can be served via static middleware
-        const fileUrl = `/uploads/${req.file.filename}`;
-        res.json({ url: fileUrl });
+
+        const bucketName = process.env.S3_BUCKET_NAME;
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const filename = 'doc-' + uniqueSuffix + path.extname(req.file.originalname);
+
+        const command = new PutObjectCommand({
+            Bucket: bucketName,
+            Key: filename,
+            Body: req.file.buffer,
+            ContentType: req.file.mimetype,
+            ACL: 'public-read'
+        });
+
+        await s3Client.send(command);
+
+        // Construct Public URL
+        // Endpoint: https://mdbkdbfztsfhzfjhlper.storage.supabase.co/storage/v1/s3
+        // Public URL format: https://mdbkdbfztsfhzfjhlper.supabase.co/storage/v1/object/public/<bucket>/<key>
+
+        // Extract project ID from endpoint for URL construction
+        // or rely on env var if we had one, but extraction is safe given the known format.
+        const projectId = 'mdbkdbfztsfhzfjhlper';
+        const publicUrl = `https://${projectId}.supabase.co/storage/v1/object/public/${bucketName}/${filename}`;
+
+        res.json({ url: publicUrl });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("Upload error:", error);
+        res.status(500).json({ error: 'Failed to upload document: ' + error.message });
     }
 });
 

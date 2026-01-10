@@ -204,7 +204,7 @@ export default function PractitionerDetailPage() {
                                     <label className="text-sm font-semibold text-gray-600">Verification Document</label>
                                     {practitioner.license ? (
                                         <a
-                                            href={`/api/identity${practitioner.license}`}
+                                            href={practitioner.license.startsWith('http') ? practitioner.license : `/api/identity${practitioner.license}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="block text-indigo-600 hover:underline mt-1"

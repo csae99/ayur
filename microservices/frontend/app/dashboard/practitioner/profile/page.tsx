@@ -387,7 +387,12 @@ export default function PractitionerProfilePage() {
                                     ) : (
                                         <div className="py-3 px-4 bg-gray-50 border border-gray-300 rounded-lg text-gray-500">
                                             {profile?.license ? (
-                                                <a href={`/api/identity${profile.license}`} target="_blank" rel="noopener noreferrer" className="text-teal-700 hover:underline">
+                                                <a
+                                                    href={profile.license.startsWith('http') ? profile.license : `/api/identity${profile.license}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-teal-700 hover:underline"
+                                                >
                                                     View Uploaded Document
                                                 </a>
                                             ) : (
