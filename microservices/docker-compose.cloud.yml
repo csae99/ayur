@@ -101,7 +101,7 @@ services:
     build: ./ayurbot-service
     environment:
       - PORT=8000
-      - GEMINI_API_KEY=AIzaSyADJy1yL1wRo4b2gewyOJpbqgg45t6g7tU
+      - GEMINI_API_KEY=AIzaSyADJy
       - MONGO_URI=mongodb+srv://csae99_db_user:d6RWAUHwpfXsqjyO@ayur-cluster.zpdhgsh.mongodb.net/?retryWrites=true&w=majority&appName=Ayur-Cluster
     ports:
       - "8000:8000"
