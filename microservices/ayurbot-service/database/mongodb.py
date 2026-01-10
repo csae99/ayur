@@ -1,5 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import certifi
 
 # MongoDB connection
 MONGO_URI = os.getenv('MONGO_URI', 'mongodb://mongo-db:27017')
@@ -11,7 +12,7 @@ class MongoDB:
     @classmethod
     async def connect_db(cls):
         """Connect to MongoDB"""
-        cls.client = AsyncIOMotorClient(MONGO_URI)
+        cls.client = AsyncIOMotorClient(MONGO_URI, tlsCAFile=certifi.where())
         print(f"Connected to MongoDB at {MONGO_URI}")
     
     @classmethod

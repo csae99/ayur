@@ -44,7 +44,7 @@ export default function PractitionerDetailPage() {
         }
 
         // Fetch practitioner details
-        fetch(`http://localhost/api/identity/admin/practitioners/${params.id}`, {
+        fetch(`/api/identity/admin/practitioners/${params.id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => res.json())
@@ -63,7 +63,7 @@ export default function PractitionerDetailPage() {
         setProcessing(true);
 
         try {
-            const res = await fetch(`http://localhost/api/identity/admin/practitioners/${params.id}/verify`, {
+            const res = await fetch(`/api/identity/admin/practitioners/${params.id}/verify`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -204,7 +204,7 @@ export default function PractitionerDetailPage() {
                                     <label className="text-sm font-semibold text-gray-600">Verification Document</label>
                                     {practitioner.license ? (
                                         <a
-                                            href={`http://localhost/api/identity${practitioner.license}`}
+                                            href={`/api/identity${practitioner.license}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="block text-indigo-600 hover:underline mt-1"
