@@ -9,6 +9,7 @@ export default function AddMedicinePage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [user, setUser] = useState<any>(null);
+    const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
     useEffect(() => {
         const userData = localStorage.getItem('user');
@@ -24,26 +25,68 @@ export default function AddMedicinePage() {
         setUser(parsedUser);
     }, [router]);
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            setSelectedFiles(e.target.files);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setError('');
 
         const formData = new FormData(e.currentTarget);
-        const data = {
-            item_title: formData.get('item_title'),
-            item_brand: formData.get('item_brand'),
-            item_cat: formData.get('item_cat'),
-            item_details: formData.get('item_details'),
-            item_tags: formData.get('item_tags'),
-            item_image: 'Medicine.png', // Default image for now
-            item_quantity: parseInt(formData.get('item_quantity') as string),
-            item_price: parseInt(formData.get('item_price') as string),
-            added_by: user.username
-        };
+        let imageUrls: string[] = [];
 
         try {
-            const res = await fetch('http://localhost/api/catalog/items', {
+            // 1. Upload Images
+            if (selectedFiles && selectedFiles.length > 0) {
+                const uploadData = new FormData();
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    uploadData.append('images', selectedFiles[i]);
+                }
+
+                // Use the new S3 upload endpoint we just created
+                // Determine API base URL (can be refactored to config)
+                // Assuming client-side, we use /api/catalog proxy if set up, or direct URL
+                // The user's code uses http://localhost/api/catalog currently (via proxy or direct)
+                // Let's use /api/catalog/upload assuming Nginx routes /api/catalog -> catalog-service
+
+                // WAIT: In previous files, they used /api/identity directly.
+                // The gateway likely routes /api/catalog.
+
+                const uploadRes = await fetch('/api/catalog/upload', {
+                    method: 'POST',
+                    body: uploadData
+                });
+
+                if (uploadRes.ok) {
+                    const uploadResult = await uploadRes.json();
+                    imageUrls = uploadResult.urls;
+                } else {
+                    const err = await uploadRes.json();
+                    throw new Error(err.error || 'Failed to upload images');
+                }
+            } else {
+                // Default placeholder if no images
+                imageUrls = ['Medicine.png'];
+            }
+
+            // 2. Create Item
+            const data = {
+                item_title: formData.get('item_title'),
+                item_brand: formData.get('item_brand'),
+                item_cat: formData.get('item_cat'),
+                item_details: formData.get('item_details'),
+                item_tags: formData.get('item_tags'),
+                item_image: JSON.stringify(imageUrls), // Store as JSON string
+                item_quantity: parseInt(formData.get('item_quantity') as string),
+                item_price: parseInt(formData.get('item_price') as string),
+                added_by: user.username
+            };
+
+            const res = await fetch('/api/catalog/items', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -57,8 +100,8 @@ export default function AddMedicinePage() {
                 const errData = await res.json();
                 setError(errData.error || 'Failed to add medicine');
             }
-        } catch (err) {
-            setError('An error occurred. Please try again.');
+        } catch (err: any) {
+            setError(err.message || 'An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -120,6 +163,18 @@ export default function AddMedicinePage() {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
                             <textarea name="item_details" required className="input w-full h-32" placeholder="Detailed description of the medicine..."></textarea>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Medicine Images</label>
+                            <input
+                                type="file"
+                                onChange={handleFileChange}
+                                multiple
+                                accept="image/*"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">You can select multiple images.</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

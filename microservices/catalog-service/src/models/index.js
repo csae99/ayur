@@ -7,7 +7,7 @@ const Item = sequelize.define('Item', {
     item_cat: { type: DataTypes.STRING, allowNull: false },
     item_details: { type: DataTypes.TEXT, allowNull: false },
     item_tags: { type: DataTypes.STRING, allowNull: false },
-    item_image: { type: DataTypes.STRING, allowNull: false },
+    item_image: { type: DataTypes.TEXT, allowNull: false }, // Stores JSON string of URLs
     item_quantity: { type: DataTypes.INTEGER, allowNull: false },
     item_price: { type: DataTypes.INTEGER, allowNull: false },
     added_by: { type: DataTypes.STRING(100), allowNull: true },

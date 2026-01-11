@@ -55,9 +55,63 @@ router.get('/items/:id', async (req, res) => {
     }
 });
 
+// Configure Multer for memory storage (S3 upload)
+const multer = require('multer');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const path = require('path');
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+// S3 Client Configuration
+const s3Client = new S3Client({
+    region: process.env.S3_REGION,
+    endpoint: process.env.S3_ENDPOINT,
+    credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECRET_KEY
+    },
+    forcePathStyle: true
+});
+
+// Upload Images Route
+router.post('/upload', upload.array('images', 5), async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: 'No files uploaded' });
+        }
+
+        const bucketName = process.env.S3_BUCKET_NAME;
+        const uploadPromises = req.files.map(async (file) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            const filename = 'med-' + uniqueSuffix + path.extname(file.originalname);
+
+            const command = new PutObjectCommand({
+                Bucket: bucketName,
+                Key: filename,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+                ACL: 'public-read'
+            });
+
+            await s3Client.send(command);
+
+            const projectId = 'mdbkdbfztsfhzfjhlper';
+            return `https://${projectId}.supabase.co/storage/v1/object/public/${bucketName}/${filename}`;
+        });
+
+        const urls = await Promise.all(uploadPromises);
+        res.json({ urls });
+    } catch (error) {
+        console.error("Upload error:", error);
+        res.status(500).json({ error: 'Failed to upload images: ' + error.message });
+    }
+});
+
 // Add new item
 router.post('/items', async (req, res) => {
     try {
+        // item_image will be a JSON string of URLs
         const item = await Item.create(req.body);
         res.status(201).json(item);
     } catch (error) {

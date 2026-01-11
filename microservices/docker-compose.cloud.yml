@@ -19,7 +19,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:dev3
+    image: shubham554/ayur-frontend:dev4
     build: ./frontend
     ports:
       - "3000:3000"
@@ -60,6 +60,11 @@ services:
       # REPLACE WITH YOUR ACTUAL SUPABASE DATABASE PASSWORD
       - DB_PASSWORD=Shubham@191
       - JWT_SECRET=ayur_super_secret_key_2025
+      - S3_ENDPOINT=https://mdbkdbfztsfhzfjhlper.storage.supabase.co/storage/v1/s3
+      - S3_REGION=ap-northeast-2
+      - S3_ACCESS_KEY=88af52c4042c35090bb886e3e80c10ba
+      - S3_SECRET_KEY=e09ca56ad39fe34b49bad90e4b6459aac048b55952c88c9d5898da951f91b33c
+      - S3_BUCKET_NAME=documentverificationbucket
       - REDIS_URL=redis://redis:6379
       - LIBRETRANSLATE_URL=http://libretranslate:5000
     depends_on:
