@@ -37,9 +37,23 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
     const [addingToCart, setAddingToCart] = useState(false);
     const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 
+    // New state for carousel
+    const [images, setImages] = useState<string[]>([]);
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
     const checkLoginStatus = () => {
         const token = localStorage.getItem('token');
         setIsLoggedIn(!!token);
+    };
+
+    const parseImages = (imageString: string | undefined): string[] => {
+        if (!imageString) return [];
+        try {
+            const parsed = JSON.parse(imageString);
+            return Array.isArray(parsed) && parsed.length > 0 ? parsed : [imageString];
+        } catch (e) {
+            return [imageString];
+        }
     };
 
     const fetchProductData = async () => {
@@ -54,6 +68,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
             }
             const itemData = await itemRes.json();
             setItem(itemData);
+            setImages(parseImages(itemData.item_image));
 
             // Fetch reviews
             fetchReviews();
@@ -134,6 +149,9 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
 
     if (!item) return null;
 
+    // Helper to get image URL
+    const getImageUrl = (img: string) => img.startsWith('http') ? img : `/images/${img}`;
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Notification Banner */}
@@ -177,19 +195,46 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
 
             <div className="container mx-auto px-6 py-10">
                 <div className="grid md:grid-cols-2 gap-10">
-                    {/* Left: Image */}
+                    {/* Left: Image Carousel */}
                     <div className="bg-white p-4 rounded-2xl shadow-sm h-fit">
-                        <div className="aspect-square bg-gradient-to-br from-green-50 to-amber-50 rounded-xl overflow-hidden flex items-center justify-center">
+                        {/* Main Image */}
+                        <div className="aspect-square bg-gradient-to-br from-green-50 to-amber-50 rounded-xl overflow-hidden flex items-center justify-center relative mb-4">
                             <img
-                                src={`/images/${item.item_image}`}
+                                src={images.length > 0 ? getImageUrl(images[selectedImageIndex]) : '/images/Medicine.png'}
                                 alt={item.item_title}
-                                className="w-full h-full object-cover hover:scale-105 transition duration-500"
+                                className="w-full h-full object-contain hover:scale-105 transition duration-500"
                                 onError={(e) => {
                                     const target = e.target as HTMLImageElement;
                                     target.src = '/images/Medicine.png';
                                 }}
                             />
                         </div>
+
+                        {/* Thumbnails */}
+                        {images.length > 1 && (
+                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                {images.map((img, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => setSelectedImageIndex(index)}
+                                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${selectedImageIndex === index
+                                                ? 'border-green-600 shadow-md scale-105'
+                                                : 'border-transparent hover:border-green-300'
+                                            }`}
+                                    >
+                                        <img
+                                            src={getImageUrl(img)}
+                                            alt={`${item.item_title} view ${index + 1}`}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                target.src = '/images/Medicine.png';
+                                            }}
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Right: Details */}

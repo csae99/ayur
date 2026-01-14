@@ -107,6 +107,12 @@ export default function LoginPage() {
                             />
                         </div>
 
+                        <div className="flex justify-end">
+                            <Link href="/forgot-password" className="text-sm text-green-700 hover:underline">
+                                Forgot Password?
+                            </Link>
+                        </div>
+
                         {/* Remember Me Checkbox */}
                         <div className="flex items-center gap-2">
                             <input

@@ -19,7 +19,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:dev4
+    image: shubham554/ayur-frontend:dev6
     build: ./frontend
     ports:
       - "3000:3000"
@@ -98,7 +98,7 @@ services:
     environment:
       - SMTP_HOST=smtp.gmail.com
       - SMTP_USER=csae99@gmail.com
-      - SMTP_PASS=jitmzrbeowuyrasn
+      - SMTP_PASS=pbncxlhwlnzfofkz
       - SMTP_PORT=587
     ports:
       - "3004:3004"

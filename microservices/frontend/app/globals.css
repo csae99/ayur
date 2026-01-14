@@ -70,6 +70,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer base {
+
+  input,
+  textarea,
+  select {
+    @apply bg-white text-gray-900 border-gray-300 placeholder-gray-500;
+  }
+}
+
 /* Button Styles */
 .btn {
   display: inline-flex;

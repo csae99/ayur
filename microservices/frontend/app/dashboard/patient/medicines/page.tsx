@@ -215,7 +215,16 @@ export default function BrowseMedicinesPage() {
                                         <div className="h-48 bg-gray-200 relative overflow-hidden">
                                             {medicine.item_image ? (
                                                 <img
-                                                    src={`/images/${medicine.item_image}`}
+                                                    src={(() => {
+                                                        const img = medicine.item_image;
+                                                        try {
+                                                            const parsed = JSON.parse(img);
+                                                            const src = Array.isArray(parsed) && parsed.length > 0 ? parsed[0] : img;
+                                                            return src.startsWith('http') ? src : `/images/${src}`;
+                                                        } catch {
+                                                            return img.startsWith('http') ? img : `/images/${img}`;
+                                                        }
+                                                    })()}
                                                     alt={medicine.item_title}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                                                     onError={(e) => {

@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { Patient, Practitioner, Admin, RefreshToken } = require('../models');
+const { Patient, Practitioner, Admin, RefreshToken, PasswordResetToken } = require('../models');
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET || 'your_jwt_secret';
@@ -370,6 +370,104 @@ router.put('/profile/password', getCurrentUser, async (req, res) => {
 
         res.json({ message: 'Password changed successfully' });
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Forgot Password
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { email, type } = req.body;
+        let user;
+
+        if (type === 'patient') {
+            user = await Patient.findOne({ where: { email } });
+        } else if (type === 'practitioner') {
+            user = await Practitioner.findOne({ where: { email } });
+        } else if (type === 'admin') {
+            user = await Admin.findOne({ where: { email } });
+        }
+
+        if (!user) {
+            return res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+        }
+
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 1); // 1 hour expiry
+
+        // Remove existing tokens for this user
+        await PasswordResetToken.destroy({ where: { user_id: user.id, user_type: type } });
+
+        await PasswordResetToken.create({
+            user_id: user.id,
+            user_type: type,
+            token: token,
+            expires_at: expiresAt
+        });
+
+        const resetLink = `http://localhost:3000/reset-password?token=${token}&type=${type}`;
+
+        const axios = require('axios');
+        try {
+            await axios.post('http://notification-service:3004/send-email', {
+                to: email,
+                subject: 'Password Reset Request',
+                html: `
+                    <p>You requested a password reset.</p>
+                    <p>Click the link below to reset your password:</p>
+                    <a href="${resetLink}">${resetLink}</a>
+                    <p>This link will expire in 1 hour.</p>
+                `
+            });
+        } catch (emailError) {
+            console.error('Failed to send reset email:', emailError.message);
+        }
+
+        res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Reset Password
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { token, type, newPassword } = req.body;
+
+        const resetToken = await PasswordResetToken.findOne({ where: { token, user_type: type } });
+
+        if (!resetToken) {
+            return res.status(400).json({ error: 'Invalid or expired token' });
+        }
+
+        if (new Date() > new Date(resetToken.expires_at)) {
+            await resetToken.destroy();
+            return res.status(400).json({ error: 'Token expired' });
+        }
+
+        let user;
+        if (type === 'patient') {
+            user = await Patient.findByPk(resetToken.user_id);
+        } else if (type === 'practitioner') {
+            user = await Practitioner.findByPk(resetToken.user_id);
+        } else if (type === 'admin') {
+            user = await Admin.findByPk(resetToken.user_id);
+        }
+
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await user.update({ password: hashedPassword });
+
+        await resetToken.destroy();
+
+        res.json({ message: 'Password reset successfully' });
+    } catch (error) {
+        console.error('Reset password error:', error);
         res.status(500).json({ error: error.message });
     }
 });

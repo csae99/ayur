@@ -69,6 +69,21 @@ const RefreshToken = sequelize.define('RefreshToken', {
     timestamps: false,
 });
 
+const PasswordResetToken = sequelize.define('PasswordResetToken', {
+    user_id: { type: DataTypes.INTEGER, allowNull: false },
+    user_type: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        validate: { isIn: [['patient', 'practitioner', 'admin']] }
+    },
+    token: { type: DataTypes.STRING(500), unique: true, allowNull: false },
+    expires_at: { type: DataTypes.DATE, allowNull: false },
+    created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+}, {
+    tableName: 'password_reset_tokens',
+    timestamps: false,
+});
+
 const Availability = sequelize.define('Availability', {
     practitioner_id: { type: DataTypes.INTEGER, allowNull: false },
     day_of_week: { type: DataTypes.STRING, allowNull: false },
@@ -121,4 +136,4 @@ Prescription.belongsTo(Practitioner, { foreignKey: 'practitioner_id' });
 Patient.hasMany(Prescription, { foreignKey: 'patient_id' });
 Prescription.belongsTo(Patient, { foreignKey: 'patient_id' });
 
-module.exports = { Patient, Practitioner, Admin, RefreshToken, Availability, Appointment, Prescription };
+module.exports = { Patient, Practitioner, Admin, RefreshToken, PasswordResetToken, Availability, Appointment, Prescription };

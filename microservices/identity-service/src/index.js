@@ -74,7 +74,8 @@ const connectWithRetry = async () => {
     while (retries < maxRetries) {
         try {
             await sequelize.authenticate();
-            console.log('Database connected...');
+            await sequelize.sync({ alter: true }); // Ensure tables exist
+            console.log('Database connected and synced...');
             app.listen(PORT, () => {
                 console.log(`Identity Service running on port ${PORT}`);
             });
