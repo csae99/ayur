@@ -28,7 +28,7 @@ services:
 
   # Identity Service (Node.js)
   identity-service:
-    image: shubham554/ayur-identity-service:dev2
+    image: shubham554/ayur-identity-service:dev3
     build: ./identity-service
     environment:
       - PORT=3001
@@ -49,7 +49,7 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:dev
+    image: shubham554/ayur-catalog-service:dev2
     build: ./catalog-service
     environment:
       - PORT=3002
