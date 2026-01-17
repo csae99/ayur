@@ -108,11 +108,11 @@ export default function PractitionerProfilePage({ params }: { params: { id: stri
     if (!practitioner) {
         return (
             <div className="min-h-screen bg-gray-50">
-                <PatientNav username={user?.username} onLogout={handleLogout} />
+                {/* Header */}
                 <div className="container mx-auto px-4 py-12 text-center">
                     <p className="text-xl text-gray-500">Practitioner not found.</p>
                 </div>
-            </div>
+            </div >
         );
     }
 
@@ -132,8 +132,6 @@ export default function PractitionerProfilePage({ params }: { params: { id: stri
                     </div>
                 </div>
             )}
-
-            <PatientNav username={user?.username} onLogout={handleLogout} />
 
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">

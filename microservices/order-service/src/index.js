@@ -50,6 +50,7 @@ app.use('/api/orders/payments', paymentRoutes);
 // Also support explicit paths
 app.use('/orders', orderRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/', orderRoutes); // Handle root requests from Nginx rewrite
 
 // Admin routes
 const adminRoutes = require('./routes/admin');

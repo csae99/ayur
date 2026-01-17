@@ -203,8 +203,6 @@ export default function AyurBotPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
-            <PatientNav username={user?.username} onLogout={handleLogout} />
-
             {/* Compact Header */}
             <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -220,8 +218,8 @@ export default function AyurBotPage() {
                     <button
                         onClick={() => setShowHistory(!showHistory)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${showHistory
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
                     >
                         <i className="fas fa-history mr-2"></i>
@@ -259,8 +257,8 @@ export default function AyurBotPage() {
                                             key={conv.session_id}
                                             onClick={() => loadConversation(conv.session_id)}
                                             className={`w-full text-left p-3 rounded-lg border transition-colors ${sessionId === conv.session_id
-                                                    ? 'bg-green-50 border-green-300'
-                                                    : 'bg-white border-gray-200 hover:bg-gray-50'
+                                                ? 'bg-green-50 border-green-300'
+                                                : 'bg-white border-gray-200 hover:bg-gray-50'
                                                 }`}
                                         >
                                             <p className="text-sm text-gray-800 font-medium truncate">
@@ -319,8 +317,8 @@ export default function AyurBotPage() {
 
                                         <div className={`flex-1 ${message.role === 'user' ? 'max-w-3xl' : ''}`}>
                                             <div className={`rounded-2xl px-6 py-4 shadow-sm ${message.role === 'user'
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'bg-white text-gray-800 border border-gray-200'
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-white text-gray-800 border border-gray-200'
                                                 }`}>
                                                 <div className="text-base leading-relaxed prose prose-sm max-w-none">
                                                     <ReactMarkdown>{message.content}</ReactMarkdown>

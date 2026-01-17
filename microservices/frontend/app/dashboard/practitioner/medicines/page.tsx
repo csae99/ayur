@@ -112,12 +112,17 @@ export default function MyMedicinesPage() {
                             </div>
                             <span className="text-2xl font-bold gradient-text">Ayurveda <span className="text-sm text-gray-500 font-normal">Practitioner</span></span>
                         </Link>
-                        <Link
-                            href="/dashboard/practitioner/add-medicine"
-                            className={`btn btn-primary ${!practitioner?.verified ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
-                        >
-                            Add New Medicine
-                        </Link>
+                        <div className="flex gap-4">
+                            <Link href="/dashboard/practitioner" className="btn btn-outline">
+                                Back to Dashboard
+                            </Link>
+                            <Link
+                                href="/dashboard/practitioner/add-medicine"
+                                className={`btn btn-primary ${!practitioner?.verified ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+                            >
+                                Add New Medicine
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </nav>

@@ -62,8 +62,7 @@ export default function FindPractitionersPage() {
 
     return (
         <div className="min-h-screen bg-gray-50 relative">
-            <PatientNav username={user?.username} onLogout={handleLogout} />
-
+            {/* Header */}
             <div className="container mx-auto px-4 py-12">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-3xl font-bold text-gray-800">Find Practitioners</h1>

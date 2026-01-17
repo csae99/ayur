@@ -1,55 +1,54 @@
-'use client';
-
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslation } from '@/context/TranslationContext';
 
-interface PatientNavProps {
-    username?: string;
-    onLogout: () => void;
-}
-
-export default function PatientNav({ username, onLogout }: PatientNavProps) {
+export default function PatientNav({ onToggleSidebar }: { onToggleSidebar?: () => void }) {
+    const router = useRouter();
     const { t } = useTranslation();
+    const [username, setUsername] = useState('');
+
+    useEffect(() => {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            try {
+                const parsed = JSON.parse(userData);
+                setUsername(parsed.username || parsed.fname || 'Patient');
+            } catch (e) {
+                console.error('Error parsing user data', e);
+            }
+        }
+    }, []);
+
+    const onLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        router.push('/login');
+    };
 
     return (
-        <nav className="bg-white shadow-sm">
-            <div className="container py-4">
+        <nav className="bg-white shadow-sm border-b border-gray-100">
+            <div className="container-fluid px-6 py-3">
                 <div className="flex items-center justify-between">
-                    <Link href="/dashboard/patient" className="flex items-center gap-2">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green-700 to-green-900 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                            A
-                        </div>
-                        <span className="text-2xl font-bold gradient-text">Ayurveda</span>
-                    </Link>
+                    <div>
+                        <button
+                            onClick={onToggleSidebar}
+                            className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                            aria-label="Toggle Sidebar"
+                        >
+                            <i className="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
 
-                    <div className="flex gap-3 items-center">
-                        <span className="text-sm text-secondary">
+                    <div className="flex gap-4 items-center">
+                        <span className="text-sm text-secondary hidden md:block">
                             {t('common.welcome')}, <span className="font-semibold text-primary">{username}</span>
                         </span>
-                        <Link href="/dashboard/patient" className="btn btn-outline">
-                            {t('navigation.dashboard')}
-                        </Link>
-                        <Link href="/dashboard/patient/practitioners" className="btn btn-outline">
-                            {t('navigation.findPractitioner')}
-                        </Link>
-                        <Link href="/dashboard/patient/wishlist" className="btn btn-outline">
-                            {t('navigation.myWishlist')}
-                        </Link>
-                        <Link href="/dashboard/patient/appointments" className="btn btn-outline">
-                            {t('navigation.myAppointments')}
-                        </Link>
-                        <Link href="/dashboard/patient/medicines" className="btn btn-outline">
-                            {t('navigation.browseMedicines')}
-                        </Link>
-                        <Link href="/dashboard/patient/cart" className="btn btn-outline">
-                            <i className="fas fa-shopping-cart mr-2"></i> {t('navigation.cart')}
-                        </Link>
-                        <Link href="/dashboard/patient/profile" className="btn btn-outline">
-                            <i className="fas fa-user-circle mr-2"></i> Profile
-                        </Link>
+
                         <LanguageSwitcher />
-                        <button onClick={onLogout} className="btn btn-secondary">
+                        <button onClick={onLogout} className="btn btn-sm btn-secondary bg-gray-100 hover:bg-gray-200 text-gray-700 border-none">
+                            <i className="fas fa-sign-out-alt mr-2"></i>
                             {t('common.logout')}
                         </button>
                     </div>

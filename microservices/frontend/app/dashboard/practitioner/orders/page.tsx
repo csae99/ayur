@@ -35,7 +35,9 @@ export default function PractitionerOrdersPage() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch orders');
+                const errText = await response.text();
+                console.error(`Fetch orders failed: ${response.status} ${errText}`);
+                throw new Error(`Failed to fetch orders: ${response.status} ${errText}`);
             }
 
             const data = await response.json();

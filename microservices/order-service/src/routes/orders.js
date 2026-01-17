@@ -11,6 +11,9 @@ const {
 
 const router = express.Router();
 
+const { Op } = require('sequelize');
+const fetch = require('node-fetch');
+
 // Get all orders (Practitioner/Admin only)
 router.get('/', authMiddleware, async (req, res) => {
     try {
@@ -19,7 +22,33 @@ router.get('/', authMiddleware, async (req, res) => {
             return res.status(403).json({ error: 'Unauthorized' });
         }
 
+        const where = {};
+
+        // If practitioner, only show orders for their items
+        if (req.user.type === 'practitioner') {
+            try {
+                // Fetch items for this practitioner from catalog service
+                const catalogResponse = await fetch(`http://catalog-service:3002/items/practitioner/${req.user.username}`);
+
+                if (!catalogResponse.ok) {
+                    throw new Error(`Failed to fetch practitioner items: ${catalogResponse.status}`);
+                }
+
+                const items = await catalogResponse.json();
+                const itemIds = items.map(item => item.id);
+
+                // Filter orders by these item IDs
+                where.item_id = { [Op.in]: itemIds };
+            } catch (err) {
+                console.error('Error fetching practitioner items:', err);
+                // Return empty list or error? 
+                // Let's return empty list if we can't find their items to be safe (don't show all orders)
+                return res.json([]);
+            }
+        }
+
         const orders = await Order.findAll({
+            where: where,
             order: [['order_date', 'DESC']],
         });
         res.json(orders);

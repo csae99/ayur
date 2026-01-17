@@ -38,6 +38,10 @@ const connectWithRetry = async () => {
         try {
             await sequelize.authenticate();
             console.log('Database connected...');
+
+            // Sync models (alter table to match model definition)
+            await sequelize.sync({ alter: true });
+            console.log('Database models synced...');
             app.listen(PORT, () => {
                 console.log(`Catalog Service running on port ${PORT}`);
             });

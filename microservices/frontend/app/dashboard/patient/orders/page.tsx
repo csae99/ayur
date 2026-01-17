@@ -180,8 +180,7 @@ export default function MyOrdersPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <PatientNav username={user?.username} onLogout={handleLogout} />
-
+            {/* Header */}
             <div className="container mx-auto px-4 py-12">
                 <h1 className="text-3xl font-bold text-gray-800 mb-8">My Orders</h1>
 
@@ -201,8 +200,8 @@ export default function MyOrdersPage() {
                             <button
                                 onClick={() => { setStatusFilter('all'); setDisplayCount(5); }}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'all'
-                                        ? 'bg-green-600 text-white'
-                                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                                     }`}
                             >
                                 All Orders ({orders.length})
@@ -210,8 +209,8 @@ export default function MyOrdersPage() {
                             <button
                                 onClick={() => { setStatusFilter('pending'); setDisplayCount(5); }}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'pending'
-                                        ? 'bg-yellow-500 text-white'
-                                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                    ? 'bg-yellow-500 text-white'
+                                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                                     }`}
                             >
                                 Pending Payment ({orders.filter(o => o.order_status === 0).length})
@@ -219,8 +218,8 @@ export default function MyOrdersPage() {
                             <button
                                 onClick={() => { setStatusFilter('confirmed'); setDisplayCount(5); }}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'confirmed'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                                     }`}
                             >
                                 Confirmed ({orders.filter(o => o.order_status >= 1 && o.order_status <= 6).length})
@@ -228,8 +227,8 @@ export default function MyOrdersPage() {
                             <button
                                 onClick={() => { setStatusFilter('cancelled'); setDisplayCount(5); }}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'cancelled'
-                                        ? 'bg-red-600 text-white'
-                                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                                    ? 'bg-red-600 text-white'
+                                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                                     }`}
                             >
                                 Cancelled ({orders.filter(o => o.order_status === 7).length})

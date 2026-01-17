@@ -9,6 +9,7 @@ RUN npm install --legacy-peer-deps
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
 WORKDIR /app
+ARG CACHEBUST=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 

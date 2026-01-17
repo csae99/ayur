@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # API Gateway
   api-gateway:
-    image: shubham554/ayur-api-gateway:dev
+    image: shubham554/ayur-api-gateway:dev2
     build: ./api-gateway
     ports:
       - "80:80"
@@ -19,7 +19,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:dev6
+    image: shubham554/ayur-frontend:dev16
     build: ./frontend
     ports:
       - "3000:3000"
@@ -49,7 +49,7 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:dev2
+    image: shubham554/ayur-catalog-service:dev3
     build: ./catalog-service
     environment:
       - PORT=3002
@@ -74,7 +74,7 @@ services:
 
   # Order Service (Node.js)
   order-service:
-    image: shubham554/ayur-order-service:dev
+    image: shubham554/ayur-order-service:dev3
     build: ./order-service
     environment:
       - PORT=3003

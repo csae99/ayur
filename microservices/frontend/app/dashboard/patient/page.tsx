@@ -33,16 +33,8 @@ export default function DashboardPage() {
         }
     }, [router]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        router.push('/');
-    };
-
     return (
         <div className="min-h-screen bg-gray-50">
-            <PatientNav username={user?.username} onLogout={handleLogout} />
-
             {/* Header */}
             <div className="bg-gradient-to-br from-green-600 to-teal-700 text-white py-12">
                 <div className="container mx-auto px-4">
