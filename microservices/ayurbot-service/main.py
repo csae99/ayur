@@ -17,6 +17,7 @@ from models.dosha_assessment import DoshaAssessmentModel
 # Import services
 from services.dosha_service import DoshaService
 from services.recommendation_service import RecommendationService
+from services.knowledge_service import KnowledgeService
 
 # Configure Gemini AI
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
@@ -33,6 +34,11 @@ model = genai.GenerativeModel('models/gemini-2.5-flash')
 async def lifespan(app: FastAPI):
     # Startup
     await MongoDB.connect_db()
+    
+    # Initialize Knowledge Base
+    print("Initializing Knowledge Base...")
+    KnowledgeService.load_index()
+    
     yield
     # Shutdown
     await MongoDB.close_db()
@@ -86,6 +92,7 @@ Important guidelines:
 - Focus on preventive health, wellness, and general Ayurvedic knowledge
 - Be warm, supportive, and culturally sensitive
 - Keep responses concise but informative (2-3 paragraphs max)
+- **Multilingual Mode**: Detect the user's language (e.g., Hindi, Spanish, French) and reply IN THAT SAME LANGUAGE. If the user speaks a mix (Hinglish), reply in the same style.
 
 When recommending herbs, suggest common Ayurvedic herbs like:
 - Ashwagandha (stress, vitality)
@@ -127,17 +134,26 @@ async def chat(chat_message: ChatMessage):
             # Load existing messages
             conversation_history = await ConversationModel.get_messages(session_id, limit=6)
         
-        # Build prompt with conversation history
+        # Retrieve RAG Context
+        context = KnowledgeService.get_relevant_context(chat_message.message)
+        if context:
+            print(f"Retrieved context length: {len(context)}")
+            system_instruction = f"{SYSTEM_PROMPT}\n\nReference Material (Use this constraints-checked info if relevant to answer):\n{context}\n"
+        else:
+            system_instruction = SYSTEM_PROMPT
+
+        # Build prompt with conversation history AND context
         if len(conversation_history) == 0:
             # First message in conversation - include full system prompt
-            prompt = f"{SYSTEM_PROMPT}\n\nUser: {chat_message.message}\n\nAyurBot:"
+            prompt = f"{system_instruction}\n\nUser: {chat_message.message}\n\nAyurBot:"
         else:
             # Subsequent messages - include recent history
             history_text = "\n".join([
                 f"{'User' if msg['role'] == 'user' else 'AyurBot'}: {msg['content']}"
                 for msg in conversation_history[-6:]  # Last 3 exchanges
             ])
-            prompt = f"{history_text}\nUser: {chat_message.message}\n\nAyurBot:"
+            # We inject context at the top of the conversation for the model's awareness
+            prompt = f"{system_instruction}\n{history_text}\nUser: {chat_message.message}\n\nAyurBot:"
         
         # Call Gemini API
         print("Calling Gemini API...")

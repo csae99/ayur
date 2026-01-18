@@ -107,14 +107,19 @@ services:
 
   # AyurBot Service (Python)
   ayurbot-service:
-    image: shubham554/ayur-ayurbot-service:dev1
+    image: shubham554/ayur-ayurbot-service:dev2
     build: ./ayurbot-service
+    env_file:
+      - ./ayurbot-service/.env
     environment:
       - PORT=8000
-      - GEMINI_API_KEY=AIzaSyADJy
+      # GEMINI_API_KEY loaded from .env
       - MONGO_URI=mongodb+srv://csae99_db_user:d6RWAUHwpfXsqjyO@ayur-cluster.zpdhgsh.mongodb.net/?retryWrites=true&w=majority&appName=Ayur-Cluster
     ports:
       - "8000:8000"
+    volumes:
+      - ./trainingdata-ayurbot:/app/data/pdfs
+      - ./ayurbot-service/data/vector_store:/app/data/vector_store # Persist index
     networks:
       - ayur-network
 
