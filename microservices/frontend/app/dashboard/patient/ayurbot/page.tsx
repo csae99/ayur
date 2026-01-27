@@ -9,6 +9,16 @@ interface Message {
     role: 'user' | 'assistant';
     content: string;
     timestamp: string;
+    products?: Product[];
+}
+
+interface Product {
+    id: number;
+    item_title: string;
+    item_brand: string;
+    item_price: string;
+    item_image: string;
+    item_quantity: number;
 }
 
 interface Conversation {
@@ -37,6 +47,17 @@ export default function AyurBotPage() {
     const [loadingHistory, setLoadingHistory] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+    // Voice Interaction State
+    const [isListening, setIsListening] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [speechSupported, setSpeechSupported] = useState(false);
+    const recognitionRef = useRef<any>(null);
+
+    // Diet Plan Modal State
+    const [showDietModal, setShowDietModal] = useState(false);
+    const [selectedDosha, setSelectedDosha] = useState('vata');
+    const [downloadingPdf, setDownloadingPdf] = useState(false);
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userData = localStorage.getItem('user');
@@ -64,6 +85,130 @@ export default function AyurBotPage() {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+
+    // Initialize Speech Recognition
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+            if (SpeechRecognition) {
+                setSpeechSupported(true);
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onresult = (event: any) => {
+                    const transcript = event.results[0][0].transcript;
+                    setInputMessage((prev) => prev + (prev ? ' ' : '') + transcript);
+                    setIsListening(false);
+                };
+
+                recognition.onerror = (event: any) => {
+                    console.error('Speech recognition error:', event.error);
+                    setIsListening(false);
+                };
+
+                recognition.onend = () => {
+                    setIsListening(false);
+                };
+
+                recognitionRef.current = recognition;
+            }
+        }
+    }, []);
+
+    // Start listening
+    const startListening = () => {
+        if (recognitionRef.current && !isListening) {
+            try {
+                recognitionRef.current.start();
+                setIsListening(true);
+            } catch (error) {
+                console.error('Failed to start speech recognition:', error);
+            }
+        }
+    };
+
+    // Stop listening
+    const stopListening = () => {
+        if (recognitionRef.current && isListening) {
+            recognitionRef.current.stop();
+            setIsListening(false);
+        }
+    };
+
+    // Text-to-Speech: Speak bot response
+    const speakText = (text: string) => {
+        if ('speechSynthesis' in window) {
+            // Stop any ongoing speech
+            window.speechSynthesis.cancel();
+
+            // Clean text (remove markdown symbols)
+            const cleanText = text
+                .replace(/[*#_`]/g, '')
+                .replace(/\n+/g, '. ')
+                .substring(0, 1000); // Limit length
+
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+
+            // Try to get a good voice
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v =>
+                v.name.includes('Google') && v.lang.includes('en')
+            ) || voices.find(v => v.lang.includes('en'));
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+
+            utterance.onstart = () => setIsSpeaking(true);
+            utterance.onend = () => setIsSpeaking(false);
+            utterance.onerror = () => setIsSpeaking(false);
+
+            window.speechSynthesis.speak(utterance);
+        }
+    };
+
+    // Stop speaking
+    // Stop speaking
+    const stopSpeaking = () => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+        }
+    };
+
+    // Download Diet Plan PDF
+    const downloadDietPlan = async () => {
+        setDownloadingPdf(true);
+        try {
+            const response = await fetch(`http://localhost/api/bot/diet-plan/${selectedDosha}`, {
+                method: 'GET',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate diet plan');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${selectedDosha}_diet_plan.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            setShowDietModal(false);
+        } catch (error) {
+            console.error('Error downloading diet plan:', error);
+            alert('Failed to download diet plan. Please try again.');
+        } finally {
+            setDownloadingPdf(false);
+        }
+    };
 
     const loadConversationHistory = async (userId: number) => {
         setLoadingHistory(true);
@@ -110,6 +255,32 @@ export default function AyurBotPage() {
         router.push('/');
     };
 
+    const handleAddToCart = async (product: Product) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost/api/orders/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    item_id: product.id,
+                    quantity: 1
+                })
+            });
+
+            if (response.ok) {
+                alert(`${product.item_title} added to cart!`);
+            } else {
+                alert('Failed to add to cart');
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            alert('Error adding to cart');
+        }
+    };
+
     const sendMessage = async (messageText?: string) => {
         const textToSend = messageText || inputMessage;
         if (!textToSend.trim() || loading) return;
@@ -148,7 +319,8 @@ export default function AyurBotPage() {
             const botMessage: Message = {
                 role: 'assistant',
                 content: data.response,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                products: data.products
             };
 
             setMessages(prev => [...prev, botMessage]);
@@ -232,8 +404,86 @@ export default function AyurBotPage() {
                         <i className="fas fa-plus mr-2"></i>
                         New Chat
                     </button>
+                    <button
+                        onClick={() => setShowDietModal(true)}
+                        className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-colors"
+                    >
+                        <i className="fas fa-file-pdf mr-2"></i>
+                        Diet Plan
+                    </button>
                 </div>
             </div>
+
+            {/* Diet Plan Modal */}
+            {showDietModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-xl font-bold text-gray-800">
+                                <i className="fas fa-leaf text-green-500 mr-2"></i>
+                                7-Day Diet Plan
+                            </h2>
+                            <button
+                                onClick={() => setShowDietModal(false)}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+
+                        <p className="text-gray-600 mb-4">
+                            Generate a personalized Ayurvedic diet plan based on your dosha type.
+                        </p>
+
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Select Your Dosha
+                            </label>
+                            <div className="grid grid-cols-3 gap-3">
+                                {['vata', 'pitta', 'kapha'].map((dosha) => (
+                                    <button
+                                        key={dosha}
+                                        onClick={() => setSelectedDosha(dosha)}
+                                        className={`px-4 py-3 rounded-xl font-medium capitalize transition-all ${selectedDosha === dosha
+                                                ? dosha === 'vata'
+                                                    ? 'bg-purple-500 text-white'
+                                                    : dosha === 'pitta'
+                                                        ? 'bg-orange-500 text-white'
+                                                        : 'bg-green-500 text-white'
+                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            }`}
+                                    >
+                                        {dosha}
+                                    </button>
+                                ))}
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">
+                                {selectedDosha === 'vata' && '🌬️ Air + Space: Light, creative, quick-thinking'}
+                                {selectedDosha === 'pitta' && '🔥 Fire + Water: Focused, intelligent, leader'}
+                                {selectedDosha === 'kapha' && '🌍 Earth + Water: Calm, loving, steady'}
+                            </p>
+                        </div>
+
+                        <button
+                            onClick={downloadDietPlan}
+                            disabled={downloadingPdf}
+                            className="w-full py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                            {downloadingPdf ? (
+                                <>
+                                    <i className="fas fa-spinner fa-spin"></i>
+                                    Generating PDF...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fas fa-download"></i>
+                                    Download PDF
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Main Chat Area */}
             <div className="flex-1 flex overflow-hidden">
@@ -323,6 +573,58 @@ export default function AyurBotPage() {
                                                 <div className="text-base leading-relaxed prose prose-sm max-w-none">
                                                     <ReactMarkdown>{message.content}</ReactMarkdown>
                                                 </div>
+
+                                                {/* Speaker Button for Bot Messages */}
+                                                {message.role === 'assistant' && (
+                                                    <div className="mt-3 pt-3 border-t border-gray-100 flex justify-end">
+                                                        <button
+                                                            onClick={() => isSpeaking ? stopSpeaking() : speakText(message.content)}
+                                                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all ${isSpeaking
+                                                                ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                                                                : 'bg-green-50 text-green-600 hover:bg-green-100'
+                                                                }`}
+                                                            title={isSpeaking ? 'Stop speaking' : 'Listen to this response'}
+                                                        >
+                                                            <i className={`fas ${isSpeaking ? 'fa-stop' : 'fa-volume-up'}`}></i>
+                                                            {isSpeaking ? 'Stop' : 'Listen'}
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {/* Product Cards */}
+                                                {message.products && message.products.length > 0 && (
+                                                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                        {message.products.map((product) => (
+                                                            <div key={product.id} className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow">
+                                                                <div className="flex gap-3">
+                                                                    <div className="w-16 h-16 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+                                                                        {product.item_image ? (
+                                                                            <img src={`http://localhost:3002${product.item_image}`} alt={product.item_title} className="w-full h-full object-cover" />
+                                                                        ) : (
+                                                                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                                                <i className="fas fa-image"></i>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <h4 className="text-sm font-semibold text-gray-800 truncate">{product.item_title}</h4>
+                                                                        <p className="text-xs text-gray-500 truncate">{product.item_brand}</p>
+                                                                        <div className="flex items-center justify-between mt-2">
+                                                                            <span className="text-sm font-bold text-green-600">₹{product.item_price}</span>
+                                                                            <button
+                                                                                onClick={() => handleAddToCart(product)}
+                                                                                className="px-2 py-1 bg-green-600 text-white text-xs rounded-md hover:bg-green-700 disabled:opacity-50"
+                                                                                disabled={product.item_quantity === 0}
+                                                                            >
+                                                                                {product.item_quantity === 0 ? 'Out of Stock' : 'Buy Now'}
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                             <p className={`text-xs text-gray-400 mt-2 px-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
                                                 {new Date(message.timestamp).toLocaleTimeString('en-US', {
@@ -382,6 +684,20 @@ export default function AyurBotPage() {
                     {/* Input Area */}
                     <div className="border-t border-gray-200 bg-white px-8 py-4">
                         <div className="max-w-6xl mx-auto flex gap-3">
+                            {/* Microphone Button */}
+                            {speechSupported && (
+                                <button
+                                    onClick={isListening ? stopListening : startListening}
+                                    disabled={loading}
+                                    className={`px-4 py-4 rounded-xl font-medium transition-all disabled:opacity-50 ${isListening
+                                        ? 'bg-red-500 text-white animate-pulse'
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                        }`}
+                                    title={isListening ? 'Stop listening' : 'Speak your message'}
+                                >
+                                    <i className={`fas ${isListening ? 'fa-stop' : 'fa-microphone'} text-lg`}></i>
+                                </button>
+                            )}
                             <input
                                 type="text"
                                 value={inputMessage}

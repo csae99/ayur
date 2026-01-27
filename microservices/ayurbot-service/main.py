@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Dict
 from contextlib import asynccontextmanager
 import os
 import google.generativeai as genai
@@ -18,6 +18,7 @@ from models.dosha_assessment import DoshaAssessmentModel
 from services.dosha_service import DoshaService
 from services.recommendation_service import RecommendationService
 from services.knowledge_service import KnowledgeService
+from services.diet_planner_service import DietPlannerService
 
 # Configure Gemini AI
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
@@ -25,6 +26,13 @@ if not GEMINI_API_KEY:
     raise ValueError("GEMINI_API_KEY environment variable not set")
 
 genai.configure(api_key=GEMINI_API_KEY)
+
+# Verify herbs loaded
+try:
+    herbs = RecommendationService.get_all_known_herbs()
+    print(f"STARTUP: Loaded {len(herbs)} herbs from map.", flush=True)
+except Exception as e:
+    print(f"STARTUP ERROR: Could not load herbs: {e}", flush=True)
 
 # Initialize Gemini model
 model = genai.GenerativeModel('models/gemini-2.5-flash')
@@ -66,6 +74,7 @@ class ChatResponse(BaseModel):
     response: str
     session_id: str
     suggestions: List[str] = []
+    products: List[Dict] = []
 
 class DoshaQuizAnswers(BaseModel):
     answers: dict  # {question_id: "A"|"B"|"C"}
@@ -92,7 +101,7 @@ Important guidelines:
 - Focus on preventive health, wellness, and general Ayurvedic knowledge
 - Be warm, supportive, and culturally sensitive
 - Keep responses concise but informative (2-3 paragraphs max)
-- **Multilingual Mode**: Detect the user's language (e.g., Hindi, Spanish, French) and reply IN THAT SAME LANGUAGE. If the user speaks a mix (Hinglish), reply in the same style.
+- **Multilingual Mode**: STRICTLY detect the user's language. If the user asks in English, reply in **English**. If they ask in Hindi, reply in **Hindi**. Do NOT default to Hindi unless the user speaks it.
 
 When recommending herbs, suggest common Ayurvedic herbs like:
 - Ashwagandha (stress, vitality)
@@ -158,8 +167,13 @@ async def chat(chat_message: ChatMessage):
         # Call Gemini API
         print("Calling Gemini API...")
         response = model.generate_content(prompt)
-        print(f"Gemini response received: {response.text[:50]}...")
-        bot_response = response.text
+        
+        try:
+            bot_response = response.text
+            print(f"Gemini response received: {bot_response[:50]}...")
+        except ValueError:
+            print("Gemini blocked response due to safety filters.")
+            bot_response = "I apologize, but I cannot provide specific medical advice for that query. Please consult a qualified Ayurvedic practitioner for personalized guidance."
         
         # Save user message to MongoDB
         await ConversationModel.add_message(session_id, "user", chat_message.message)
@@ -176,10 +190,112 @@ async def chat(chat_message: ChatMessage):
         else:
             suggestions = ["Tell me about doshas", "Suggest herbs for stress", "Ayurvedic diet tips"]
         
+        # Smart Cart: Identify mentioned herbs and fetch products
+        products = []
+        try:
+            # Safe loading of known entities
+            try:
+                known_herbs = RecommendationService.get_all_known_herbs()
+                known_symptoms = RecommendationService.get_all_known_symptoms()
+                symptom_map = RecommendationService.load_symptom_herb_map()
+            except Exception as e:
+                print(f"DEBUGGING: Error loading maps: {e}")
+                known_herbs = []
+                known_symptoms = []
+                symptom_map = {}
+
+            # 1. Identify User Intent (Tags) - from USER MESSAGE ONLY
+            user_text = (chat_message.message or "").lower()
+            user_intent_tags = [tag for tag in known_symptoms if tag.lower() in user_text]
+            
+            # 2. Identify Potential Herbs - from BOT RESPONSE
+            bot_text_lower = bot_response.lower()
+            potential_herbs = [herb for herb in known_herbs if herb.lower() in bot_text_lower]
+
+            # 3. Compile Search List
+            final_entities = []
+            
+            if user_intent_tags:
+                print(f"DEBUG: Search Intent Detected: {user_intent_tags}")
+                
+                # If intent is known (e.g. 'digestion'), ONLY allow herbs mapped to that intent.
+                valid_herbs_for_intent = set()
+                for tag in user_intent_tags:
+                    # Map keys might be lowercase
+                    tag_key = tag.lower() 
+                    if tag_key in symptom_map:
+                        valid_herbs_for_intent.update(symptom_map[tag_key].get("herbs", []))
+                    # Handle exact case match if needed, though load_symptom_herb_map should correspond
+                    elif tag in symptom_map:
+                        valid_herbs_for_intent.update(symptom_map[tag].get("herbs", []))
+                
+                valid_herbs_lower = {h.lower() for h in valid_herbs_for_intent}
+                
+                # Filter strict: Only keep herbs that match the intent
+                matched_herbs = [h for h in potential_herbs if h.lower() in valid_herbs_lower]
+                final_entities.extend(matched_herbs)
+                
+                # Add the tags themselves to find generic items like "Digestive Syrup"
+                final_entities.extend(user_intent_tags)
+                
+            else:
+                print("DEBUG: No specific intent tags found. Searching for all mentioned herbs.")
+                final_entities.extend(potential_herbs)
+
+            # Deduplicate and Clean
+            final_entities = list(set([e for e in final_entities if e and len(e.strip()) > 2]))
+            print(f"DEBUG: Final Search Entities sent to Catalog: {final_entities}")
+            
+            if final_entities:
+                # Fetch from Catalog
+                raw_products = await RecommendationService.search_catalog_herbs(final_entities)
+                
+                # 4. POST-CATALOG HARD FILTER (Safety Net)
+                final_products = []
+                
+                if user_intent_tags: # Strict Mode
+                    valid_intent_set = set(t.lower() for t in user_intent_tags)
+                    
+                    for prod in raw_products:
+                        prod_tags = (prod.get('item_tags') or "").lower()
+                        prod_title = (prod.get('item_title') or "").lower()
+                        
+                        is_relevant = False
+                        
+                        # Rule A: Product explicitly tagged with intent (e.g. 'digestion')
+                        # Split tags by comma to avoid partial matches like 'indigestion' matching 'digestion' if careless
+                        prod_tag_list = [t.strip() for t in prod_tags.split(',')]
+                        if any(intent in prod_tag_list for intent in valid_intent_set):
+                            is_relevant = True
+                            
+                        # Rule B: Product Title matches a Valid Herb for that intent
+                        if not is_relevant:
+                            # We already calculated valid_herbs_lower for this intent
+                            if any(herb in prod_title for herb in valid_herbs_lower):
+                                is_relevant = True
+                        
+                        if is_relevant:
+                            final_products.append(prod)
+                        else:
+                            print(f"DEBUG: Dropped Rejection: {prod_title} (Tags: {prod_tags}) vs Intent: {valid_intent_set}")
+                else:
+                    # Relaxed Mode
+                    final_products = raw_products
+
+                print(f"DEBUG: Showing {len(final_products)} products after filtering.")
+                products = final_products[:4]  # Limit to 4 products for display
+
+        except Exception as e:
+            print(f"DEBUG: CRITICAL ERROR in Smart Cart Logic: {e}")
+            traceback.print_exc()
+            # Fallback: empty products list, do not crash chat
+            products = []
+        
         return ChatResponse(
             response=bot_response,
             session_id=session_id,
-            suggestions=suggestions[:3]
+            suggestions=suggestions[:3],
+            products=products
         )
         
     except Exception as e:
@@ -305,6 +421,35 @@ async def recommend_herbs(request: HerbRecommendationRequest):
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Recommendation error: {str(e)}")
+
+
+# ============== Diet Plan PDF Endpoint ==============
+@app.get("/diet-plan/{dosha}")
+async def get_diet_plan_pdf(dosha: str):
+    """Generate and download a 7-day diet plan PDF for the specified dosha"""
+    try:
+        dosha = dosha.lower()
+        if dosha not in ["vata", "pitta", "kapha"]:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid dosha. Must be one of: vata, pitta, kapha"
+            )
+        
+        pdf_bytes = DietPlannerService.generate_diet_plan_pdf(dosha)
+        
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={dosha}_diet_plan.pdf"
+            }
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to generate diet plan: {str(e)}")
+
 
 if __name__ == "__main__":
     import uvicorn

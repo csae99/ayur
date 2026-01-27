@@ -19,7 +19,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:dev16
+    image: shubham554/ayur-frontend:dev17
     build: ./frontend
     ports:
       - "3000:3000"
@@ -49,7 +49,7 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:dev3
+    image: shubham554/ayur-catalog-service:dev4
     build: ./catalog-service
     environment:
       - PORT=3002
@@ -107,7 +107,7 @@ services:
 
   # AyurBot Service (Python)
   ayurbot-service:
-    image: shubham554/ayur-ayurbot-service:dev2
+    image: shubham554/ayur-ayurbot-service:dev3
     build: ./ayurbot-service
     env_file:
       - ./ayurbot-service/.env

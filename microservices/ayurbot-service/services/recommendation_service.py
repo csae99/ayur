@@ -14,6 +14,21 @@ class RecommendationService:
         
         with open(json_path, 'r') as f:
             return json.load(f)
+
+    @staticmethod
+    def get_all_known_herbs() -> List[str]:
+        """Get list of all unique herbs known to the system"""
+        symptom_map = RecommendationService.load_symptom_herb_map()
+        herbs = set()
+        for data in symptom_map.values():
+            herbs.update(data.get("herbs", []))
+        return list(herbs)
+
+    @staticmethod
+    def get_all_known_symptoms() -> List[str]:
+        """Get list of all known symptoms/tags from the map"""
+        symptom_map = RecommendationService.load_symptom_herb_map()
+        return list(symptom_map.keys())
     
     @staticmethod
     def get_herb_recommendations(symptoms: List[str]) -> Dict:
@@ -50,7 +65,12 @@ class RecommendationService:
             async with httpx.AsyncClient() as client:
                 # Search for each herb in the catalog
                 results = []
+                seen_titles = set()
+                
                 for herb_name in herb_names[:5]:  # Limit to top 5 herbs
+                    if not herb_name or len(herb_name.strip()) < 2:
+                        continue
+
                     response = await client.get(
                         f"{CATALOG_URL}/items",
                         params={"search": herb_name},
@@ -58,11 +78,17 @@ class RecommendationService:
                     )
                     if response.status_code == 200:
                         items = response.json()
-                        # Add matching items
-                        for item in items[:2]:  # Top 2 per herb
-                            results.append(item)
+                        # Add matching items, avoiding duplicates
+                        for item in items:
+                            title = item.get('item_title', '')
+                            if title and title not in seen_titles:
+                                results.append(item)
+                                seen_titles.add(title)
+                                
+                        if len(results) >= 20: # Collect more to allow filtering downstream
+                            break
                 
-                return results
+                return results[:20] # Let main.py filter and limit to 4
         except Exception as e:
             print(f"Error searching catalog: {e}")
             return []

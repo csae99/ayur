@@ -18,7 +18,16 @@ app.get('/', (req, res) => {
 
 app.get('/items', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM items');
+        const { search } = req.query;
+        let queryText = 'SELECT * FROM items';
+        let queryParams = [];
+
+        if (search) {
+            queryText += ' WHERE item_title ILIKE $1 OR item_tags ILIKE $1';
+            queryParams.push(`%${search}%`);
+        }
+
+        const result = await pool.query(queryText, queryParams);
         res.json(result.rows);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -56,6 +65,25 @@ app.post('/items', async (req, res) => {
             [item_title, item_brand, item_cat, item_details, item_tags, item_image, item_quantity, item_price, added_by, 'Pending']
         );
         res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/items/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { item_title, item_brand, item_cat, item_details, item_tags, item_image, item_quantity, item_price, status } = req.body;
+
+        const result = await pool.query(
+            'UPDATE items SET item_title=$1, item_brand=$2, item_cat=$3, item_details=$4, item_tags=$5, item_image=$6, item_quantity=$7, item_price=$8, status=$9 WHERE id=$10 RETURNING *',
+            [item_title, item_brand, item_cat, item_details, item_tags, item_image, item_quantity, item_price, status, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+        res.json(result.rows[0]);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
