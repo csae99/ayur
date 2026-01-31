@@ -12,11 +12,20 @@ router.get('/stats', adminAuth, async (req, res) => {
         const approvedMedicines = await Item.count({ where: { status: 'Approved' } });
         const rejectedMedicines = await Item.count({ where: { status: 'Rejected' } });
 
+        // Try to get pending edits count, default to 0 if column doesn't exist yet
+        let pendingEdits = 0;
+        try {
+            pendingEdits = await Item.count({ where: { has_pending_edits: true } });
+        } catch (e) {
+            console.log('has_pending_edits column may not exist yet:', e.message);
+        }
+
         res.json({
             totalMedicines,
             pendingMedicines,
             approvedMedicines,
-            rejectedMedicines
+            rejectedMedicines,
+            pendingEdits
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -27,16 +36,23 @@ router.get('/stats', adminAuth, async (req, res) => {
 router.get('/items', adminAuth, async (req, res) => {
     try {
         const { status, search } = req.query;
+        const { Op } = require('sequelize');
         let where = {};
+        let usePendingEditsFilter = false;
 
         // Filter by status
         if (status && status !== 'all') {
-            where.status = status;
+            if (status === 'PendingEdits') {
+                // Special filter for items with pending edits
+                usePendingEditsFilter = true;
+                where.has_pending_edits = true;
+            } else {
+                where.status = status;
+            }
         }
 
         // Search by title, brand, or category
         if (search) {
-            const { Op } = require('sequelize');
             where = {
                 ...where,
                 [Op.or]: [
@@ -47,7 +63,17 @@ router.get('/items', adminAuth, async (req, res) => {
             };
         }
 
-        const items = await Item.findAll({ where });
+        let items;
+        try {
+            items = await Item.findAll({ where });
+        } catch (error) {
+            // If has_pending_edits column doesn't exist, return empty array for that filter
+            if (usePendingEditsFilter && error.message.includes('has_pending_edits')) {
+                items = [];
+            } else {
+                throw error;
+            }
+        }
         res.json(items);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -202,5 +228,85 @@ router.put('/items/:id/stock', adminAuth, async (req, res) => {
     }
 });
 
-module.exports = router;
+// ==================== PENDING EDITS MANAGEMENT ====================
 
+// GET /pending-edits - Get all items with pending edits
+router.get('/pending-edits', adminAuth, async (req, res) => {
+    try {
+        const items = await Item.findAll({
+            where: { has_pending_edits: true },
+            order: [['id', 'DESC']]
+        });
+        res.json(items);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// PUT /pending-edits/:id/approve - Approve pending edits (merge into main fields)
+router.put('/pending-edits/:id/approve', adminAuth, async (req, res) => {
+    try {
+        const item = await Item.findByPk(req.params.id);
+
+        if (!item) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        if (!item.has_pending_edits || !item.pending_edits) {
+            return res.status(400).json({ error: 'No pending edits to approve' });
+        }
+
+        const pendingEdits = item.pending_edits;
+
+        // Merge pending edits into main fields
+        await item.update({
+            item_title: pendingEdits.item_title || item.item_title,
+            item_brand: pendingEdits.item_brand || item.item_brand,
+            item_cat: pendingEdits.item_cat || item.item_cat,
+            item_price: pendingEdits.item_price || item.item_price,
+            item_quantity: pendingEdits.item_quantity !== undefined ? pendingEdits.item_quantity : item.item_quantity,
+            item_details: pendingEdits.item_details || item.item_details,
+            item_tags: pendingEdits.item_tags || item.item_tags,
+            // Clear pending edits
+            pending_edits: null,
+            has_pending_edits: false
+        });
+
+        res.json({
+            message: 'Pending edits approved and applied successfully',
+            item
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// PUT /pending-edits/:id/reject - Reject pending edits (discard them)
+router.put('/pending-edits/:id/reject', adminAuth, async (req, res) => {
+    try {
+        const item = await Item.findByPk(req.params.id);
+
+        if (!item) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        if (!item.has_pending_edits) {
+            return res.status(400).json({ error: 'No pending edits to reject' });
+        }
+
+        // Clear pending edits without applying them
+        await item.update({
+            pending_edits: null,
+            has_pending_edits: false
+        });
+
+        res.json({
+            message: 'Pending edits rejected and discarded',
+            item
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+module.exports = router;

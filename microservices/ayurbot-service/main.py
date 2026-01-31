@@ -19,6 +19,7 @@ from services.dosha_service import DoshaService
 from services.recommendation_service import RecommendationService
 from services.knowledge_service import KnowledgeService
 from services.diet_planner_service import DietPlannerService
+from services.vision_service import VisionService
 
 # Configure Gemini AI
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
@@ -449,6 +450,36 @@ async def get_diet_plan_pdf(dosha: str):
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Failed to generate diet plan: {str(e)}")
+
+
+# ============== Vision Assessment Endpoint ==============
+class VisionAssessmentRequest(BaseModel):
+    image: str  # Base64 encoded image
+    analysis_type: str  # "face", "tongue", or "skin"
+
+
+@app.post("/vision-assessment")
+async def analyze_vision(request: VisionAssessmentRequest):
+    """Analyze an image for dosha indicators using Gemini Vision"""
+    try:
+        if request.analysis_type not in ["face", "tongue", "skin"]:
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid analysis_type. Must be 'face', 'tongue', or 'skin'"
+            )
+        
+        result = await VisionService.analyze_image(
+            request.image,
+            request.analysis_type
+        )
+        
+        return result
+        
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Vision analysis failed: {str(e)}")
 
 
 if __name__ == "__main__":

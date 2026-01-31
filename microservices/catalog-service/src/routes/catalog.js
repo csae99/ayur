@@ -119,13 +119,55 @@ router.post('/items', async (req, res) => {
     }
 });
 
-// Update item
+// Update item - For approved items, stores edits as pending for admin approval
 router.put('/items/:id', async (req, res) => {
     try {
+        const token = req.headers.authorization?.split(' ')[1];
+        const jwt = require('jsonwebtoken');
+        const SECRET_KEY = process.env.JWT_SECRET || 'your_jwt_secret';
+
+        let decoded = null;
+        if (token) {
+            try {
+                decoded = jwt.verify(token, SECRET_KEY);
+            } catch (err) {
+                // Token invalid, continue without auth
+            }
+        }
+
         const item = await Item.findByPk(req.params.id);
         if (!item) return res.status(404).json({ error: 'Item not found' });
-        await item.update(req.body);
-        res.json(item);
+
+        // If item is approved and editor is a practitioner (not admin)
+        // Store edits as pending instead of direct update
+        if (item.status === 'Approved' && decoded?.type !== 'admin') {
+            // Store the proposed changes as pending edits
+            const pendingEdits = {
+                item_title: req.body.item_title,
+                item_brand: req.body.item_brand,
+                item_cat: req.body.item_cat,
+                item_price: req.body.item_price,
+                item_quantity: req.body.item_quantity,
+                item_details: req.body.item_details || req.body.item_desc,
+                item_tags: req.body.item_tags,
+                submitted_at: new Date().toISOString()
+            };
+
+            await item.update({
+                pending_edits: pendingEdits,
+                has_pending_edits: true
+            });
+
+            res.json({
+                ...item.toJSON(),
+                message: 'Changes submitted for admin approval. Current listing remains unchanged until approved.',
+                pending: true
+            });
+        } else {
+            // Direct update for: non-approved items OR admin user
+            await item.update(req.body);
+            res.json(item);
+        }
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

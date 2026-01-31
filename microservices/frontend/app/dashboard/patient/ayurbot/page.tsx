@@ -411,6 +411,13 @@ export default function AyurBotPage() {
                         <i className="fas fa-file-pdf mr-2"></i>
                         Diet Plan
                     </button>
+                    <button
+                        onClick={() => router.push('/dashboard/patient/ayurbot/vision')}
+                        className="px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600 transition-colors"
+                    >
+                        <i className="fas fa-camera mr-2"></i>
+                        Visual Assessment
+                    </button>
                 </div>
             </div>
 
@@ -445,12 +452,12 @@ export default function AyurBotPage() {
                                         key={dosha}
                                         onClick={() => setSelectedDosha(dosha)}
                                         className={`px-4 py-3 rounded-xl font-medium capitalize transition-all ${selectedDosha === dosha
-                                                ? dosha === 'vata'
-                                                    ? 'bg-purple-500 text-white'
-                                                    : dosha === 'pitta'
-                                                        ? 'bg-orange-500 text-white'
-                                                        : 'bg-green-500 text-white'
-                                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                            ? dosha === 'vata'
+                                                ? 'bg-purple-500 text-white'
+                                                : dosha === 'pitta'
+                                                    ? 'bg-orange-500 text-white'
+                                                    : 'bg-green-500 text-white'
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                             }`}
                                     >
                                         {dosha}

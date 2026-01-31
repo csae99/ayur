@@ -12,6 +12,9 @@ const Item = sequelize.define('Item', {
     item_price: { type: DataTypes.INTEGER, allowNull: false },
     added_by: { type: DataTypes.STRING(100), allowNull: true },
     status: { type: DataTypes.STRING(20), defaultValue: 'Pending', allowNull: false },
+    // Pending edits system - stores proposed changes awaiting admin approval
+    pending_edits: { type: DataTypes.JSONB, allowNull: true, defaultValue: null },
+    has_pending_edits: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
 }, {
     tableName: 'items',
     timestamps: false,

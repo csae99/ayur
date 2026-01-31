@@ -16,6 +16,17 @@ interface Medicine {
     item_image: string;
     status: string;
     added_by: string;
+    has_pending_edits?: boolean;
+    pending_edits?: {
+        item_title?: string;
+        item_brand?: string;
+        item_cat?: string;
+        item_price?: number;
+        item_quantity?: number;
+        item_details?: string;
+        item_tags?: string;
+        submitted_at?: string;
+    };
 }
 
 export default function MedicineDetailPage() {
@@ -84,6 +95,80 @@ export default function MedicineDetailPage() {
         }
     };
 
+    const handleApprovePendingEdits = async () => {
+        if (!confirm('Approve these changes? The medicine listing will be updated.')) return;
+
+        const token = localStorage.getItem('token');
+        setProcessing(true);
+
+        try {
+            const res = await fetch(`http://localhost/api/catalog/admin/pending-edits/${params.id}/approve`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                const updated = await res.json();
+                setMedicine({ ...updated, has_pending_edits: false, pending_edits: undefined });
+                alert('Pending edits approved and applied!');
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Failed to approve edits');
+            }
+        } catch (err) {
+            console.error('Error approving edits:', err);
+            alert('An error occurred');
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    const handleRejectPendingEdits = async () => {
+        if (!confirm('Reject these changes? The edits will be discarded.')) return;
+
+        const token = localStorage.getItem('token');
+        setProcessing(true);
+
+        try {
+            const res = await fetch(`http://localhost/api/catalog/admin/pending-edits/${params.id}/reject`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                setMedicine(prev => prev ? { ...prev, has_pending_edits: false, pending_edits: undefined } : null);
+                alert('Pending edits rejected and discarded.');
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Failed to reject edits');
+            }
+        } catch (err) {
+            console.error('Error rejecting edits:', err);
+            alert('An error occurred');
+        } finally {
+            setProcessing(false);
+        }
+    };
+
+    const renderDiff = (label: string, current: any, proposed: any) => {
+        if (proposed === undefined || proposed === null || proposed === current) return null;
+        return (
+            <div className="mb-3 p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-700 mb-1">{label}</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="bg-red-50 p-2 rounded border-l-4 border-red-400">
+                        <span className="text-red-600 font-medium">Current: </span>
+                        <span className="text-gray-700">{String(current) || '(empty)'}</span>
+                    </div>
+                    <div className="bg-green-50 p-2 rounded border-l-4 border-green-400">
+                        <span className="text-green-600 font-medium">Proposed: </span>
+                        <span className="text-gray-700">{String(proposed) || '(empty)'}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -146,6 +231,11 @@ export default function MedicineDetailPage() {
                                 {medicine.status === 'Pending' && (
                                     <span className="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold">Pending Review</span>
                                 )}
+                                {medicine.has_pending_edits && (
+                                    <span className="px-4 py-2 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold mt-2 block">
+                                        <i className="fas fa-clock mr-1"></i> Edits Pending
+                                    </span>
+                                )}
                             </div>
                         </div>
 
@@ -182,6 +272,56 @@ export default function MedicineDetailPage() {
                                     <p className="text-gray-800">{medicine.item_details}</p>
                                 </div>
                             </div>
+
+                            {/* Pending Edits Section */}
+                            {medicine.has_pending_edits && medicine.pending_edits && (
+                                <div className="border-t border-orange-200 pt-6 mb-6 bg-orange-50 -mx-8 px-8 py-6">
+                                    <h2 className="text-xl font-bold text-orange-700 mb-4">
+                                        <i className="fas fa-clock mr-2"></i>
+                                        Pending Edits Review
+                                    </h2>
+                                    <p className="text-sm text-gray-600 mb-4">
+                                        The practitioner has submitted the following changes for approval:
+                                    </p>
+
+                                    <div className="space-y-2">
+                                        {renderDiff('Title', medicine.item_title, medicine.pending_edits.item_title)}
+                                        {renderDiff('Brand', medicine.item_brand, medicine.pending_edits.item_brand)}
+                                        {renderDiff('Category', medicine.item_cat, medicine.pending_edits.item_cat)}
+                                        {renderDiff('Price (₹)', medicine.item_price, medicine.pending_edits.item_price)}
+                                        {renderDiff('Stock Quantity', medicine.item_quantity, medicine.pending_edits.item_quantity)}
+                                        {renderDiff('Tags', medicine.item_tags, medicine.pending_edits.item_tags)}
+                                        {renderDiff('Description', medicine.item_details, medicine.pending_edits.item_details)}
+                                    </div>
+
+                                    <div className="flex gap-4 mt-6">
+                                        <button
+                                            onClick={handleRejectPendingEdits}
+                                            disabled={processing}
+                                            className="flex-1 py-3 bg-red-100 text-red-700 rounded-lg font-medium hover:bg-red-200 transition-colors disabled:opacity-50"
+                                        >
+                                            {processing ? (
+                                                <i className="fas fa-spinner fa-spin mr-2"></i>
+                                            ) : (
+                                                <i className="fas fa-times mr-2"></i>
+                                            )}
+                                            Reject Edits
+                                        </button>
+                                        <button
+                                            onClick={handleApprovePendingEdits}
+                                            disabled={processing}
+                                            className="flex-1 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50"
+                                        >
+                                            {processing ? (
+                                                <i className="fas fa-spinner fa-spin mr-2"></i>
+                                            ) : (
+                                                <i className="fas fa-check mr-2"></i>
+                                            )}
+                                            Approve & Apply Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Status Actions */}
                             <div className="border-t border-gray-200 pt-6">
