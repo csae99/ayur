@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ayurbot-service
+description: AyurBot AI chatbot service for Ayurveda Platform
+type: application
+version: 1.0.0
+appVersion: "dev3"

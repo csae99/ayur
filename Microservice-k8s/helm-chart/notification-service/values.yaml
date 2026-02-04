@@ -1,0 +1,28 @@
+replicaCount: 1
+
+image:
+  repository: shubham554/ayur-notification-service
+  tag: "dev"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3004
+
+# SMTP configuration
+smtp:
+  host: "smtp.gmail.com"
+  port: "587"
+  user: ""
+  pass: ""
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+secrets:
+  create: true

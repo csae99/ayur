@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # API Gateway
   api-gateway:
-    image: shubham554/ayur-api-gateway:dev2
+    image: shubham554/ayur-api-gateway:dev3
     build: ./api-gateway
     ports:
       - "80:80"
@@ -28,7 +28,7 @@ services:
 
   # Identity Service (Node.js)
   identity-service:
-    image: shubham554/ayur-identity-service:dev3
+    image: shubham554/ayur-identity-service:dev4
     build: ./identity-service
     environment:
       - PORT=3001
@@ -49,7 +49,7 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:dev5
+    image: shubham554/ayur-catalog-service:dev6
     build: ./catalog-service
     environment:
       - PORT=3002
@@ -74,7 +74,7 @@ services:
 
   # Order Service (Node.js)
   order-service:
-    image: shubham554/ayur-order-service:dev3
+    image: shubham554/ayur-order-service:dev4
     build: ./order-service
     environment:
       - PORT=3003
@@ -107,7 +107,7 @@ services:
 
   # AyurBot Service (Python)
   ayurbot-service:
-    image: shubham554/ayur-ayurbot-service:dev3
+    image: shubham554/ayur-ayurbot-service:dev4
     build: ./ayurbot-service
     env_file:
       - ./ayurbot-service/.env

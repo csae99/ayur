@@ -9,7 +9,8 @@ const prescriptionRoutes = require('./routes/prescriptions'); // Added prescript
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// app.use(cors()); // CORS handled by API Gateway
+// Enable CORS for all origins
+app.use(cors());
 app.use(express.json());
 
 // Serve static files

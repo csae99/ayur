@@ -1,0 +1,36 @@
+replicaCount: 1
+
+image:
+  repository: shubham554/ayur-ayurbot-service
+  tag: "dev4"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8000
+
+# MongoDB Atlas connection
+mongodb:
+  uri: ""
+
+# Gemini API Key
+gemini:
+  apiKey: ""
+
+# Persistent Volume for vector store
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 5Gi
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+secrets:
+  create: true

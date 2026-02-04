@@ -1,0 +1,21 @@
+replicaCount: 1
+
+image:
+  repository: libretranslate/libretranslate
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+env:
+  LT_LOAD_ONLY: "en,hi,es,fr,zh"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi

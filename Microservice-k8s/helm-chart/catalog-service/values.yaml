@@ -1,0 +1,48 @@
+replicaCount: 1
+
+image:
+  repository: shubham554/ayur-catalog-service
+  tag: "dev6"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3002
+
+# Database configuration (Supabase)
+database:
+  host: "aws-1-ap-northeast-2.pooler.supabase.com"
+  port: "5432"
+  user: "postgres.mdbkdbfztsfhzfjhlper"
+  name: "postgres"
+  password: ""
+
+# S3 configuration
+s3:
+  endpoint: "https://mdbkdbfztsfhzfjhlper.storage.supabase.co/storage/v1/s3"
+  region: "ap-northeast-2"
+  bucketName: "documentverificationbucket"
+  accessKey: ""
+  secretKey: ""
+
+# JWT Secret
+jwtSecret: ""
+
+# Redis URL (internal service)
+redis:
+  url: "redis://ayur-redis:6379"
+
+# LibreTranslate URL (internal service)
+libretranslate:
+  url: "http://ayur-libretranslate:5000"
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+secrets:
+  create: true

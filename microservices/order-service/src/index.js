@@ -7,6 +7,8 @@ const orderRoutes = require('./routes/orders');
 const app = express();
 const PORT = process.env.PORT || 3003;
 
+// Enable CORS for all origins
+app.use(cors());
 app.use(express.json());
 
 // Request logging for debug

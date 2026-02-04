@@ -1,0 +1,118 @@
+{{- if .Values.configmap.create }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "api-gateway.fullname" . }}-nginx-config
+  labels:
+    {{- include "api-gateway.labels" . | nindent 4 }}
+data:
+  nginx.conf: |
+    worker_processes auto;
+    events {
+        worker_connections 1024;
+    }
+    http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+        sendfile        on;
+        keepalive_timeout  65;
+        client_max_body_size 50M;
+
+        # Upstream definitions
+        upstream frontend {
+            server {{ .Values.services.frontend }};
+        }
+        upstream identity-service {
+            server {{ .Values.services.identity }};
+        }
+        upstream catalog-service {
+            server {{ .Values.services.catalog }};
+        }
+        upstream order-service {
+            server {{ .Values.services.order }};
+        }
+        upstream notification-service {
+            server {{ .Values.services.notification }};
+        }
+        upstream ayurbot-service {
+            server {{ .Values.services.ayurbot }};
+        }
+
+        server {
+            listen 80;
+            server_name _;
+
+            # Frontend
+            location / {
+                proxy_pass http://frontend;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_cache_bypass $http_upgrade;
+            }
+
+            # Identity Service API
+            location /api/identity/ {
+                proxy_pass http://identity-service/;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # Catalog Service API
+            location /api/catalog/ {
+                proxy_pass http://catalog-service/;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # Order Service API
+            location /api/orders/ {
+                proxy_pass http://order-service/;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # Notification Service API
+            location /api/notifications/ {
+                proxy_pass http://notification-service/;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # AyurBot Service API
+            location /api/ayurbot/ {
+                proxy_pass http://ayurbot-service/;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_read_timeout 300;
+                proxy_send_timeout 300;
+            }
+
+            # Health check
+            location /health {
+                access_log off;
+                return 200 "healthy\n";
+                add_header Content-Type text/plain;
+            }
+        }
+    }
+{{- end }}

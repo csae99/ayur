@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ayurbot-service.fullname" . }}
+  labels:
+    {{- include "ayurbot-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ayurbot-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ayurbot-service.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "8000"
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ayurbot-service.fullname" . }}-secrets
+                  key: MONGO_URI
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "ayurbot-service.fullname" . }}-secrets
+                  key: GEMINI_API_KEY
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: vector-store
+              mountPath: /app/data/vector_store
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: vector-store
+          persistentVolumeClaim:
+            claimName: {{ include "ayurbot-service.fullname" . }}-vector-store
+        {{- end }}

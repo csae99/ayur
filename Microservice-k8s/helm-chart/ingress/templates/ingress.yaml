@@ -1,0 +1,77 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "ingress.fullname" . }}
+  labels:
+    {{- include "ingress.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.annotations | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingressClassName }}
+  {{- if .Values.tls.enabled }}
+  tls:
+    - hosts:
+        {{- range .Values.hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .Values.tls.secretName }}
+  {{- end }}
+  rules:
+    {{- range .Values.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          # Frontend - default route (must be last due to catch-all)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $.Values.services.frontend.name }}
+                port:
+                  number: {{ $.Values.services.frontend.port }}
+          
+          # Identity Service API
+          - path: /api/identity(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $.Values.services.identity.name }}
+                port:
+                  number: {{ $.Values.services.identity.port }}
+          
+          # Catalog Service API
+          - path: /api/catalog(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $.Values.services.catalog.name }}
+                port:
+                  number: {{ $.Values.services.catalog.port }}
+          
+          # Order Service API
+          - path: /api/orders(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $.Values.services.order.name }}
+                port:
+                  number: {{ $.Values.services.order.port }}
+          
+          # Notification Service API
+          - path: /api/notifications(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $.Values.services.notification.name }}
+                port:
+                  number: {{ $.Values.services.notification.port }}
+          
+          # AyurBot Service API
+          - path: /api/bot(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $.Values.services.ayurbot.name }}
+                port:
+                  number: {{ $.Values.services.ayurbot.port }}
+    {{- end }}

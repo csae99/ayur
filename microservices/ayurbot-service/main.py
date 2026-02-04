@@ -55,15 +55,14 @@ async def lifespan(app: FastAPI):
 # FastAPI app with lifespan
 app = FastAPI(title="AyurBot Service", version="1.0.0", lifespan=lifespan)
 
-# CORS middleware
-# CORS middleware - Handled by API Gateway
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+# CORS middleware - enabled for all origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Pydantic models
 class ChatMessage(BaseModel):

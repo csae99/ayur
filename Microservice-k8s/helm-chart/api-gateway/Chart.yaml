@@ -1,0 +1,6 @@
+apiVersion: v2
+name: api-gateway
+description: Nginx API Gateway for Ayurveda Platform
+type: application
+version: 1.0.0
+appVersion: "dev2"

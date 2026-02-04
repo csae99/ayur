@@ -1,0 +1,6 @@
+apiVersion: v2
+name: catalog-service
+description: Catalog/Medicine service for Ayurveda Platform
+type: application
+version: 1.0.0
+appVersion: "dev5"

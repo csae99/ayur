@@ -1,0 +1,43 @@
+replicaCount: 1
+
+image:
+  repository: shubham554/ayur-identity-service
+  tag: "dev4"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3001
+
+# Database configuration (Supabase)
+database:
+  host: "aws-1-ap-northeast-2.pooler.supabase.com"
+  port: "5432"
+  user: "postgres.mdbkdbfztsfhzfjhlper"
+  name: "postgres"
+  # Password should be provided via --set or secrets
+  password: ""
+
+# S3 configuration
+s3:
+  endpoint: "https://mdbkdbfztsfhzfjhlper.storage.supabase.co/storage/v1/s3"
+  region: "ap-northeast-2"
+  bucketName: "documentverificationbucket"
+  # Keys should be provided via --set or secrets
+  accessKey: ""
+  secretKey: ""
+
+# JWT Secret (should be provided via --set or secrets)
+jwtSecret: ""
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+# Create secrets from values
+secrets:
+  create: true

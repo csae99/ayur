@@ -1,0 +1,54 @@
+replicaCount: 1
+
+image:
+  repository: shubham554/ayur-api-gateway
+  tag: "dev3"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+# Backend service names (used in nginx.conf ConfigMap)
+services:
+  frontend: "ayur-frontend:3000"
+  identity: "ayur-identity-service:3001"
+  catalog: "ayur-catalog-service:3002"
+  order: "ayur-order-service:3003"
+  notification: "ayur-notification-service:3004"
+  ayurbot: "ayur-ayurbot-service:8000"
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+  hosts:
+    - host: ayurved.xyz
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: www.ayurved.xyz
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  # - secretName: ayurved-tls
+  #   hosts:
+  #     - ayurved.xyz
+  #     - www.ayurved.xyz
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# ConfigMap for nginx configuration
+configmap:
+  create: true

@@ -1,0 +1,37 @@
+replicaCount: 1
+
+image:
+  repository: shubham554/ayur-order-service
+  tag: "dev4"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3003
+
+# Database configuration (Supabase)
+database:
+  host: "aws-1-ap-northeast-2.pooler.supabase.com"
+  port: "5432"
+  user: "postgres.mdbkdbfztsfhzfjhlper"
+  name: "postgres"
+  password: ""
+
+# JWT Secret
+jwtSecret: ""
+
+# Razorpay configuration
+razorpay:
+  keyId: ""
+  keySecret: ""
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+secrets:
+  create: true

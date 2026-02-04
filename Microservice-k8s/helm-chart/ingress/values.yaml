@@ -1,0 +1,48 @@
+# Ingress configuration for nginx-ingress controller
+# This replaces the api-gateway service for K8s deployments
+
+ingressClassName: nginx
+
+# Domain configuration
+hosts:
+  - ayurved.xyz
+  - www.ayurved.xyz
+
+# TLS configuration (uncomment to enable HTTPS)
+tls:
+  enabled: false
+  # secretName: ayurved-tls
+
+# Service endpoints (internal K8s service names)
+services:
+  frontend:
+    name: ayur-frontend
+    port: 3000
+  identity:
+    name: ayur-identity-service
+    port: 3001
+  catalog:
+    name: ayur-catalog-service
+    port: 3002
+  order:
+    name: ayur-order-service
+    port: 3003
+  notification:
+    name: ayur-notification-service
+    port: 3004
+  ayurbot:
+    name: ayur-ayurbot-service
+    port: 8000
+
+# Nginx Ingress annotations
+annotations:
+  # Enable regex for path matching
+  nginx.ingress.kubernetes.io/use-regex: "true"
+  # Path rewriting: /api/identity/auth -> /auth
+  nginx.ingress.kubernetes.io/rewrite-target: /$2
+  # Increase body size for file uploads
+  nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+  # Increase timeouts for long-running requests (AI bot)
+  nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+  nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+  # CORS is handled by microservices, not ingress
