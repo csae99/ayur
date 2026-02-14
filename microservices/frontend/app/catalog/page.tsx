@@ -41,7 +41,7 @@ export default function CatalogPage() {
             queryParams.append('min_price', filters.minPrice.toString());
             queryParams.append('max_price', filters.maxPrice.toString());
 
-            const res = await fetch(`http://localhost/api/catalog/items?${queryParams.toString()}`);
+            const res = await fetch(`${window.location.origin}/api/catalog/items?${queryParams.toString()}`);
             if (res.ok) {
                 const data = await res.json();
                 setItems(data);
@@ -88,7 +88,7 @@ export default function CatalogPage() {
         setAddingToCart(itemId);
 
         try {
-            const response = await fetch('http://localhost/api/orders/orders', {
+            const response = await fetch(`${window.location.origin}/api/orders/orders`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

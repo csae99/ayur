@@ -33,8 +33,8 @@ export default function RegisterPage() {
         setError('');
         setLoading(true);
         const endpoint = activeTab === 'patient'
-            ? 'http://localhost/api/identity/auth/register/patient'
-            : 'http://localhost/api/identity/auth/register/practitioner';
+            ? `${window.location.origin}/api/identity/auth/register/patient`
+            : `${window.location.origin}/api/identity/auth/register/practitioner`;
 
         try {
             const res = await fetch(endpoint, {

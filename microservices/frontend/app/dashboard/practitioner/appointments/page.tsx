@@ -37,7 +37,7 @@ export default function PractitionerAppointmentsPage() {
             return;
         }
 
-        fetch('http://localhost/api/identity/appointments/practitioner', {
+        fetch(`${window.location.origin}/api/identity/appointments/practitioner`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => res.json())
@@ -57,7 +57,7 @@ export default function PractitionerAppointmentsPage() {
 
     const handleStatusUpdate = (id: number, newStatus: string) => {
         const token = localStorage.getItem('token');
-        fetch(`http://localhost/api/identity/appointments/${id}/status`, {
+        fetch(`${window.location.origin}/api/identity/appointments/${id}/status`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

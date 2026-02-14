@@ -41,7 +41,7 @@ export default function PractitionerProfilePage({ params }: { params: { id: stri
             }
         }
 
-        fetch(`http://localhost/api/identity/practitioners/public/${params.id}`)
+        fetch(`${window.location.origin}/api/identity/practitioners/public/${params.id}`)
             .then(res => {
                 if (!res.ok) throw new Error('Practitioner not found');
                 return res.json();
@@ -67,7 +67,7 @@ export default function PractitionerProfilePage({ params }: { params: { id: stri
         if (!token) return;
 
         try {
-            const response = await fetch('http://localhost/api/identity/appointments/book', {
+            const response = await fetch(`${window.location.origin}/api/identity/appointments/book`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

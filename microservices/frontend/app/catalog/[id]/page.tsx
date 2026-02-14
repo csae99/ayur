@@ -61,7 +61,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
             setLoading(true);
 
             // Fetch item details
-            const itemRes = await fetch(`http://localhost/api/catalog/items/${params.id}`);
+            const itemRes = await fetch(`${window.location.origin}/api/catalog/items/${params.id}`);
             if (!itemRes.ok) {
                 if (itemRes.status === 404) return notFound();
                 throw new Error('Failed to fetch item');
@@ -81,7 +81,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
 
     const fetchReviews = async () => {
         try {
-            const reviewRes = await fetch(`http://localhost/api/catalog/items/${params.id}/reviews`);
+            const reviewRes = await fetch(`${window.location.origin}/api/catalog/items/${params.id}/reviews`);
             if (reviewRes.ok) {
                 const reviewData = await reviewRes.json();
                 setReviews(reviewData.reviews);
@@ -114,7 +114,7 @@ export default function ProductDetailsPage({ params }: { params: { id: string } 
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch('http://localhost/api/orders/cart/add', {
+            const response = await fetch(`${window.location.origin}/api/orders/cart/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

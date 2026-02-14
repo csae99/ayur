@@ -40,7 +40,7 @@ export default function AvailabilityPage() {
         // But frontend usually only has user.id if logged in. 
         // Let's assume user.id matches practitioner.id for now (identity service usually returns id).
 
-        fetch(`http://localhost/api/identity/availability/${user.id}`, {
+        fetch(`${window.location.origin}/api/identity/availability/${user.id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => {
@@ -87,7 +87,7 @@ export default function AvailabilityPage() {
         const token = localStorage.getItem('token');
 
         try {
-            const res = await fetch('http://localhost/api/identity/availability', {
+            const res = await fetch(`${window.location.origin}/api/identity/availability`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

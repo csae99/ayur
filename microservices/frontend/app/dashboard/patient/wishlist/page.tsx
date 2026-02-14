@@ -40,7 +40,7 @@ export default function WishlistPage() {
     const fetchWishlist = async (token: string) => {
         try {
             // 1. Get Wishlist IDs
-            const resIds = await fetch('http://localhost/api/orders/wishlist', {
+            const resIds = await fetch(`${window.location.origin}/api/orders/wishlist`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!resIds.ok) throw new Error('Failed to fetch wishlist');
@@ -57,7 +57,7 @@ export default function WishlistPage() {
             const items = await Promise.all(
                 itemIds.map(async (id) => {
                     try {
-                        const res = await fetch(`http://localhost/api/catalog/items/${id}`);
+                        const res = await fetch(`${window.location.origin}/api/catalog/items/${id}`);
                         if (res.ok) return await res.json();
                         return null;
                     } catch (e) {

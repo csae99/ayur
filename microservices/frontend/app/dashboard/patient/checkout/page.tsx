@@ -87,7 +87,7 @@ export default function CheckoutPage() {
         const pricing = calculatePricing(); // This calculates without discount first
 
         try {
-            const response = await fetch('http://localhost/api/orders/coupons/apply', {
+            const response = await fetch(`${window.location.origin}/api/orders/coupons/apply`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ export default function CheckoutPage() {
 
     const fetchCart = () => {
         const token = localStorage.getItem('token');
-        fetch('http://localhost/api/orders/cart', {
+        fetch(`${window.location.origin}/api/orders/cart`, {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then(res => res.json())
@@ -124,7 +124,7 @@ export default function CheckoutPage() {
 
     const fetchAddresses = () => {
         const token = localStorage.getItem('token');
-        fetch('http://localhost/api/orders/checkout/addresses', {
+        fetch(`${window.location.origin}/api/orders/checkout/addresses`, {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then(res => res.json())
@@ -143,7 +143,7 @@ export default function CheckoutPage() {
         setLoading(true);
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch('http://localhost/api/orders/checkout/addresses', {
+            const res = await fetch(`${window.location.origin}/api/orders/checkout/addresses`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -172,7 +172,7 @@ export default function CheckoutPage() {
         const token = localStorage.getItem('token');
         try {
             // 1. Create Order in Database (Confirmed if COD, Pending if Razorpay)
-            const response = await fetch('http://localhost/api/orders/checkout', {
+            const response = await fetch(`${window.location.origin}/api/orders/checkout`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -201,11 +201,11 @@ export default function CheckoutPage() {
                 const pricing = calculatePricing();
 
                 // Fetch Razorpay key from config API
-                const configRes = await fetch('http://localhost/api/orders/payments/config');
+                const configRes = await fetch(`${window.location.origin}/api/orders/payments/config`);
                 const config = await configRes.json();
 
                 // create razorpay order
-                const rzpOrderRes = await fetch('http://localhost/api/orders/payments/create-order', {
+                const rzpOrderRes = await fetch(`${window.location.origin}/api/orders/payments/create-order`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -231,7 +231,7 @@ export default function CheckoutPage() {
                     handler: async function (response: any) {
                         // Verify Payment
                         try {
-                            const verifyRes = await fetch('http://localhost/api/orders/payments/verify', {
+                            const verifyRes = await fetch(`${window.location.origin}/api/orders/payments/verify`, {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',

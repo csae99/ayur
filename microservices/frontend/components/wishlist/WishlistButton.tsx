@@ -40,7 +40,7 @@ export default function WishlistButton({ itemId, initialInWishlist = false, onTo
         try {
             if (inWishlist) {
                 // Remove
-                const res = await fetch(`http://localhost/api/orders/wishlist/${itemId}`, {
+                const res = await fetch(`${window.location.origin}/api/orders/wishlist/${itemId}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -50,7 +50,7 @@ export default function WishlistButton({ itemId, initialInWishlist = false, onTo
                 }
             } else {
                 // Add
-                const res = await fetch('http://localhost/api/orders/wishlist', {
+                const res = await fetch(`${window.location.origin}/api/orders/wishlist`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

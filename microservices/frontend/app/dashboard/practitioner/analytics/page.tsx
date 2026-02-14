@@ -34,10 +34,10 @@ export default function PractitionerAnalyticsPage() {
         }
 
         Promise.allSettled([
-            fetch('http://localhost/api/identity/practitioners/stats', {
+            fetch(`${window.location.origin}/api/identity/practitioners/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(res => res.ok ? res.json() : null),
-            fetch('http://localhost/api/orders/analytics/practitioner/stats', {
+            fetch(`${window.location.origin}/api/orders/analytics/practitioner/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(res => res.ok ? res.json() : null)
         ]).then(([identityResult, orderResult]) => {

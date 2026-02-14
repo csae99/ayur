@@ -50,7 +50,7 @@ export default function AddMedicinePage() {
                 // Use the new S3 upload endpoint we just created
                 // Determine API base URL (can be refactored to config)
                 // Assuming client-side, we use /api/catalog proxy if set up, or direct URL
-                // The user's code uses http://localhost/api/catalog currently (via proxy or direct)
+                // The user's code uses ${window.location.origin}/api/catalog currently (via proxy or direct)
                 // Let's use /api/catalog/upload assuming Nginx routes /api/catalog -> catalog-service
 
                 // WAIT: In previous files, they used /api/identity directly.

@@ -36,7 +36,7 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
         }
 
         // Fetch order details
-        fetch(`http://localhost/api/orders/orders/${params.id}`, {
+        fetch(`${window.location.origin}/api/orders/orders/${params.id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -55,7 +55,7 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
             .then(async (orderData) => {
                 // Fetch item details for this order
                 try {
-                    const itemRes = await fetch(`http://localhost/api/catalog/items/${orderData.item_id}`);
+                    const itemRes = await fetch(`${window.location.origin}/api/catalog/items/${orderData.item_id}`);
                     if (itemRes.ok) {
                         const itemData = await itemRes.json();
                         setOrder({ ...orderData, item: itemData });

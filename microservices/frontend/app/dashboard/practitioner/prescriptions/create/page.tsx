@@ -35,7 +35,7 @@ export default function CreatePrescriptionPage() {
         const token = localStorage.getItem('token');
 
         // Fetch Patients
-        fetch('http://localhost/api/identity/appointments/practitioner', {
+        fetch(`${window.location.origin}/api/identity/appointments/practitioner`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => res.json())
@@ -53,7 +53,7 @@ export default function CreatePrescriptionPage() {
             .catch(err => console.error(err));
 
         // Fetch Catalog Items
-        fetch('http://localhost/api/catalog/items', {
+        fetch(`${window.location.origin}/api/catalog/items`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => res.json())
@@ -95,7 +95,7 @@ export default function CreatePrescriptionPage() {
         const token = localStorage.getItem('token');
 
         try {
-            const res = await fetch('http://localhost/api/identity/prescriptions', {
+            const res = await fetch(`${window.location.origin}/api/identity/prescriptions`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

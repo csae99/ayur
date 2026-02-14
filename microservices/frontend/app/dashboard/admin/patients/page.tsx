@@ -37,7 +37,7 @@ export default function PatientsPage() {
         }
 
         // Fetch patients
-        const url = `http://localhost/api/identity/admin/patients?search=${searchQuery}`;
+        const url = `${window.location.origin}/api/identity/admin/patients?search=${searchQuery}`;
         fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         })

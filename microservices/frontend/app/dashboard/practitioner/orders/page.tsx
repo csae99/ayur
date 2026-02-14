@@ -28,7 +28,7 @@ export default function PractitionerOrdersPage() {
             const token = localStorage.getItem('token');
 
             // Fetch all orders (practitioners see all orders in simplified model)
-            const response = await fetch('http://localhost/api/orders', {
+            const response = await fetch(`${window.location.origin}/api/orders`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -46,7 +46,7 @@ export default function PractitionerOrdersPage() {
             const ordersWithDetails = await Promise.all(
                 data.map(async (order: OrderItem) => {
                     try {
-                        const itemResponse = await fetch(`http://localhost/api/catalog/items/${order.item_id}`);
+                        const itemResponse = await fetch(`${window.location.origin}/api/catalog/items/${order.item_id}`);
                         if (itemResponse.ok) {
                             const item = await itemResponse.json();
                             return { ...order, item };
@@ -79,7 +79,7 @@ export default function PractitionerOrdersPage() {
                 body.tracking_number = trackingNumber;
             }
 
-            const response = await fetch(`http://localhost/api/orders/${orderId}/status`, {
+            const response = await fetch(`${window.location.origin}/api/orders/${orderId}/status`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,

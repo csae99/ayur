@@ -83,7 +83,7 @@ export const authUtils = {
         if (!refreshToken) return null;
 
         try {
-            const response = await fetch('http://localhost/api/identity/auth/refresh', {
+            const response = await fetch(`${window.location.origin}/api/identity/auth/refresh`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refreshToken })
@@ -111,7 +111,7 @@ export const authUtils = {
 
         if (refreshToken) {
             try {
-                await fetch('http://localhost/api/identity/auth/logout', {
+                await fetch(`${window.location.origin}/api/identity/auth/logout`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ refreshToken })

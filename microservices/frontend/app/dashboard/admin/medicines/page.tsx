@@ -41,7 +41,7 @@ export default function MedicinesPage() {
         }
 
         // Fetch medicines
-        const url = `http://localhost/api/catalog/admin/items?status=${statusFilter}&search=${searchQuery}`;
+        const url = `${window.location.origin}/api/catalog/admin/items?status=${statusFilter}&search=${searchQuery}`;
         fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         })

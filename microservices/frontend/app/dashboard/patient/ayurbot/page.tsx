@@ -184,7 +184,7 @@ export default function AyurBotPage() {
     const downloadDietPlan = async () => {
         setDownloadingPdf(true);
         try {
-            const response = await fetch(`http://localhost/api/bot/diet-plan/${selectedDosha}`, {
+            const response = await fetch(`${window.location.origin}/api/bot/diet-plan/${selectedDosha}`, {
                 method: 'GET',
             });
 
@@ -214,7 +214,7 @@ export default function AyurBotPage() {
         setLoadingHistory(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost/api/bot/user/${userId}/conversations`, {
+            const response = await fetch(`${window.location.origin}/api/bot/user/${userId}/conversations`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -233,7 +233,7 @@ export default function AyurBotPage() {
     const loadConversation = async (convSessionId: string) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost/api/bot/history/${convSessionId}`, {
+            const response = await fetch(`${window.location.origin}/api/bot/history/${convSessionId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -258,7 +258,7 @@ export default function AyurBotPage() {
     const handleAddToCart = async (product: Product) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost/api/orders/cart/add', {
+            const response = await fetch(`${window.location.origin}/api/orders/cart/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -297,7 +297,7 @@ export default function AyurBotPage() {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost/api/bot/chat', {
+            const response = await fetch(`${window.location.origin}/api/bot/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -55,7 +55,7 @@ export default function PendingEditsPage() {
     const fetchPendingEdits = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost/api/catalog/admin/pending-edits', {
+            const response = await fetch(`${window.location.origin}/api/catalog/admin/pending-edits`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -75,7 +75,7 @@ export default function PendingEditsPage() {
         setProcessing(id);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost/api/catalog/admin/pending-edits/${id}/approve`, {
+            const response = await fetch(`${window.location.origin}/api/catalog/admin/pending-edits/${id}/approve`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -100,7 +100,7 @@ export default function PendingEditsPage() {
         setProcessing(id);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost/api/catalog/admin/pending-edits/${id}/reject`, {
+            const response = await fetch(`${window.location.origin}/api/catalog/admin/pending-edits/${id}/reject`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

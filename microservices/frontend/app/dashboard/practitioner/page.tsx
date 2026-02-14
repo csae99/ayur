@@ -45,14 +45,14 @@ export default function PractitionerDashboard() {
         const fetchData = async () => {
             try {
                 // Fetch practitioner details
-                const practRes = await fetch(`http://localhost/api/identity/auth/practitioner/${user.username}`);
+                const practRes = await fetch(`${window.location.origin}/api/identity/auth/practitioner/${user.username}`);
                 if (practRes.ok) {
                     const practData = await practRes.json();
                     setPractitioner(practData);
                 }
 
                 // Fetch medicines
-                const medRes = await fetch(`http://localhost/api/catalog/items/practitioner/${user.username}`);
+                const medRes = await fetch(`${window.location.origin}/api/catalog/items/practitioner/${user.username}`);
                 if (medRes.ok) {
                     const medData = await medRes.json();
                     setMedicines(medData);

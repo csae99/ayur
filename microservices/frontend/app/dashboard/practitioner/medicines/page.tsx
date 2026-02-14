@@ -58,7 +58,7 @@ export default function MyMedicinesPage() {
         const fetchData = async () => {
             // Fetch practitioner details for verification status
             try {
-                const practRes = await fetch(`http://localhost/api/identity/auth/practitioner/${user.username}`);
+                const practRes = await fetch(`${window.location.origin}/api/identity/auth/practitioner/${user.username}`);
                 if (practRes.ok) {
                     const practData = await practRes.json();
                     setPractitioner(practData);
@@ -69,7 +69,7 @@ export default function MyMedicinesPage() {
 
             // Fetch medicines
             try {
-                const res = await fetch(`http://localhost/api/catalog/items/practitioner/${user.username}`);
+                const res = await fetch(`${window.location.origin}/api/catalog/items/practitioner/${user.username}`);
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 const data = await res.json();
 
@@ -112,7 +112,7 @@ export default function MyMedicinesPage() {
         if (!confirm('Are you sure you want to delete this medicine? This action cannot be undone.')) return;
 
         const token = localStorage.getItem('token');
-        fetch(`http://localhost/api/catalog/items/${id}`, {
+        fetch(`${window.location.origin}/api/catalog/items/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -149,7 +149,7 @@ export default function MyMedicinesPage() {
         setSaving(true);
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost/api/catalog/items/${editingMedicine.id}`, {
+            const response = await fetch(`${window.location.origin}/api/catalog/items/${editingMedicine.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

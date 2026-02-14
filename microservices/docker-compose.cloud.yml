@@ -19,7 +19,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:dev18
+    image: shubham554/ayur-frontend:dev19
     build: ./frontend
     ports:
       - "3000:3000"

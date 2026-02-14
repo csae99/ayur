@@ -37,7 +37,7 @@ export default function BookingCalendar({ practitionerId, onSelectSlot }: Bookin
         const fetchSlots = async (date: string) => {
             setLoading(true);
             try {
-                const res = await fetch(`http://localhost/api/identity/availability/${practitionerId}/slots?date=${date}`);
+                const res = await fetch(`${window.location.origin}/api/identity/availability/${practitionerId}/slots?date=${date}`);
                 if (res.ok) {
                     const data = await res.json();
                     setAvailableSlots(data); // Expecting text array ["09:00", "10:00"]

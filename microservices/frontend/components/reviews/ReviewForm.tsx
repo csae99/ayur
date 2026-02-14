@@ -31,7 +31,7 @@ export default function ReviewForm({ itemId, onReviewSubmitted }: ReviewFormProp
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(`http://localhost/api/catalog/items/${itemId}/reviews`, {
+            const response = await fetch(`${window.location.origin}/api/catalog/items/${itemId}/reviews`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

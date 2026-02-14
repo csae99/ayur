@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
         setError('');
 
         try {
-            const res = await fetch('http://localhost/api/identity/auth/forgot-password', {
+            const res = await fetch(`${window.location.origin}/api/identity/auth/forgot-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, type }),

@@ -85,7 +85,7 @@ export default function VisionAssessmentPage() {
         setResult(null);
 
         try {
-            const response = await fetch('http://localhost/api/bot/vision-assessment', {
+            const response = await fetch(`${window.location.origin}/api/bot/vision-assessment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

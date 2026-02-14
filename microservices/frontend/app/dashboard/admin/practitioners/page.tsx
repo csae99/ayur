@@ -41,7 +41,7 @@ export default function PractitionersPage() {
         }
 
         // Fetch practitioners
-        const url = `http://localhost/api/identity/admin/practitioners?status=${statusFilter}&search=${searchQuery}`;
+        const url = `${window.location.origin}/api/identity/admin/practitioners?status=${statusFilter}&search=${searchQuery}`;
         fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         })

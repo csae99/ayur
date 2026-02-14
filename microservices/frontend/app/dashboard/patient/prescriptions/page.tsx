@@ -50,7 +50,7 @@ export default function PatientPrescriptionsPage() {
             }
         }
 
-        fetch('http://localhost/api/identity/prescriptions/patient', {
+        fetch(`${window.location.origin}/api/identity/prescriptions/patient`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => {
@@ -77,7 +77,7 @@ export default function PatientPrescriptionsPage() {
         setAddingToCart(medicine.item_id);
 
         try {
-            const response = await fetch('http://localhost/api/orders/orders', {
+            const response = await fetch(`${window.location.origin}/api/orders/orders`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

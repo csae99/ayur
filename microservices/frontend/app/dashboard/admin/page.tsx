@@ -45,10 +45,10 @@ export default function AdminDashboard() {
 
         // Fetch statistics from both services
         Promise.all([
-            fetch('http://localhost/api/identity/admin/stats', {
+            fetch(`${window.location.origin}/api/identity/admin/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(res => res.json()),
-            fetch('http://localhost/api/catalog/admin/stats', {
+            fetch(`${window.location.origin}/api/catalog/admin/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(res => res.json())
         ])

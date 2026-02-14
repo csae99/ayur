@@ -52,7 +52,7 @@ export default function MedicineDetailPage() {
         }
 
         // Fetch medicine details
-        fetch(`http://localhost/api/catalog/admin/items/${params.id}`, {
+        fetch(`${window.location.origin}/api/catalog/admin/items/${params.id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => res.json())
@@ -71,7 +71,7 @@ export default function MedicineDetailPage() {
         setProcessing(true);
 
         try {
-            const res = await fetch(`http://localhost/api/catalog/admin/items/${params.id}/status`, {
+            const res = await fetch(`${window.location.origin}/api/catalog/admin/items/${params.id}/status`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -102,7 +102,7 @@ export default function MedicineDetailPage() {
         setProcessing(true);
 
         try {
-            const res = await fetch(`http://localhost/api/catalog/admin/pending-edits/${params.id}/approve`, {
+            const res = await fetch(`${window.location.origin}/api/catalog/admin/pending-edits/${params.id}/approve`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -130,7 +130,7 @@ export default function MedicineDetailPage() {
         setProcessing(true);
 
         try {
-            const res = await fetch(`http://localhost/api/catalog/admin/pending-edits/${params.id}/reject`, {
+            const res = await fetch(`${window.location.origin}/api/catalog/admin/pending-edits/${params.id}/reject`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

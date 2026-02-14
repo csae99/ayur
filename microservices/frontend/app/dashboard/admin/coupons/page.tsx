@@ -59,7 +59,7 @@ export default function CouponsPage() {
     const fetchCoupons = async () => {
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch('http://localhost/api/orders/coupons', {
+            const res = await fetch(`${window.location.origin}/api/orders/coupons`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -78,7 +78,7 @@ export default function CouponsPage() {
 
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch('http://localhost/api/orders/coupons', {
+            const res = await fetch(`${window.location.origin}/api/orders/coupons`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ export default function CouponsPage() {
     const handleToggleActive = async (id: number, currentState: boolean) => {
         const token = localStorage.getItem('token');
         try {
-            await fetch(`http://localhost/api/orders/coupons/${id}`, {
+            await fetch(`${window.location.origin}/api/orders/coupons/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ export default function CouponsPage() {
 
         const token = localStorage.getItem('token');
         try {
-            await fetch(`http://localhost/api/orders/coupons/${id}`, {
+            await fetch(`${window.location.origin}/api/orders/coupons/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

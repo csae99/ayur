@@ -46,11 +46,11 @@ export default function MyAppointmentsPage() {
             console.error('Error parsing user data', e);
         }
 
-        const fetchAppointments = fetch('http://localhost/api/identity/appointments/patient', {
+        const fetchAppointments = fetch(`${window.location.origin}/api/identity/appointments/patient`, {
             headers: { 'Authorization': `Bearer ${token}` }
         }).then(res => res.json());
 
-        const fetchPractitioners = fetch('http://localhost/api/identity/practitioners/public')
+        const fetchPractitioners = fetch(`${window.location.origin}/api/identity/practitioners/public`)
             .then(res => res.json());
 
         Promise.all([fetchAppointments, fetchPractitioners])
@@ -85,7 +85,7 @@ export default function MyAppointmentsPage() {
 
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`http://localhost/api/identity/appointments/${id}/status`, {
+            const res = await fetch(`${window.location.origin}/api/identity/appointments/${id}/status`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ export default function MyAppointmentsPage() {
 
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch(`http://localhost/api/identity/appointments/${rescheduleModal.appointment.id}`, {
+            const res = await fetch(`${window.location.origin}/api/identity/appointments/${rescheduleModal.appointment.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

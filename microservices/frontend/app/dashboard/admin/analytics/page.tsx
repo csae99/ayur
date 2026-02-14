@@ -43,10 +43,10 @@ export default function AdminAnalyticsPage() {
         }
 
         Promise.allSettled([
-            fetch('http://localhost/api/orders/analytics/stats', {
+            fetch(`${window.location.origin}/api/orders/analytics/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(res => res.ok ? res.json() : null),
-            fetch('http://localhost/api/identity/admin/stats', {
+            fetch(`${window.location.origin}/api/identity/admin/stats`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             }).then(res => res.ok ? res.json() : null)
         ])

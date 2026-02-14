@@ -64,7 +64,7 @@ export default function BrowseMedicinesPage() {
         queryParams.append('min_price', filters.minPrice.toString());
         queryParams.append('max_price', filters.maxPrice.toString());
 
-        fetch(`http://localhost/api/catalog/items?${queryParams.toString()}`, {
+        fetch(`${window.location.origin}/api/catalog/items?${queryParams.toString()}`, {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then(res => res.json())
@@ -106,8 +106,8 @@ export default function BrowseMedicinesPage() {
         setAddingToCart(medicine.id);
 
         try {
-            console.log('Adding to cart...', 'http://localhost/api/orders/cart/add', { item_id: medicine.id, quantity: 1 });
-            const response = await fetch('http://localhost/api/orders/cart/add', {
+            console.log('Adding to cart...', `${window.location.origin}/api/orders/cart/add`, { item_id: medicine.id, quantity: 1 });
+            const response = await fetch(`${window.location.origin}/api/orders/cart/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

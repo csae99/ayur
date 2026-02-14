@@ -40,7 +40,7 @@ export default function FindPractitionersPage() {
             }
         }
 
-        fetch('http://localhost/api/identity/practitioners/public')
+        fetch(`${window.location.origin}/api/identity/practitioners/public`)
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data)) {

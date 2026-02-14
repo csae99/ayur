@@ -1,7 +1,9 @@
 import { authUtils } from './auth';
 
-// API base URL
-const API_BASE = 'http://localhost/api';
+// API base URL - dynamically use current hostname so it works on any machine
+const API_BASE = typeof window !== 'undefined'
+    ? `${window.location.origin}/api`
+    : 'http://localhost/api';
 
 interface FetchOptions extends RequestInit {
     skipAuth?: boolean;

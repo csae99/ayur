@@ -87,7 +87,7 @@ export default function CartPage() {
     const fetchAvailableCoupons = async () => {
         const token = localStorage.getItem('token');
         try {
-            const res = await fetch('http://localhost/api/orders/coupons/available', {
+            const res = await fetch(`${window.location.origin}/api/orders/coupons/available`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
@@ -99,7 +99,7 @@ export default function CartPage() {
 
     const fetchCart = () => {
         const token = localStorage.getItem('token');
-        fetch('http://localhost/api/orders/cart', {
+        fetch(`${window.location.origin}/api/orders/cart`, {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then(res => res.json())
@@ -116,7 +116,7 @@ export default function CartPage() {
     const handleUpdateQuantity = async (itemId: number, newQuantity: number) => {
         const token = localStorage.getItem('token');
         try {
-            await fetch('http://localhost/api/orders/cart/update', {
+            await fetch(`${window.location.origin}/api/orders/cart/update`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ export default function CartPage() {
     const handleRemoveItem = async (itemId: number) => {
         const token = localStorage.getItem('token');
         try {
-            await fetch('http://localhost/api/orders/cart/remove', {
+            await fetch(`${window.location.origin}/api/orders/cart/remove`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -163,7 +163,7 @@ export default function CartPage() {
         const pricing = calculatePricing();
 
         try {
-            const response = await fetch('http://localhost/api/orders/coupons/apply', {
+            const response = await fetch(`${window.location.origin}/api/orders/coupons/apply`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

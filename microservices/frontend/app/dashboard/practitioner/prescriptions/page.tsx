@@ -28,7 +28,7 @@ export default function PractitionerPrescriptionsPage() {
             return;
         }
 
-        fetch('http://localhost/api/identity/prescriptions/practitioner', {
+        fetch(`${window.location.origin}/api/identity/prescriptions/practitioner`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(res => {

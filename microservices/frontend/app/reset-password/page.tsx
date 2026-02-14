@@ -35,7 +35,7 @@ function ResetPasswordForm() {
         }
 
         try {
-            const res = await fetch('http://localhost/api/identity/auth/reset-password', {
+            const res = await fetch(`${window.location.origin}/api/identity/auth/reset-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token, type, newPassword }),
