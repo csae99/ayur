@@ -76,6 +76,49 @@ router.post('/register/patient', async (req, res) => {
             email,
             ...otherData,
         });
+
+        // Send welcome email
+        if (email) {
+            const axios = require('axios');
+            try {
+                await axios.post('http://notification-service:3004/send-email', {
+                    to: email,
+                    subject: '🌿 Welcome to Ayurveda Platform!',
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <div style="background: linear-gradient(135deg, #15803d 0%, #166534 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                                <h1>🌿 Welcome to Ayurveda!</h1>
+                                <p>Your wellness journey begins here</p>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
+                                <p>Dear <strong>${otherData.fname || username}</strong>,</p>
+                                <p>Thank you for registering as a <strong>Patient</strong> on Ayurveda Platform! We're thrilled to have you on board.</p>
+                                <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                                    <h3>What you can do:</h3>
+                                    <ul style="line-height: 2;">
+                                        <li>🧴 Browse authentic Ayurvedic medicines</li>
+                                        <li>👨‍⚕️ Connect with certified practitioners</li>
+                                        <li>📅 Book appointments online</li>
+                                        <li>🤖 Chat with AyurBot for wellness advice</li>
+                                        <li>🛒 Order medicines with home delivery</li>
+                                    </ul>
+                                </div>
+                                <center>
+                                    <a href="#" style="display: inline-block; background: #15803d; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0;">Get Started</a>
+                                </center>
+                                <div style="text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px;">
+                                    <p>Questions? Contact us at support@ayurveda.com</p>
+                                    <p>&copy; 2025 Ayurveda Platform. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                });
+            } catch (emailError) {
+                console.error('Failed to send welcome email:', emailError.message);
+            }
+        }
+
         res.status(201).json({ message: 'Patient registered successfully', patientId: patient.id });
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -93,6 +136,49 @@ router.post('/register/practitioner', async (req, res) => {
             email,
             ...otherData,
         });
+
+        // Send welcome email
+        if (email) {
+            const axios = require('axios');
+            try {
+                await axios.post('http://notification-service:3004/send-email', {
+                    to: email,
+                    subject: '🌿 Welcome to Ayurveda Platform - Practitioner!',
+                    html: `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <div style="background: linear-gradient(135deg, #15803d 0%, #166534 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                                <h1>🌿 Welcome, Practitioner!</h1>
+                                <p>You're now part of the Ayurveda Platform</p>
+                            </div>
+                            <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px;">
+                                <p>Dear <strong>Dr. ${otherData.fname || username}</strong>,</p>
+                                <p>Thank you for registering as a <strong>Practitioner</strong> on Ayurveda Platform! We're honored to have you join our community of certified practitioners.</p>
+                                <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                                    <h3>What you can do:</h3>
+                                    <ul style="line-height: 2;">
+                                        <li>💊 Add and manage your medicines catalog</li>
+                                        <li>📅 Set your availability and manage appointments</li>
+                                        <li>📋 Create and send prescriptions to patients</li>
+                                        <li>📊 View analytics on your practice performance</li>
+                                        <li>📦 Track and manage patient orders</li>
+                                    </ul>
+                                </div>
+                                <center>
+                                    <a href="#" style="display: inline-block; background: #15803d; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0;">Set Up Your Profile</a>
+                                </center>
+                                <div style="text-align: center; color: #6b7280; font-size: 12px; margin-top: 30px;">
+                                    <p>Questions? Contact us at support@ayurveda.com</p>
+                                    <p>&copy; 2025 Ayurveda Platform. All rights reserved.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                });
+            } catch (emailError) {
+                console.error('Failed to send welcome email:', emailError.message);
+            }
+        }
+
         res.status(201).json({ message: 'Practitioner registered successfully', practitionerId: practitioner.id });
     } catch (error) {
         res.status(400).json({ error: error.message });
