@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: shubham554/ayur-frontend
-  tag: "dev19"
+  tag: "dev20"
   pullPolicy: IfNotPresent
 
 service:
