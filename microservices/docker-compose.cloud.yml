@@ -19,7 +19,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:dev19
+    image: shubham554/ayur-frontend:dev20
     build: ./frontend
     ports:
       - "3000:3000"
@@ -28,7 +28,7 @@ services:
 
   # Identity Service (Node.js)
   identity-service:
-    image: shubham554/ayur-identity-service:dev4
+    image: shubham554/ayur-identity-service:dev5
     build: ./identity-service
     environment:
       - PORT=3001
@@ -49,7 +49,7 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:dev6
+    image: shubham554/ayur-catalog-service:dev7
     build: ./catalog-service
     environment:
       - PORT=3002
@@ -92,7 +92,7 @@ services:
 
   # Notification Service (Node.js)
   notification-service:
-    image: shubham554/ayur-notification-service:dev
+    image: shubham554/ayur-notification-service:dev2
     build: ./notification-service
     container_name: microservices-notification-service-1
     environment:

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -17,7 +17,7 @@ interface Medicine {
     has_pending_edits?: boolean;
 }
 
-export default function MedicinesPage() {
+function MedicinesContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [medicines, setMedicines] = useState<Medicine[]>([]);
@@ -270,5 +270,13 @@ export default function MedicinesPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function MedicinesPage() {
+    return (
+        <Suspense fallback={<div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-700"></div></div>}>
+            <MedicinesContent />
+        </Suspense>
     );
 }

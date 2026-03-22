@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: shubham554/ayur-catalog-service
-  tag: "dev6"
+  tag: "dev7"
   pullPolicy: IfNotPresent
 
 service:

@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: shubham554/ayur-notification-service
-  tag: "dev"
+  tag: "dev2"
   pullPolicy: IfNotPresent
 
 service:

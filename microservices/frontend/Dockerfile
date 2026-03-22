@@ -1,4 +1,4 @@
-FROM node:18-alpine AS deps
+FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -7,7 +7,7 @@ COPY package.json package-lock.json* ./
 RUN npm install --legacy-peer-deps
 
 # Rebuild the source code only when needed
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 ARG CACHEBUST=1
 COPY --from=deps /app/node_modules ./node_modules
@@ -21,7 +21,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
 # Production image, copy all the files and run next
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production

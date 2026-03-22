@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
@@ -17,7 +17,7 @@ interface Practitioner {
     joined_on: string;
 }
 
-export default function PractitionersPage() {
+function PractitionersContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [practitioners, setPractitioners] = useState<Practitioner[]>([]);
@@ -215,5 +215,13 @@ export default function PractitionersPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function PractitionersPage() {
+    return (
+        <Suspense fallback={<div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-700"></div></div>}>
+            <PractitionersContent />
+        </Suspense>
     );
 }
