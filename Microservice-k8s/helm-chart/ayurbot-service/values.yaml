@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: shubham554/ayur-ayurbot-service
-  tag: "dev4"
+  tag: "dev5"
   pullPolicy: IfNotPresent
 
 service:
