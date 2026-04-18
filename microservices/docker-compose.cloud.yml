@@ -49,7 +49,7 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:dev7
+    image: shubham554/ayur-catalog-service:dev8
     build: ./catalog-service
     environment:
       - PORT=3002
@@ -107,7 +107,7 @@ services:
 
   # AyurBot Service (Python) - Vectorless RAG (BM25)
   ayurbot-service:
-    image: shubham554/ayur-ayurbot-service:vectorless
+    image: shubham554/ayur-ayurbot-service:vectorless-v2
     build: ./ayurbot-vectorless
     environment:
       - PORT=8000
