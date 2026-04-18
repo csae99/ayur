@@ -3,6 +3,75 @@ const { Item } = require('../models');
 
 const router = express.Router();
 
+// AyurBot Product Recommendations — single-query multi-term search
+// Accepts: ?herbs=Triphala,Ginger&symptoms=digestion,stress&limit=4
+router.get('/items/recommend', async (req, res) => {
+    try {
+        const { herbs = '', symptoms = '', limit = 4 } = req.query;
+        const { Op } = require('sequelize');
+
+        // Combine herbs and symptoms into search terms
+        const terms = [...herbs.split(','), ...symptoms.split(',')]
+            .map(t => t.trim())
+            .filter(t => t.length > 1);
+
+        if (terms.length === 0) {
+            return res.json([]);
+        }
+
+        // Build OR clauses: search title, tags, AND details for each term
+        const orClauses = terms.flatMap(term => [
+            { item_title:   { [Op.iLike]: `%${term}%` } },
+            { item_tags:    { [Op.iLike]: `%${term}%` } },
+            { item_details: { [Op.iLike]: `%${term}%` } }
+        ]);
+
+        // Single DB query — approved + in-stock only
+        const items = await Item.findAll({
+            where: {
+                status: 'Approved',
+                item_quantity: { [Op.gt]: 0 },
+                [Op.or]: orClauses
+            },
+            limit: parseInt(limit) * 5  // fetch extra for ranking + dedup
+        });
+
+        // Relevance ranking: title match (3pts) > tag match (2pts) > detail match (1pt)
+        const termsLower = terms.map(t => t.toLowerCase());
+        const seenTitles = new Set();
+        const ranked = items
+            .map(item => {
+                let score = 0;
+                const title   = (item.item_title   || '').toLowerCase();
+                const tags    = (item.item_tags     || '').toLowerCase();
+                const details = (item.item_details  || '').toLowerCase();
+
+                termsLower.forEach(t => {
+                    if (title.includes(t))   score += 3;
+                    if (tags.includes(t))    score += 2;
+                    if (details.includes(t)) score += 1;
+                });
+                return { item, score };
+            })
+            .filter(r => {
+                // Deduplicate by title
+                const key = (r.item.item_title || '').toLowerCase();
+                if (seenTitles.has(key)) return false;
+                seenTitles.add(key);
+                return true;
+            })
+            .sort((a, b) => b.score - a.score)
+            .slice(0, parseInt(limit))
+            .map(r => r.item);
+
+        console.log(`[Recommend] terms=${terms.join(',')} → ${items.length} raw → ${ranked.length} ranked`);
+        res.json(ranked);
+    } catch (error) {
+        console.error('[Recommend] Error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Get all items
 // Get all items with filtering
 router.get('/items', async (req, res) => {

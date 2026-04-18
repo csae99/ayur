@@ -1,0 +1,242 @@
+{
+    "stress": {
+        "herbs": [
+            "Ashwagandha",
+            "Brahmi",
+            "Tulsi"
+        ],
+        "description": "Adaptogenic herbs that help reduce cortisol and calm the mind"
+    },
+    "anxiety": {
+        "herbs": [
+            "Ashwagandha",
+            "Brahmi",
+            "Jatamansi"
+        ],
+        "description": "Nervine tonics that soothe anxiety and promote mental clarity"
+    },
+    "insomnia": {
+        "herbs": [
+            "Ashwagandha",
+            "Jatamansi",
+            "Shankhpushpi"
+        ],
+        "description": "Sleep-inducing herbs that calm the nervous system"
+    },
+    "digestion": {
+        "herbs": [
+            "Triphala",
+            "Ginger",
+            "Fennel"
+        ],
+        "description": "Digestive herbs that kindle agni (digestive fire)"
+    },
+    "constipation": {
+        "herbs": [
+            "Triphala",
+            "Psyllium Husk",
+            "Aloe Vera"
+        ],
+        "description": "Gentle laxatives that promote regular bowel movements"
+    },
+    "immunity": {
+        "herbs": [
+            "Tulsi",
+            "Turmeric",
+            "Amla"
+        ],
+        "description": "Immune-boosting herbs rich in antioxidants"
+    },
+    "inflammation": {
+        "herbs": [
+            "Turmeric",
+            "Boswellia",
+            "Ginger"
+        ],
+        "description": "Anti-inflammatory herbs that reduce swelling and pain"
+    },
+    "joint_pain": {
+        "herbs": [
+            "Boswellia",
+            "Turmeric",
+            "Guggul"
+        ],
+        "description": "Herbs that support joint health and reduce inflammation"
+    },
+    "memory": {
+        "herbs": [
+            "Brahmi",
+            "Shankhpushpi",
+            "Gotu Kola"
+        ],
+        "description": "Nootropic herbs that enhance cognitive function"
+    },
+    "focus": {
+        "herbs": [
+            "Brahmi",
+            "Gotu Kola",
+            "Ashwagandha"
+        ],
+        "description": "Herbs that improve concentration and mental clarity"
+    },
+    "fatigue": {
+        "herbs": [
+            "Ashwagandha",
+            "Shatavari",
+            "Gokshura"
+        ],
+        "description": "Rejuvenating herbs that restore energy and vitality"
+    },
+    "women_health": {
+        "herbs": [
+            "Shatavari",
+            "Ashoka",
+            "Lodhra"
+        ],
+        "description": "Female reproductive tonics that balance hormones"
+    },
+    "mens_health": {
+        "herbs": [
+            "Ashwagandha",
+            "Gokshura",
+            "Safed Musli"
+        ],
+        "description": "Male reproductive tonics that support vitality"
+    },
+    "skin": {
+        "herbs": [
+            "Neem",
+            "Turmeric",
+            "Manjistha"
+        ],
+        "description": "Blood-purifying herbs that promote clear, healthy skin"
+    },
+    "hair": {
+        "herbs": [
+            "Bhringraj",
+            "Amla",
+            "Brahmi"
+        ],
+        "description": "Herbs that nourish hair follicles and promote growth"
+    },
+    "respiratory": {
+        "herbs": [
+            "Tulsi",
+            "Vasaka",
+            "Licorice"
+        ],
+        "description": "Respiratory tonics that support lung health"
+    },
+    "diabetes": {
+        "herbs": [
+            "Gudmar",
+            "Bitter Melon",
+            "Fenugreek"
+        ],
+        "description": "Herbs that help regulate blood sugar levels"
+    },
+    "cholesterol": {
+        "herbs": [
+            "Guggul",
+            "Arjuna",
+            "Garlic"
+        ],
+        "description": "Herbs that support heart health and lipid metabolism"
+    },
+    "liver": {
+        "herbs": [
+            "Kutki",
+            "Punarnava",
+            "Bhumi Amla"
+        ],
+        "description": "Hepatoprotective herbs that support liver detoxification"
+    },
+    "detox": {
+        "herbs": [
+            "Triphala",
+            "Neem",
+            "Manjistha"
+        ],
+        "description": "Cleansing herbs that eliminate toxins from the body"
+    },
+    "bloating": {
+        "herbs": [
+            "Fennel",
+            "Ajwain",
+            "Ginger"
+        ],
+        "description": "Carminative herbs that relieve gas and abdominal bloating"
+    },
+    "acidity": {
+        "herbs": [
+            "Amla",
+            "Licorice",
+            "Coriander"
+        ],
+        "description": "Cooling herbs that neutralize excess stomach acid (Pitta)"
+    },
+    "weight_loss": {
+        "herbs": [
+            "Guggul",
+            "Triphala",
+            "Garcinia"
+        ],
+        "description": "Metabolism-boosting herbs that support healthy weight management"
+    },
+    "weight_gain": {
+        "herbs": [
+            "Ashwagandha",
+            "Shatavari",
+            "Vidari"
+        ],
+        "description": "Nourishing rasayana herbs that promote healthy weight gain"
+    },
+    "cold_cough": {
+        "herbs": [
+            "Tulsi",
+            "Ginger",
+            "Licorice"
+        ],
+        "description": "Warming expectorant herbs for cold, cough and congestion"
+    },
+    "fever": {
+        "herbs": [
+            "Tulsi",
+            "Giloy",
+            "Neem"
+        ],
+        "description": "Antipyretic herbs that reduce fever and boost immunity"
+    },
+    "blood_pressure": {
+        "herbs": [
+            "Arjuna",
+            "Garlic",
+            "Brahmi"
+        ],
+        "description": "Cardiotonic herbs that support healthy blood pressure levels"
+    },
+    "thyroid": {
+        "herbs": [
+            "Guggul",
+            "Ashwagandha",
+            "Brahmi"
+        ],
+        "description": "Thyroid-balancing herbs that regulate metabolism and hormones"
+    },
+    "energy": {
+        "herbs": [
+            "Ashwagandha",
+            "Shilajit",
+            "Gokshura"
+        ],
+        "description": "Rejuvenating rasayana herbs that restore vitality and stamina"
+    },
+    "menstrual": {
+        "herbs": [
+            "Shatavari",
+            "Ashoka",
+            "Dashamoola"
+        ],
+        "description": "Uterine tonics that regulate menstrual cycle and ease cramps"
+    }
+}

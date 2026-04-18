@@ -1,0 +1,15 @@
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+google-generativeai>=0.4.1
+pymongo>=4.6.3
+motor>=3.3.2
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+httpx>=0.25.2
+certifi>=2024.7.4
+rank-bm25>=0.2.2
+pypdf>=4.0.0
+reportlab
+pillow>=12.1.1
+cryptography>=46.0.5
+protobuf>=5.29.6

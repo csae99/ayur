@@ -104,16 +104,22 @@ services:
     networks:
       - ayur-network
 
-  # AyurBot Service (Python)
+  # AyurBot Service (Python) - Vectorless RAG
   ayurbot-service:
-    image: shubham554/ayur-ayurbot-service:latest
-    build: ./ayurbot-service
+    image: shubham554/ayur-ayurbot-service:vectorless
+    build: ./ayurbot-vectorless
     environment:
       - PORT=8000
-      - GEMINI_API_KEY=AIzaSyDtKb4tUk131cnKEwfPr7caYqgsQSa0UyY
+      - GEMINI_API_KEY=AIzaSyAzFWgv55AzBkz-Dk8W3WnFg-o74hxX3bw
       - MONGO_URI=mongodb://mongo-db:27017
+      - BM25_RERANK_ENABLED=false
+    volumes:
+      - ./trainingdata-ayurbot:/app/data/pdfs
+      - ./ayurbot-vectorless/data/knowledge_chunks.json:/app/data/knowledge_chunks.json
     ports:
       - "8000:8000"
+    depends_on:
+      - mongo-db
     networks:
       - ayur-network
 
