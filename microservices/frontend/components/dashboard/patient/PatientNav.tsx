@@ -28,7 +28,7 @@ export default function PatientNav({ onToggleSidebar }: { onToggleSidebar?: () =
     };
 
     return (
-        <nav className="bg-white shadow-sm border-b border-gray-100">
+        <nav className="bg-white shadow-sm border-b border-gray-100 print:hidden">
             <div className="container-fluid px-6 py-3">
                 <div className="flex items-center justify-between">
                     <div>

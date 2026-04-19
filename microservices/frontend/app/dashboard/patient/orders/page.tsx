@@ -11,7 +11,8 @@ export default function MyOrdersPage() {
     const [orders, setOrders] = useState<OrderItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
-    const [displayCount, setDisplayCount] = useState(5);
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 10;
     const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
 
     useEffect(() => {
@@ -198,7 +199,7 @@ export default function MyOrdersPage() {
                         {/* Filter Tabs */}
                         <div className="flex flex-wrap gap-2 mb-6">
                             <button
-                                onClick={() => { setStatusFilter('all'); setDisplayCount(5); }}
+                                onClick={() => { setStatusFilter('all'); setCurrentPage(1); }}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'all'
                                     ? 'bg-green-600 text-white'
                                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -207,7 +208,7 @@ export default function MyOrdersPage() {
                                 All Orders ({orders.length})
                             </button>
                             <button
-                                onClick={() => { setStatusFilter('pending'); setDisplayCount(5); }}
+                                onClick={() => { setStatusFilter('pending'); setCurrentPage(1); }}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'pending'
                                     ? 'bg-yellow-500 text-white'
                                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -216,7 +217,7 @@ export default function MyOrdersPage() {
                                 Pending Payment ({orders.filter(o => o.order_status === 0).length})
                             </button>
                             <button
-                                onClick={() => { setStatusFilter('confirmed'); setDisplayCount(5); }}
+                                onClick={() => { setStatusFilter('confirmed'); setCurrentPage(1); }}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'confirmed'
                                     ? 'bg-blue-600 text-white'
                                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -225,7 +226,7 @@ export default function MyOrdersPage() {
                                 Confirmed ({orders.filter(o => o.order_status >= 1 && o.order_status <= 6).length})
                             </button>
                             <button
-                                onClick={() => { setStatusFilter('cancelled'); setDisplayCount(5); }}
+                                onClick={() => { setStatusFilter('cancelled'); setCurrentPage(1); }}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${statusFilter === 'cancelled'
                                     ? 'bg-red-600 text-white'
                                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -237,51 +238,58 @@ export default function MyOrdersPage() {
 
                         {/* Filtered Orders */}
                         <div className="space-y-4">
-                            {orders
-                                .filter(order => {
-                                    if (statusFilter === 'pending') return order.order_status === 0;
-                                    if (statusFilter === 'confirmed') return order.order_status >= 1 && order.order_status <= 6;
-                                    if (statusFilter === 'cancelled') return order.order_status === 7;
-                                    return true; // 'all'
-                                })
-                                .slice(0, displayCount)
-                                .map((order) => (
-                                    <OrderCard
-                                        key={order.id}
-                                        order={order}
-                                        onCancel={handleCancelOrder}
-                                        onCompletePayment={handleCompletePayment}
-                                    />
-                                ))
-                            }
                             {(() => {
                                 const filteredOrders = orders.filter(order => {
                                     if (statusFilter === 'pending') return order.order_status === 0;
                                     if (statusFilter === 'confirmed') return order.order_status >= 1 && order.order_status <= 6;
                                     if (statusFilter === 'cancelled') return order.order_status === 7;
-                                    return true;
+                                    return true; // 'all'
                                 });
-                                if (filteredOrders.length === 0) {
-                                    return (
-                                        <div className="text-center py-10 bg-white rounded-xl shadow-sm">
-                                            <p className="text-gray-500">No orders found in this category.</p>
-                                        </div>
-                                    );
-                                }
-                                if (displayCount < filteredOrders.length) {
-                                    return (
-                                        <div className="flex justify-center mt-4">
-                                            <button
-                                                onClick={() => setDisplayCount(prev => prev + 5)}
-                                                className="btn btn-primary"
-                                            >
-                                                Load More
-                                            </button>
-                                        </div>
-                                    );
-                                }
-                                return null;
-                            })()}
+                                
+        const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+        const displayedOrders = filteredOrders.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+        return (
+            <>
+                <div className="space-y-4">
+                    {filteredOrders.length === 0 ? (
+                         <div className="text-center py-10 bg-white rounded-xl shadow-sm">
+                             <p className="text-gray-500">No orders found in this category.</p>
+                         </div>
+                    ) : (
+                         displayedOrders.map((order) => (
+                             <OrderCard
+                                 key={order.id}
+                                 order={order}
+                                 onCancel={handleCancelOrder}
+                                 onCompletePayment={handleCompletePayment}
+                             />
+                         ))
+                    )}
+                </div>
+                
+                {totalPages > 1 && (
+                    <div className="flex justify-center items-center gap-4 mt-8">
+                        <button 
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors"
+                        >
+                            <i className="fas fa-chevron-left mr-2"></i> Previous
+                        </button>
+                        <span className="text-gray-600 font-medium">Page {currentPage} of {totalPages}</span>
+                        <button 
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-colors"
+                        >
+                            Next <i className="fas fa-chevron-right ml-2"></i>
+                        </button>
+                    </div>
+                )}
+            </>
+        );
+    })()}
                         </div>
                     </>
                 )}

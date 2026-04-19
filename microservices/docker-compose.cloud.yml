@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # API Gateway
   api-gateway:
-    image: shubham554/ayur-api-gateway:dev3
+    image: shubham554/ayur-api-gateway:dev4
     build: ./api-gateway
     ports:
       - "80:80"
@@ -19,7 +19,7 @@ services:
 
   # Frontend (Next.js)
   frontend:
-    image: shubham554/ayur-frontend:dev20
+    image: shubham554/ayur-frontend:dev21
     build: ./frontend
     ports:
       - "3000:3000"
@@ -28,7 +28,7 @@ services:
 
   # Identity Service (Node.js)
   identity-service:
-    image: shubham554/ayur-identity-service:dev5
+    image: shubham554/ayur-identity-service:dev6
     build: ./identity-service
     environment:
       - PORT=3001
@@ -49,7 +49,7 @@ services:
 
   # Catalog Service (Node.js)
   catalog-service:
-    image: shubham554/ayur-catalog-service:dev8
+    image: shubham554/ayur-catalog-service:dev9
     build: ./catalog-service
     environment:
       - PORT=3002
@@ -74,7 +74,7 @@ services:
 
   # Order Service (Node.js)
   order-service:
-    image: shubham554/ayur-order-service:dev4
+    image: shubham554/ayur-order-service:dev5
     build: ./order-service
     environment:
       - PORT=3003
@@ -92,7 +92,7 @@ services:
 
   # Notification Service (Node.js)
   notification-service:
-    image: shubham554/ayur-notification-service:dev2
+    image: shubham554/ayur-notification-service:dev3
     build: ./notification-service
     container_name: microservices-notification-service-1
     environment:
@@ -107,7 +107,7 @@ services:
 
   # AyurBot Service (Python) - Vectorless RAG (BM25)
   ayurbot-service:
-    image: shubham554/ayur-ayurbot-service:vectorless-v2
+    image: shubham554/ayur-ayurbot-service:vectorless-v3
     build: ./ayurbot-vectorless
     environment:
       - PORT=8000

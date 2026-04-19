@@ -23,7 +23,7 @@ export default function PatientSidebar({ isOpen }: { isOpen: boolean }) {
     ];
 
     return (
-        <aside className={`${isOpen ? 'w-64' : 'w-0 opacity-0 overflow-hidden'} bg-white shadow-md min-h-screen flex flex-col font-sans transition-all duration-300 ease-in-out`}>
+        <aside className={`${isOpen ? 'w-64' : 'w-0 opacity-0 overflow-hidden'} bg-white shadow-md min-h-screen flex flex-col font-sans transition-all duration-300 ease-in-out print:hidden`}>
             {isOpen && (
                 <>
                     <div className="p-6 border-b border-gray-100 flex items-center gap-3">
